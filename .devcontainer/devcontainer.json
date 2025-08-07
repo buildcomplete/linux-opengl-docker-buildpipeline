@@ -6,6 +6,9 @@
 
     // Container configuration for OpenGL/X11
     "runArgs": [
+        // Map container user ID 1001 to host user ID 1000
+        "--user", "1001:1000", 
+        
         // X11 forwarding - mount X11 socket
         "--volume=/tmp/.X11-unix:/tmp/.X11-unix:rw",
         
@@ -16,7 +19,7 @@
         "--env=DISPLAY=:0",
         
         // Network access
-        "--network=host"
+        "--network=host" 
     ],
 
     // Mount the workspace
@@ -34,7 +37,7 @@
 
 
     "mounts": [
-        "source=vscode-user-home,target=/home/vscode,type=volume"
+        "source=vscode-user-home2,target=/home/vscode,type=volume"
     ]
 }
 

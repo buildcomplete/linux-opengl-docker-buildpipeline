@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:25.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     # OpenGL and Mesa utilities
     mesa-utils \
     mesa-utils-extra \
-    libgl1-mesa-glx \
+    #libgl1-mesa-glx \
     libgl1-mesa-dri \
     # X11 libraries
     libx11-6 \
@@ -39,11 +39,22 @@ RUN apt-get update && apt-get install -y \
     nano \
     htop \
     git \
+    gdb \
+    # Raylib
+    build-essential \
+    libasound2-dev \
+    libx11-dev libxrandr-dev \
+    libxi-dev libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libxcursor-dev \
+    libxinerama-dev \
+    libwayland-dev \
+    libxkbcommon-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
 ARG USERNAME=vscode
-ARG USER_UID=1000
+ARG USER_UID=1001
 ARG USER_GID=$USER_UID
 
 RUN groupadd --gid $USER_GID $USERNAME \
