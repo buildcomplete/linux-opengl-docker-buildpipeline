@@ -1,0 +1,40 @@
+{
+    "name": "OpenGL Texture Test Container",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+
+    // Container configuration for OpenGL/X11
+    "runArgs": [
+        // X11 forwarding - mount X11 socket
+        "--volume=/tmp/.X11-unix:/tmp/.X11-unix:rw",
+        
+        // GPU access for hardware acceleration
+        "--device=/dev/dri:/dev/dri",
+        
+        // Pass DISPLAY environment variable
+        "--env=DISPLAY=:0",
+        
+        // Network access
+        "--network=host"
+    ],
+
+    // Mount the workspace
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+
+    // Post-create command to test OpenGL and build texture tests
+    "postCreateCommand": "echo 'Building texture tests...' && cd tests && make build && echo 'Testing OpenGL...' && glxinfo | head -10 && echo 'Run: cd tests && make test-textures'",
+
+    // Use the non-root user
+    "remoteUser": "vscode",
+
+    // Keep container running
+    "shutdownAction": "stopContainer",
+
+
+    "mounts": [
+        "source=vscode-user-home,target=/home/vscode,type=volume"
+    ]
+}
+
