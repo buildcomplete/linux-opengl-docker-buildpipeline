@@ -10,13 +10,14 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "raylib.h"
 #include "raymath.h"
 #include <math.h>
-#include <stdio.h>
+#include <iostream>
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 #include "Navigator.h"
-
+#include "CoordinateHelper.h"
 
 int main ()
 {
+
 	// Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
@@ -34,6 +35,7 @@ int main ()
 	SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
 	
 	Navigator navigator;
+	CoordinateHelper coordinateHelper;
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
@@ -44,53 +46,25 @@ int main ()
 		BeginDrawing();
 
 		BeginMode2D(navigator.camera);
+		coordinateHelper.Draw(navigator.gameMousePos, navigator.camera);
 
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
 
 		DrawRectangleLines( 10, 10, 250, 113, BLUE);
 
-
 		// draw our texture to the screen
 		DrawTexture(wabbit, 400, 200, WHITE);
-
-		// draw circle close to where mouse is
-		float res = 50.0f;
-		Vector2 worldPos = GetScreenToWorld2D(navigator.gameMousePos, navigator.camera);
-
-		Vector2 quantifiedCenter =  { 
-			(float)round(worldPos.x / res) * res,
-			(float)round(worldPos.y / res) * res};
-
-		
-		for (int r = -2;r<3;++r) {
-			for (int c = -2;c<3;++c) {
-				Vector2 indicatorPos = {
-					quantifiedCenter.x + c*res,
-					quantifiedCenter.y + r*res };
-
-				Color circleColor = WHITE;
-				float alpha = Clamp(
-					1.0f-Vector2Distance(worldPos, indicatorPos) / (2.5f * res), 
-					0.0f, 
-					1.0f);
-				
-				circleColor.a = (int)floor(255.0f * alpha);
-
-				DrawCircleLines( indicatorPos.x, indicatorPos.y, 10, circleColor );
-			}
-		}
-
 
 		EndMode2D();
 
 		// draw some text using the default font
-		DrawText("Hello Raylib", 20,20,20,WHITE);
-
+		char buffer[100];
+		sprintf(buffer, "Hello raylib: %.2f", (float)GetRandomValue(0, 100)/100.0f);
+		DrawText(buffer, 20,20,20,WHITE);
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
-
 		
 	}
 
