@@ -15,6 +15,35 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include "Navigator.h"
 #include "CoordinateHelper.h"
 
+#define OLIVE_GREEN   	CLITERAL(Color){ 27, 33, 00, 255 }      //  Background
+#define NETGREEN      	CLITERAL(Color){ 65, 228, 22, 255 }      // Network
+#define ELECTRIC_BLUE   CLITERAL(Color){ 94, 255, 254, 255 }      // Network
+
+class UIBoxComponent
+{
+public:	
+	
+	int x,y,h,w; // Grid aligned (cm) base coordinates
+	Color color;
+
+	UIBoxComponent(int _x, int _y, int _h, int _w, Color _color) 
+		: x(_x), y(_y), h(_h),w(_w), color(_color)
+	{
+		
+	}
+
+	void Draw(CoordinateHelper& coordinateHelper)
+	{
+		// This is only updated when changing monitor, so could probably be a fixed calculation 
+		float border_cm = 0.1f;
+		int xp = coordinateHelper.CmToPixel((float)x - border_cm);
+		int yp = coordinateHelper.CmToPixel((float)y - border_cm);
+		int wp = coordinateHelper.CmToPixel((float)w - 2.0f*border_cm);
+		int hp = coordinateHelper.CmToPixel((float)h - 2.0f*border_cm);
+		DrawRectangleLines( xp, yp, wp, hp, color);
+	}
+};
+
 int main ()
 {
 
@@ -36,6 +65,17 @@ int main ()
 	
 	Navigator navigator;
 	CoordinateHelper coordinateHelper;
+
+	// Define all input frames
+	const int numComponents = 5;
+	UIBoxComponent components[numComponents] = 
+	{
+		UIBoxComponent(1,10,2,2, ELECTRIC_BLUE), // Camera is 2x2, starting at 1x10
+		UIBoxComponent(4,7,2,4, ELECTRIC_BLUE), // ConvolveHorz is 2x4, starting at 4x7
+		UIBoxComponent(4,9,2,4, ELECTRIC_BLUE), // ConvolveHorz is 2x4, starting at 4x9
+		UIBoxComponent(9,7,2,2, ELECTRIC_BLUE), // SquareConvHorz is 2x2, starting at 9x7
+		UIBoxComponent(9,9,2,2, ELECTRIC_BLUE) // ConvolveHorz is 2x4, starting at 9x9
+	};
 	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
@@ -46,15 +86,28 @@ int main ()
 		BeginDrawing();
 
 		BeginMode2D(navigator.camera);
-		coordinateHelper.Draw(navigator.gameMousePos, navigator.camera);
+		coordinateHelper.DrawHelpers(navigator.gameMousePos, navigator.camera);
 
 		// Setup the back buffer for drawing (clear color and depth buffers)
-		ClearBackground(BLACK);
+		ClearBackground(OLIVE_GREEN);
 
 		DrawRectangleLines( 10, 10, 250, 113, BLUE);
 
 		// draw our texture to the screen
 		DrawTexture(wabbit, 400, 200, WHITE);
+
+		Vector2 points[5] = {
+			{-10.0f, -10.0f },
+			{-10.0f,  10.0f },
+			{ 10.0f,  10.0f },
+			{ 10.0f,  -10.0f},
+			{-10.0f, -10.0f }
+
+		};
+		DrawSplineLinear(points, 5, 3, GREEN);
+
+		for (int i=0;i<numComponents;++i)
+			components[i].Draw(coordinateHelper);
 
 		EndMode2D();
 

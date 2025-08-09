@@ -8,10 +8,10 @@
 class CoordinateHelper 
 {
     public:
-        float res = 1;
+        float pixPr_cm = 1;
         CoordinateHelper();
-        void Draw(Vector2 gameMousePos, Camera2D worldPos);
-
+        float CmToPixel(float cm);
+        void DrawHelpers(Vector2 gameMousePos, Camera2D worldPos);
 };
 
 #endif
