@@ -12,6 +12,8 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include <math.h>
 #include <stdio.h>
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
+#include "Navigator.h"
+
 
 int main ()
 {
@@ -29,81 +31,32 @@ int main ()
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
-	Rectangle player = { 400, 280, 40, 40 };
-	Camera2D camera = { 0 };
-    camera.target = (Vector2){ player.x + 20.0f, player.y + 20.0f };
-    camera.offset = (Vector2){ screenWidth/2.0f, screenHeight/2.0f };
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
-	
 	SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
 	
-	bool isDragging = false;
-	bool wasDraggin = false;
-	Vector2 dragAcceleration = {0,0};
-	Vector2 gameMousePos = {0,0}; // Hack to store mouse pos between enabling end disabling mouse drag
-	bool skipUpdateMousePos = false;
+	Navigator navigator;
+	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-
-        // Camera target follows player
-        camera.target = (Vector2){ player.x + 20, player.y + 20 };
-
-        // Camera rotation controls
-        if (IsKeyDown(KEY_A)) camera.rotation--;
-        else if (IsKeyDown(KEY_S)) camera.rotation++;
-
-		isDragging = IsMouseButtonDown(1);
-		if (isDragging != wasDraggin)
-		{
-			wasDraggin=isDragging;
-			dragAcceleration.x = dragAcceleration.y = 0;
-			if (isDragging)
-			{
-				DisableCursor();
-			}
-			else
-			{
-				EnableCursor();
-				SetMousePosition(gameMousePos.x, gameMousePos.y);
-				skipUpdateMousePos=true;
-			}
-		}
-
-		if (isDragging)
-		{
-			Vector2 md = GetMouseDelta();
-			dragAcceleration.x -= md.x * 0.1f;
-			dragAcceleration.y -= md.y * 0.1f;
-			camera.offset.x += dragAcceleration.x;
-			camera.offset.y += dragAcceleration.y;
-		}
-		else if (!skipUpdateMousePos)
-		{
-			gameMousePos = GetMousePosition();
-		}
-		skipUpdateMousePos=false;
+		navigator.HandleInput();
 
 		// drawing
 		BeginDrawing();
 
-		BeginMode2D(camera);
+		BeginMode2D(navigator.camera);
 
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
 
 		DrawRectangleLines( 10, 10, 250, 113, BLUE);
 
-		// draw some text using the default font
-		DrawText("Hello Raylib", 20,20,20,WHITE);
 
 		// draw our texture to the screen
 		DrawTexture(wabbit, 400, 200, WHITE);
 
 		// draw circle close to where mouse is
 		float res = 50.0f;
-		Vector2 worldPos = GetScreenToWorld2D(gameMousePos, camera);
+		Vector2 worldPos = GetScreenToWorld2D(navigator.gameMousePos, navigator.camera);
 
 		Vector2 quantifiedCenter =  { 
 			(float)round(worldPos.x / res) * res,
@@ -130,6 +83,10 @@ int main ()
 
 
 		EndMode2D();
+
+		// draw some text using the default font
+		DrawText("Hello Raylib", 20,20,20,WHITE);
+
 		
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
