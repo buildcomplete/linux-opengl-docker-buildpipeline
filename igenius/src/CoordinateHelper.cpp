@@ -13,7 +13,6 @@ float CoordinateHelper::CmToPixel(float cm)
     return pixPr_cm * cm;
 }
 
-
 void CoordinateHelper::DrawHelpers(Vector2 gameMousePos, Camera2D camera)
 {
     // Assuming drawing in camera mode.
@@ -37,8 +36,9 @@ void CoordinateHelper::DrawHelpers(Vector2 gameMousePos, Camera2D camera)
                 1.0f);
             
             circleColor.a = (int)floor(255.0f * alpha);
-
-            DrawCircleLines( indicatorPos.x, indicatorPos.y, pixPr_cm / 6.0f, circleColor );
+ 
+            if (alpha !=0)
+                DrawCircleLines( indicatorPos.x, indicatorPos.y, pixPr_cm / 6.0f, circleColor );
         }
     }
 }
