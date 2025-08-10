@@ -11,7 +11,6 @@ class CoordinateHelper
         float pixPr_cm = 1;
         CoordinateHelper();
         float CmToPixel(float cm);
-        void DrawHelpers(Vector2 gameMousePos, Camera2D worldPos);
 };
 
 #endif

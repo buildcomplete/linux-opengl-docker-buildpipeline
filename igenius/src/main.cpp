@@ -45,9 +45,9 @@ int main ()
 {
 
 	// Tell the window to use vsync and work on high DPI displays
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI | FLAG_FULLSCREEN_MODE);
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI );
 
-	int screenWidth = GetMonitorWidth(0), screenHeight = GetMonitorHeight(0);
+	int screenWidth = 800, screenHeight = 600;
 
 	// Create the window and OpenGL context
 	InitWindow(screenWidth, screenHeight, "Hello Raylib");
@@ -85,7 +85,7 @@ int main ()
 
 		BeginMode2D(navigator.camera);
 		{
-			coordinateHelper.DrawHelpers(navigator.gameMousePos, navigator.camera);
+			navigator.DrawCursorWorldGuide(coordinateHelper.pixPr_cm);
 
 			// Setup the back buffer for drawing (clear color and depth buffers)
 			ClearBackground(OLIVE_GREEN);
@@ -105,10 +105,11 @@ int main ()
 
 			for (int i=0;i<numComponents;++i)
 				components[i].Draw(coordinateHelper);
+
 		}
 		EndMode2D();
 
-		navigator.Draw();
+		navigator.DrawCursorScreenGuide();
 
 		// draw some text using the default font
 		char buffer[100];
