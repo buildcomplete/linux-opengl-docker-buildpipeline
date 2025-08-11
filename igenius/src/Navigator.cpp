@@ -15,11 +15,11 @@ Navigator::Navigator()
 
 inline bool did_enter_state(MOUSE_MODE_FLAGS testState, MOUSE_MODE_FLAGS newState, MOUSE_MODE_FLAGS flippedStates)
 {
-    return testState & newState & flippedStates;
+    return (testState & newState & flippedStates);
 }
 inline bool did_exit_state(MOUSE_MODE_FLAGS testState, MOUSE_MODE_FLAGS newState, MOUSE_MODE_FLAGS flippedStates)
 {
-    return testState & ~newState & flippedStates;
+    return (testState & ~newState & flippedStates);
 }
 
 
@@ -42,6 +42,7 @@ Vector2 networkDrawPos[2] = {{0,0},{0,0}};
 Vector2 networkValidToHelper = {0,0};
 std::vector<Vector2> drawnNetwork= std::vector<Vector2>(5);
 bool anyNewvalidPointInNetwork = false;
+std::vector<std::vector<Vector2>> networks = std::vector<std::vector<Vector2>>(5);
 // END NEWORK DRAWING HELPER METHODS
 
 void Navigator::HandleInput(float pixPr_cm)
@@ -53,11 +54,21 @@ void Navigator::HandleInput(float pixPr_cm)
     
     // Set MOUSE SELECTING if we are not positioning components or in network mode
     targetState = (MOUSE_MODE_FLAGS)(targetState | ((targetState & (IG_MOUSE_MODE_NETWORK | IG_MOUSE_POSITION_COMPONENT ) ) ? IG_MOUSE_ZERO : IG_MOUSE_SELECTING));
-    MOUSE_MODE_FLAGS flippedStates = (MOUSE_MODE_FLAGS)(targetState & ~flags);
+    MOUSE_MODE_FLAGS flippedStates = (MOUSE_MODE_FLAGS)(targetState ^ flags);
 
     if (did_enter_state(IG_MOUSE_MODE_NETWORK,targetState, flippedStates ))
     {
         // when starting network mode, reset current drawing state (or connect to existing network later on...)
+        drawnNetwork.clear();
+    }
+
+    if (did_exit_state(IG_MOUSE_MODE_NETWORK, targetState, flippedStates))
+    {
+        // Copy to list of actual networks
+        if (drawnNetwork.size() > 1)
+        {
+            networks.push_back(std::vector<Vector2>(drawnNetwork));
+        }
         drawnNetwork.clear();
     }
 
@@ -81,8 +92,6 @@ void Navigator::HandleInput(float pixPr_cm)
         }
         anyNewvalidPointInNetwork=false;
     }
-
-    
     
     if ( IG_MOUSE_SCREEN_DRAGGING & flippedStates)
     {
@@ -193,6 +202,12 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
     {
         DrawLineStrip(&(drawnNetwork[0]), drawnNetwork.size(), NETGREEN );
     }
+
+    for (int i=0;i<networks.size();  ++i)
+    {
+        DrawLineStrip(&(networks[i][0]), networks[i].size(), NETGREEN );
+    }
+    
 }
 void Navigator::DrawCursorScreenGuide()
 {
