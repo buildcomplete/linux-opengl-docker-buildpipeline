@@ -24,7 +24,7 @@ class Navigator {
         Vector2 gameMousePos = {0,0}; // Hack to store mouse pos between enabling end disabling mouse drag
         Navigator();
         
-        void HandleInput();
+        void HandleInput(float pixPr_cm);
         void DrawCursorWorldGuide(float pixPr_cm);
         void DrawCursorScreenGuide();
 };

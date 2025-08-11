@@ -78,7 +78,7 @@ int main ()
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		navigator.HandleInput();
+		navigator.HandleInput(coordinateHelper.pixPr_cm);
 
 		// drawing
 		BeginDrawing();
