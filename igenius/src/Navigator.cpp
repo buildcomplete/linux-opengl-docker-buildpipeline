@@ -37,11 +37,11 @@ Vector2 QuantifiedNetworkPos(Vector2 worldPos, float pixPr_cm)
     return Vector2Add(quantifiedCenter, {dxs * pixPr_cm, dys * pixPr_cm});
 }
 
-bool startNewDrawing = true;
 int networkDrawPosIdx = 1;
 Vector2 networkDrawPos[2] = {{0,0},{0,0}};
 Vector2 networkValidToHelper = {0,0};
 std::vector<Vector2> drawnNetwork= std::vector<Vector2>(5);
+bool anyNewvalidPointInNetwork = false;
 // END NEWORK DRAWING HELPER METHODS
 
 void Navigator::HandleInput(float pixPr_cm)
@@ -58,28 +58,28 @@ void Navigator::HandleInput(float pixPr_cm)
     if (did_enter_state(IG_MOUSE_MODE_NETWORK,targetState, flippedStates ))
     {
         // when starting network mode, reset current drawing state (or connect to existing network later on...)
-        startNewDrawing = true;
         drawnNetwork.clear();
     }
 
     // when starting network draw
     if (did_enter_state(IG_MOUSE_DRAW_NETWORK,targetState, flippedStates ))
     {
-        if (drawnNetwork.size() != 0 )
-            drawnNetwork.push_back(networkValidToHelper);
-
-        networkDrawPosIdx = (networkDrawPosIdx + 1) % 2;
-        networkValidToHelper = QuantifiedNetworkPos(
-            GetScreenToWorld2D(gameMousePos, camera),
-            pixPr_cm);
-        networkDrawPos[networkDrawPosIdx] = networkValidToHelper;
-        if (!startNewDrawing)
-            drawnNetwork.push_back(networkValidToHelper);
-
-        startNewDrawing=false;
-        
+        // if starting a new network, update networkValidToHelper
+        // if not starting a new it should be valid from mouse moving
         if (drawnNetwork.size() == 0 )
+        {
+            networkValidToHelper = QuantifiedNetworkPos(
+                GetScreenToWorld2D(gameMousePos, camera),
+                pixPr_cm);
+            anyNewvalidPointInNetwork = true;
+        }
+        if (anyNewvalidPointInNetwork)
+        {
             drawnNetwork.push_back(networkValidToHelper);
+            networkDrawPosIdx = (networkDrawPosIdx + 1) % 2;
+            networkDrawPos[networkDrawPosIdx] = networkValidToHelper;
+        }
+        anyNewvalidPointInNetwork=false;
     }
 
     
@@ -164,7 +164,7 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
         circleColor.a = 155;
         DrawCircle( netPos.x,netPos.y, pixPr_cm / 6.0f, circleColor );
 
-        if (!startNewDrawing)
+        if (drawnNetwork.size() != 0 )
         {
             Vector2 to = QuantifiedNetworkPos(worldPos, pixPr_cm);
             Vector2 from = networkDrawPos[networkDrawPosIdx];
@@ -177,17 +177,21 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
             if ( distOk && (horzOrVert || diagonal))
             {
                 networkValidToHelper = to;
+                anyNewvalidPointInNetwork= true;
             }
             if (distOk)
             {
-                DrawLine(from.x, from.y, networkValidToHelper.x, networkValidToHelper.y, ELECTRIC_BLUE);
+                DrawLine(from.x, from.y, networkValidToHelper.x, networkValidToHelper.y, NETGREEN);
             }
-
-            if (drawnNetwork.size() > 1)
+            else
             {
-                DrawLineStrip(&(drawnNetwork[0]), drawnNetwork.size(), ELECTRIC_BLUE );
+                anyNewvalidPointInNetwork=false;
             }
         }
+    }
+    if (drawnNetwork.size() > 0)
+    {
+        DrawLineStrip(&(drawnNetwork[0]), drawnNetwork.size(), NETGREEN );
     }
 }
 void Navigator::DrawCursorScreenGuide()

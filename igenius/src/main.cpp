@@ -20,11 +20,10 @@ class UIBoxComponent
 {
 public:	
 	
-	int x,y,h,w; // Grid aligned (cm) base coordinates
+	int x,y,w, h; // Grid aligned (cm) base coordinates
 	Color color;
-
-	UIBoxComponent(int _x, int _y, int _h, int _w, Color _color) 
-		: x(_x), y(_y), h(_h),w(_w), color(_color)
+	UIBoxComponent(int _x, int _y, int _w, int _h, Color _color) 
+		: x(_x), y(_y), w(_w), h(_h),color(_color)
 	{
 		
 	}
@@ -68,11 +67,11 @@ int main ()
 	UIBoxComponent components[numComponents] = 
 	{
 		UIBoxComponent(1,1,1,1, ELECTRIC_BLUE), // Test component is 1x1, starting at 1x1
-		UIBoxComponent(1,10,2,2, ELECTRIC_BLUE), // Camera is 2x2, starting at 1x10
-		UIBoxComponent(4,6,2,3, ELECTRIC_BLUE), // ConvolveHorz is 2x3, starting at 4x7
-		UIBoxComponent(4,9,2,3, ELECTRIC_BLUE), // ConvolveHorz is 2x3, starting at 4x9
-		UIBoxComponent(9,6,2,2, ELECTRIC_BLUE), // SquareConvHorz is 2x2, starting at 9x7
-		UIBoxComponent(9,9,2,2, ELECTRIC_BLUE) // SquareConvolveHorz is 2x4, starting at 9x9
+		UIBoxComponent(1,8,1,1, ELECTRIC_BLUE), // Camera is 1x1, starting at 1x10
+		UIBoxComponent(4,7,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x7
+		UIBoxComponent(4,9,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x9
+		UIBoxComponent(9,5,2,3, ELECTRIC_BLUE), // SquareConvHorz is 2x3, starting at 9x7
+		UIBoxComponent(9,9,2,3, ELECTRIC_BLUE) // SquareConvolveHorz is 2x3, starting at 9x9
 	};
 	
 	// game loop
