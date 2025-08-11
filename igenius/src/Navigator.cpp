@@ -1,6 +1,7 @@
 #include "Navigator.h"
 #include "ig_types.h"
 #include <iostream>
+#include <vector>
 
 Navigator::Navigator()
 {
@@ -40,6 +41,7 @@ bool startNewDrawing = true;
 int networkDrawPosIdx = 1;
 Vector2 networkDrawPos[2] = {{0,0},{0,0}};
 Vector2 networkValidToHelper = {0,0};
+std::vector<Vector2> drawnNetwork= std::vector<Vector2>(5);
 // END NEWORK DRAWING HELPER METHODS
 
 void Navigator::HandleInput(float pixPr_cm)
@@ -57,17 +59,27 @@ void Navigator::HandleInput(float pixPr_cm)
     {
         // when starting network mode, reset current drawing state (or connect to existing network later on...)
         startNewDrawing = true;
+        drawnNetwork.clear();
     }
 
     // when starting network draw
     if (did_enter_state(IG_MOUSE_DRAW_NETWORK,targetState, flippedStates ))
     {
+        if (drawnNetwork.size() != 0 )
+            drawnNetwork.push_back(networkValidToHelper);
+
         networkDrawPosIdx = (networkDrawPosIdx + 1) % 2;
-        networkValidToHelper=QuantifiedNetworkPos(
+        networkValidToHelper = QuantifiedNetworkPos(
             GetScreenToWorld2D(gameMousePos, camera),
             pixPr_cm);
         networkDrawPos[networkDrawPosIdx] = networkValidToHelper;
+        if (!startNewDrawing)
+            drawnNetwork.push_back(networkValidToHelper);
+
         startNewDrawing=false;
+        
+        if (drawnNetwork.size() == 0 )
+            drawnNetwork.push_back(networkValidToHelper);
     }
 
     
@@ -169,7 +181,11 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
             if (distOk)
             {
                 DrawLine(from.x, from.y, networkValidToHelper.x, networkValidToHelper.y, ELECTRIC_BLUE);
+            }
 
+            if (drawnNetwork.size() > 1)
+            {
+                DrawLineStrip(&(drawnNetwork[0]), drawnNetwork.size(), ELECTRIC_BLUE );
             }
         }
     }
