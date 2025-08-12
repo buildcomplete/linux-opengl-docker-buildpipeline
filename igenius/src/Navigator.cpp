@@ -13,17 +13,9 @@ Navigator::Navigator()
     DisableCursor();
 }
 
-inline bool did_enter_state(MOUSE_MODE_FLAGS testState, MOUSE_MODE_FLAGS newState, MOUSE_MODE_FLAGS flippedStates)
-{
-    return (testState & newState & flippedStates);
-}
-inline bool did_exit_state(MOUSE_MODE_FLAGS testState, MOUSE_MODE_FLAGS newState, MOUSE_MODE_FLAGS flippedStates)
-{
-    return (testState & ~newState & flippedStates);
-}
 
 
-// BEGIN NETWORK DRAWING HELERS, SHOULD BE MOVED SOMEWHERE ELSE
+// BEGIN NETWORK DRAWING HELPERS, SHOULD BE MOVED SOMEWHERE ELSE
 Vector2 QuantifiedNetworkPos(Vector2 worldPos, float pixPr_cm)
 {
     Vector2 quantifiedCenter =  { 
@@ -43,26 +35,17 @@ Vector2 networkValidToHelper = {0,0};
 std::vector<Vector2> drawnNetwork= std::vector<Vector2>(5);
 bool anyNewvalidPointInNetwork = false;
 std::vector<std::vector<Vector2>> networks = std::vector<std::vector<Vector2>>(5);
-// END NEWORK DRAWING HELPER METHODS
+// END NETWORK DRAWING HELPER METHODS
 
-void Navigator::HandleInput(float pixPr_cm)
+void Navigator::SyncWithState(Engine_InputEventManager& eMan, float pixPr_cm)
 {
-    MOUSE_MODE_FLAGS targetState = IG_MOUSE_ZERO;
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_SPACE)) ? IG_MOUSE_SCREEN_DRAGGING : IG_MOUSE_ZERO));
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsKeyDown(KEY_LEFT_SHIFT)) ? IG_MOUSE_MODE_NETWORK : IG_MOUSE_ZERO));
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IG_MOUSE_MODE_NETWORK & IG_MOUSE_MODE_NETWORK && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) ? IG_MOUSE_DRAW_NETWORK : IG_MOUSE_ZERO));
-    
-    // Set MOUSE SELECTING if we are not positioning components or in network mode
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((targetState & (IG_MOUSE_MODE_NETWORK | IG_MOUSE_POSITION_COMPONENT ) ) ? IG_MOUSE_ZERO : IG_MOUSE_SELECTING));
-    MOUSE_MODE_FLAGS flippedStates = (MOUSE_MODE_FLAGS)(targetState ^ flags);
-
-    if (did_enter_state(IG_MOUSE_MODE_NETWORK,targetState, flippedStates ))
+    if (eMan.did_enter_state(IG_MOUSE_MODE_NETWORK))
     {
         // when starting network mode, reset current drawing state (or connect to existing network later on...)
         drawnNetwork.clear();
     }
 
-    if (did_exit_state(IG_MOUSE_MODE_NETWORK, targetState, flippedStates))
+    if (eMan.did_exit_state(IG_MOUSE_MODE_NETWORK))
     {
         // Copy to list of actual networks
         if (drawnNetwork.size() > 1)
@@ -73,7 +56,7 @@ void Navigator::HandleInput(float pixPr_cm)
     }
 
     // when starting network draw
-    if (did_enter_state(IG_MOUSE_DRAW_NETWORK,targetState, flippedStates ))
+    if (eMan.did_enter_state(IG_MOUSE_DRAW_NETWORK ))
     {
         // if starting a new network, update networkValidToHelper
         // if not starting a new it should be valid from mouse moving
@@ -89,17 +72,17 @@ void Navigator::HandleInput(float pixPr_cm)
             drawnNetwork.push_back(networkValidToHelper);
             networkDrawPosIdx = (networkDrawPosIdx + 1) % 2;
             networkDrawPos[networkDrawPosIdx] = networkValidToHelper;
+            anyNewvalidPointInNetwork=false;
         }
-        anyNewvalidPointInNetwork=false;
     }
     
-    if ( IG_MOUSE_SCREEN_DRAGGING & flippedStates)
+    if ( eMan.did_enter_state(IG_MOUSE_SCREEN_DRAGGING))
     {
         dragAcceleration.x = dragAcceleration.y = 0;
     }
     
     Vector2 md = GetMouseDelta();
-    if (IG_MOUSE_SCREEN_DRAGGING & targetState)
+    if (IG_MOUSE_SCREEN_DRAGGING & eMan.GetFlags())
     {
         dragAcceleration.x -= md.x * 0.1f;
         dragAcceleration.y -= md.y * 0.1f;
@@ -122,11 +105,10 @@ void Navigator::HandleInput(float pixPr_cm)
         gameMousePos.x  += md.x;
         gameMousePos.y  += md.y;
     }
-    flags = (MOUSE_MODE_FLAGS)targetState;
 }
 
 
-void Navigator::DrawCursorWorldGuide(float pixPr_cm)
+void Navigator::DrawCursorWorldGuide(Engine_InputEventManager& eMan, float pixPr_cm)
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
@@ -137,7 +119,7 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
         (float)round(worldPos.y / pixPr_cm) * pixPr_cm
     };
 
-    if (IG_MOUSE_SELECTING & flags)
+    if (IG_MOUSE_SELECTING & eMan.GetFlags())
     {
         for (int r = -2;r<3;++r) 
         {
@@ -165,7 +147,7 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
     // If there are 0 or 1 neighbours, draw a circle
     // Then draw a line from center of this to each neighbour
     // But this is only the drawing function, so here we only draw connection to other network, and it is not possible to create illigal connections
-    if (IG_MOUSE_MODE_NETWORK & flags)
+    if (IG_MOUSE_MODE_NETWORK & eMan.GetFlags())
     {
         Vector2 netPos = QuantifiedNetworkPos(worldPos, pixPr_cm);
 
@@ -209,10 +191,10 @@ void Navigator::DrawCursorWorldGuide(float pixPr_cm)
     }
     
 }
-void Navigator::DrawCursorScreenGuide()
+void Navigator::DrawCursorScreenGuide(Engine_InputEventManager& eMan)
 {
     // Draw cross where we are 
-    if (IG_MOUSE_SELECTING & flags )
+    if (IG_MOUSE_SELECTING & eMan.GetFlags() )
     {
         DrawLine(
             gameMousePos.x - 10, gameMousePos.y ,
@@ -224,7 +206,7 @@ void Navigator::DrawCursorScreenGuide()
             NETGREEN);
     }
 
-    if (IG_MOUSE_SCREEN_DRAGGING & flags)
+    if (IG_MOUSE_SCREEN_DRAGGING & eMan.GetFlags())
     {
         DrawLine(
             gameMousePos.x - dragAcceleration.x * 1.5, gameMousePos.y - dragAcceleration.y * 1.5,
@@ -232,7 +214,7 @@ void Navigator::DrawCursorScreenGuide()
             NETGREEN);
     }
 
-    if (IG_MOUSE_MODE_NETWORK & flags)
+    if (IG_MOUSE_MODE_NETWORK & eMan.GetFlags())
     {
         DrawLine(
             gameMousePos.x - 10, gameMousePos.y ,

@@ -23,12 +23,23 @@ classDiagram
     }
     
     class IG_UI_Component {
-        byte id
+        byte c_id
         Vector2[] anchors
+        Vector2[] inputAnchors
+        Vector2 outputAnchor
     }
 
     IG_Network .. IG_Component
     IG_UI_Network .. IG_UI_Component
+
+    class ConnectionStateManager {
+        IG_Network[] networks
+        IG_Component[] Components
+        IG_UI_Network[] ui_networks
+        IG_UI_Component[] ui_Components
+        
+    }
+
 
 
 ```

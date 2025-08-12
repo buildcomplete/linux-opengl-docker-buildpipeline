@@ -61,6 +61,7 @@ int main ()
 	
 	Navigator navigator;
 	CoordinateHelper coordinateHelper;
+	Engine_InputEventManager eventManager = Engine_InputEventManager();
 
 	// Define all input frames
 	const int numComponents = 6;
@@ -77,14 +78,15 @@ int main ()
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		navigator.HandleInput(coordinateHelper.pixPr_cm);
+		eventManager.UpdateStateFromInput();
+		navigator.SyncWithState(eventManager, coordinateHelper.pixPr_cm);
 
 		// drawing
 		BeginDrawing();
 
 		BeginMode2D(navigator.camera);
 		{
-			navigator.DrawCursorWorldGuide(coordinateHelper.pixPr_cm);
+			navigator.DrawCursorWorldGuide(eventManager, coordinateHelper.pixPr_cm);
 
 			// Setup the back buffer for drawing (clear color and depth buffers)
 			ClearBackground(OLIVE_GREEN);
@@ -108,7 +110,7 @@ int main ()
 		}
 		EndMode2D();
 
-		navigator.DrawCursorScreenGuide();
+		navigator.DrawCursorScreenGuide(eventManager);
 
 		// draw some text using the default font
 		char buffer[100];
