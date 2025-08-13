@@ -10,6 +10,8 @@ class Canvas
 public:
     Canvas();
 
+    void Update();
+
     void Draw(CoordinateHelper&);
 
     std::vector<UI_Component> components;

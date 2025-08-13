@@ -38,6 +38,8 @@ public:
     Rectangle anchor;
     std::vector<Vector2> inputAnchors;
     Vector2 outputAnchor;
+
+    bool Inside(Vector2 pWorld);
 };
 
 // Factory should be able to made pr depth / level 

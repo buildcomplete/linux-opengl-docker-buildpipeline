@@ -5,6 +5,7 @@
 #include "Navigator.h"
 #include "CoordinateHelper.h"
 #include "Canvas.h"
+#include "Engine_NetworkDrawingManager.h"
 
 class UIBoxComponent
 {
@@ -52,8 +53,8 @@ public:
     void Init();
     void UpdateTimeSlice();
     void Render();
+    void RandomTestDrawings();
     void Shutdown();
-
 	bool ShouldClose();
 
     ~Engine();
@@ -62,8 +63,10 @@ private:
     Engine_StateManager stateManager;
     Navigator navigator;
 	CoordinateHelper coordinateHelper;
+	Engine_NetworkDrawingManager networkDrawingManager;
 	Canvas canvas;
     Texture wabbit;
+	void HandleStateChanges();
 	
 };
 

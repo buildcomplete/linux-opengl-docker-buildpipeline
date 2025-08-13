@@ -17,6 +17,9 @@ class Navigator {
         void SyncWithState(Engine_StateManager& eMan, float pixPr_cm);
         void DrawCursorWorldGuide(Engine_StateManager& eMan, float pixPr_cm);
         void DrawCursorScreenGuide(Engine_StateManager& eMan);
+        Vector2 GetMousePosWorld();
+
 };
 
 #endif
+

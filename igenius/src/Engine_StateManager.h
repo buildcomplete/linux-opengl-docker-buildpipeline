@@ -7,9 +7,11 @@ typedef enum
     IG_MOUSE_SELECTING 			    = 1 << 0, //1
     IG_MOUSE_SCREEN_DRAGGING 		= 1 << 1, // 2
     IG_MOUSE_MODE_NETWORK			= 1 << 2, // 4
-    IG_MOUSE_DRAW_NETWORK			= 1 << 3, // 8
+    // Try to execute command from mouse cursor depending on state...
+    IG_MOUSE_TRY_COMMAND			= 1 << 3, // 8
     IG_MOUSE_POSITION_COMPONENT 	= 1 << 4, // 16
-    IG_MOUSE_DELETE                 = 1 << 5 // 32
+    IG_MOUSE_DELETE                 = 1 << 5, // 32
+
 } MOUSE_MODE_FLAGS;
 
 // Raises all enter and exit events to listeners

@@ -25,6 +25,9 @@ void Engine::UpdateTimeSlice()
 {
     stateManager.UpdateFromInput();
 	navigator.SyncWithState(stateManager, coordinateHelper.pixPr_cm);
+    HandleStateChanges();
+
+    canvas.Update();
 }
 
 void Engine::Render()
@@ -35,25 +38,18 @@ void Engine::Render()
 
     BeginMode2D(navigator.camera);
     {
-        navigator.DrawCursorWorldGuide(stateManager, coordinateHelper.pixPr_cm);
-
         // Setup the back buffer for drawing (clear color and depth buffers)
         ClearBackground(OLIVE_GREEN);
+        
+        navigator.DrawCursorWorldGuide(stateManager, coordinateHelper.pixPr_cm);
 
-        // draw our texture to the screen
-        DrawTexture(wabbit, 400, 200, WHITE);
-
-        Vector2 points[5] = {
-            {-10.0f, -10.0f },
-            {-10.0f,  10.0f },
-            { 10.0f,  10.0f },
-            { 10.0f,  -10.0f},
-            {-10.0f, -10.0f }
-
-        };
-        DrawSplineLinear(points, 5, 3, GREEN);
+        RandomTestDrawings();
 
         canvas.Draw(coordinateHelper);
+        networkDrawingManager.Draw(
+            navigator.GetMousePosWorld(),
+            IG_MOUSE_MODE_NETWORK & stateManager.GetFlags(),
+            coordinateHelper.pixPr_cm);
     }
     EndMode2D();
 
@@ -66,6 +62,20 @@ void Engine::Render()
     
     // end the frame and get ready for the next one  (display frame, poll input, etc...)
     EndDrawing();
+}
+
+void Engine::RandomTestDrawings()
+{
+    // draw our texture to the screen
+    DrawTexture(wabbit, 400, 200, WHITE);
+
+    Vector2 points[5] = {
+        {-10.0f, -10.0f},
+        {-10.0f, 10.0f},
+        {10.0f, 10.0f},
+        {10.0f, -10.0f},
+        {-10.0f, -10.0f}};
+    DrawSplineLinear(points, 5, 3, GREEN);
 }
 
 void Engine::Shutdown()
@@ -86,4 +96,32 @@ bool Engine::ShouldClose()
 Engine::~Engine()
 {
 	
+}
+
+void Engine::HandleStateChanges()
+{
+    if (stateManager.DidEnterState(IG_MOUSE_MODE_NETWORK))
+    {
+        networkDrawingManager.StartNewNetwork();
+    }
+
+    if (stateManager.DidExitState(IG_MOUSE_MODE_NETWORK))
+    {
+        networkDrawingManager.CompleteDrawing();
+    }
+
+    if (stateManager.DidEnterState(IG_MOUSE_TRY_COMMAND))
+    {
+        // Try to select component
+        if (IG_MOUSE_SELECTING & stateManager.GetFlags())
+        {
+
+        }
+
+        // Send network command, begin new, select and existing, expand network
+        if (IG_MOUSE_MODE_NETWORK & stateManager.GetFlags())
+        {
+            networkDrawingManager.AddAnchorPoint(navigator.GetMousePosWorld(), coordinateHelper.pixPr_cm);
+        }
+    }
 }

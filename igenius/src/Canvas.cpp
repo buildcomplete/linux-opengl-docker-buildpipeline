@@ -12,6 +12,25 @@ Canvas::Canvas()
     components.push_back(UI_Component(++objectId, {9.0f,9.0f,2.0f,3.0f} ));    // UIBoxComponent(9,9,2,3, ELECTRIC_BLUE) // SquareConvolveHorz is 2x3, starting at 9x9
 }
 
+void Canvas::Update()
+{
+    // Update location of mouse according to screen, gameworld in Component and network coordinates
+
+
+    // Perform detection of what objects are selected
+}
+
+
+// Select / deselect component
+// Multiple components can be selected
+// We could, read the state here, and handle the logic
+// Or we could manage that outside in the engine, and just inform when an event occured
+// centralized or decentralized...
+void ToggleComponent()
+{
+
+}
+
 void Canvas::Draw(CoordinateHelper& coordinateHelper)
 {
     for (int i=0;i<components.size();++i)
