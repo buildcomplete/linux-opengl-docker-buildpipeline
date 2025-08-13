@@ -5,4 +5,17 @@
 #define NETGREEN      	CLITERAL(Color){ 65, 228, 22, 255 }      // Network
 #define ELECTRIC_BLUE   CLITERAL(Color){ 94, 255, 254, 255 }      // Network
 
+typedef enum 
+{
+    SCALAR,
+    IMAGE,
+    BINARY_IMAGE,
+    RAY,
+    LINESEGMENT,
+    CIRCLES,
+    VERTICES,
+    IMAGESET,
+    PROFILEWITHORIGIN
+} IGDataTypes;
+
 #endif

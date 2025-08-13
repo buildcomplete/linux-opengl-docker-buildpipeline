@@ -1,132 +1,42 @@
 /*
-Raylib example file.
-This is an example main file for a simple raylib project.
-Use this as a starting point or replace it with your code.
-
-by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
-
+IG Host loop
 */
 
 #include "raylib.h"
-#include "raymath.h"
-#include <math.h>
-#include <iostream>
-#include "resource_dir.h"	// utility header for SearchAndSetResourceDir
-#include "Navigator.h"
-#include "CoordinateHelper.h"
-#include "ig_types.h"
+#include "Engine.h"
 
-class UIBoxComponent
+void InitRaylibWindow()
 {
-public:	
-	
-	int x,y,w, h; // Grid aligned (cm) base coordinates
-	Color color;
-	UIBoxComponent(int _x, int _y, int _w, int _h, Color _color) 
-		: x(_x), y(_y), w(_w), h(_h),color(_color)
-	{
-		
-	}
-
-	void Draw(CoordinateHelper& coordinateHelper)
-	{
-		// This is only updated when changing monitor, so could be a fixed calculation 
-		float padding_cm = 0.1f;
-		int xp = coordinateHelper.CmToPixel((float)x - padding_cm);
-		int yp = coordinateHelper.CmToPixel((float)y - padding_cm);
-		int wp = coordinateHelper.CmToPixel((float)w + 2.0f * padding_cm);
-		int hp = coordinateHelper.CmToPixel((float)h + 2.0f * padding_cm);
-		DrawRectangleLines( xp, yp, wp, hp, color);
-	}
-};
-
-int main ()
-{
-
 	// Tell the window to use vsync and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI );
 
 	int screenWidth = 800, screenHeight = 600;
 
 	// Create the window and OpenGL context
-	InitWindow(screenWidth, screenHeight, "Hello Raylib");
+	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
 
-	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	SearchAndSetResourceDir("resources");
+	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+}
 
-	// Load a texture from the resources directory
-	Texture wabbit = LoadTexture("wabbit_alpha.png");
+int main ()
+{
+	// Since I try to avoid using pointers, 
+	// I need to do some pre-initialization before Contructing instances
+	// Or I would need to make a contruct/init procedure
+	// (Ideally I would like this code to be in engine init... but then all memebers would need to be pointers since contructor is called on declaration)
+ 	InitRaylibWindow();
 
-	SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
-	
-	Navigator navigator;
-	CoordinateHelper coordinateHelper;
-	Engine_InputEventManager eventManager = Engine_InputEventManager();
-
-	// Define all input frames
-	const int numComponents = 6;
-	UIBoxComponent components[numComponents] = 
-	{
-		UIBoxComponent(1,1,1,1, ELECTRIC_BLUE), // Test component is 1x1, starting at 1x1
-		UIBoxComponent(1,8,1,1, ELECTRIC_BLUE), // Camera is 1x1, starting at 1x10
-		UIBoxComponent(4,7,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x7
-		UIBoxComponent(4,9,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x9
-		UIBoxComponent(9,5,2,3, ELECTRIC_BLUE), // SquareConvHorz is 2x3, starting at 9x7
-		UIBoxComponent(9,9,2,3, ELECTRIC_BLUE) // SquareConvolveHorz is 2x3, starting at 9x9
-	};
+	Engine engine;
+	engine.Init();
 	
 	// game loop
-	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
+	while (!engine.ShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		eventManager.UpdateStateFromInput();
-		navigator.SyncWithState(eventManager, coordinateHelper.pixPr_cm);
-
-		// drawing
-		BeginDrawing();
-
-		BeginMode2D(navigator.camera);
-		{
-			navigator.DrawCursorWorldGuide(eventManager, coordinateHelper.pixPr_cm);
-
-			// Setup the back buffer for drawing (clear color and depth buffers)
-			ClearBackground(OLIVE_GREEN);
-
-			// draw our texture to the screen
-			DrawTexture(wabbit, 400, 200, WHITE);
-
-			Vector2 points[5] = {
-				{-10.0f, -10.0f },
-				{-10.0f,  10.0f },
-				{ 10.0f,  10.0f },
-				{ 10.0f,  -10.0f},
-				{-10.0f, -10.0f }
-
-			};
-			DrawSplineLinear(points, 5, 3, GREEN);
-
-			for (int i=0;i<numComponents;++i)
-				components[i].Draw(coordinateHelper);
-
-		}
-		EndMode2D();
-
-		navigator.DrawCursorScreenGuide(eventManager);
-
-		// draw some text using the default font
-		char buffer[100];
-		sprintf(buffer, "Image Genius: %.2f", (float)GetRandomValue(0, 100)/100.0f);
-		DrawText(buffer, 20,20,20,WHITE);
-		
-		// end the frame and get ready for the next one  (display frame, poll input, etc...)
-		EndDrawing();
-		
+		engine.UpdateTimeSlice();
+		engine.Render();
 	}
 
-	// cleanup
-	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
+	engine.Shutdown();
 
-	// destroy the window and cleanup the OpenGL context
-	CloseWindow();
 	return 0;
 }

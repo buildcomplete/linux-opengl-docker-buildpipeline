@@ -1,9 +1,5 @@
-#ifndef ENGINE_INPUTEVENTMANAGER_H
-#define ENGINE_EVENTMANAGER_H
-
-#include <vector>
-#include <unordered_map>
-#include <functional>
+#ifndef ENGINE_STATEMANAGER_H
+#define ENGINE_STATEMANAGER_H
 
 typedef enum
 {
@@ -12,18 +8,19 @@ typedef enum
     IG_MOUSE_SCREEN_DRAGGING 		= 1 << 1, // 2
     IG_MOUSE_MODE_NETWORK			= 1 << 2, // 4
     IG_MOUSE_DRAW_NETWORK			= 1 << 3, // 8
-    IG_MOUSE_POSITION_COMPONENT 	= 1 << 4,
+    IG_MOUSE_POSITION_COMPONENT 	= 1 << 4, // 16
+    IG_MOUSE_DELETE                 = 1 << 5 // 32
 } MOUSE_MODE_FLAGS;
 
 // Raises all enter and exit events to listeners
-class Engine_InputEventManager
+class Engine_StateManager
 {
 public:
     MOUSE_MODE_FLAGS GetFlags();
-    void UpdateStateFromInput();
+    void UpdateFromInput();
 
-    bool did_enter_state(MOUSE_MODE_FLAGS testState);
-    bool did_exit_state(MOUSE_MODE_FLAGS testState);
+    bool DidEnterState(MOUSE_MODE_FLAGS testState);
+    bool DidExitState(MOUSE_MODE_FLAGS testState);
 
 private:
     MOUSE_MODE_FLAGS flags = IG_MOUSE_SELECTING;

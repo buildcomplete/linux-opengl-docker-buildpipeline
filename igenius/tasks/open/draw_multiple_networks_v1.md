@@ -2,7 +2,11 @@
 
 ## v1
 - Make it possible to connect networks to components
-- Make it possible to edit existing networks
+- Make it possible to edit existing networks, 
+  - select network that you click on
+  - only allow selecting on anchor
+  - deny starting drawing in illigal areas
+  
 
 ## v0
 - Make it possible to draw multiple networks,

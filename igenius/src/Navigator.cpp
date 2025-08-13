@@ -1,5 +1,5 @@
 #include "Navigator.h"
-#include "ig_types.h"
+#include "IG_types.h"
 #include <iostream>
 #include <vector>
 
@@ -12,7 +12,6 @@ Navigator::Navigator()
     gameMousePos = {(float)GetScreenWidth() / 2,(float)GetScreenHeight() / 2};
     DisableCursor();
 }
-
 
 
 // BEGIN NETWORK DRAWING HELPERS, SHOULD BE MOVED SOMEWHERE ELSE
@@ -37,15 +36,15 @@ bool anyNewvalidPointInNetwork = false;
 std::vector<std::vector<Vector2>> networks = std::vector<std::vector<Vector2>>(5);
 // END NETWORK DRAWING HELPER METHODS
 
-void Navigator::SyncWithState(Engine_InputEventManager& eMan, float pixPr_cm)
+void Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm)
 {
-    if (eMan.did_enter_state(IG_MOUSE_MODE_NETWORK))
+    if (eMan.DidEnterState(IG_MOUSE_MODE_NETWORK))
     {
         // when starting network mode, reset current drawing state (or connect to existing network later on...)
-        drawnNetwork.clear();
+            drawnNetwork.clear();
     }
 
-    if (eMan.did_exit_state(IG_MOUSE_MODE_NETWORK))
+    if (eMan.DidExitState(IG_MOUSE_MODE_NETWORK))
     {
         // Copy to list of actual networks
         if (drawnNetwork.size() > 1)
@@ -56,7 +55,7 @@ void Navigator::SyncWithState(Engine_InputEventManager& eMan, float pixPr_cm)
     }
 
     // when starting network draw
-    if (eMan.did_enter_state(IG_MOUSE_DRAW_NETWORK ))
+    if (eMan.DidEnterState(IG_MOUSE_DRAW_NETWORK ))
     {
         // if starting a new network, update networkValidToHelper
         // if not starting a new it should be valid from mouse moving
@@ -76,7 +75,7 @@ void Navigator::SyncWithState(Engine_InputEventManager& eMan, float pixPr_cm)
         }
     }
     
-    if ( eMan.did_enter_state(IG_MOUSE_SCREEN_DRAGGING))
+    if ( eMan.DidEnterState(IG_MOUSE_SCREEN_DRAGGING))
     {
         dragAcceleration.x = dragAcceleration.y = 0;
     }
@@ -108,7 +107,7 @@ void Navigator::SyncWithState(Engine_InputEventManager& eMan, float pixPr_cm)
 }
 
 
-void Navigator::DrawCursorWorldGuide(Engine_InputEventManager& eMan, float pixPr_cm)
+void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, float pixPr_cm)
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
@@ -191,7 +190,7 @@ void Navigator::DrawCursorWorldGuide(Engine_InputEventManager& eMan, float pixPr
     }
     
 }
-void Navigator::DrawCursorScreenGuide(Engine_InputEventManager& eMan)
+void Navigator::DrawCursorScreenGuide(Engine_StateManager& eMan)
 {
     // Draw cross where we are 
     if (IG_MOUSE_SELECTING & eMan.GetFlags() )
