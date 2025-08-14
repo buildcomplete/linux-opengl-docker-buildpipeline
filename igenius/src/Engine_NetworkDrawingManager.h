@@ -4,7 +4,10 @@
 #include "raylib.h"
 #include <vector>
 
-// Helper class to track drawing command related to updating network
+/**
+ * Responsible for drawing network connections and handling mouse events 
+ * for network creation, interacting with the Canvas to understand item presence.
+ */
 class Engine_NetworkDrawingManager
 {
 public:

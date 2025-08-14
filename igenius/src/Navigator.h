@@ -5,6 +5,10 @@
 #include "raymath.h"
 #include "Engine_StateManager.h"
 
+/**
+ * Handles mouse interactions, including dragging and cursor customization, 
+ * while querying the Canvas for item types to enhance user experience.
+ */
 class Navigator {
 	Vector2 dragAcceleration = {0,0};
     

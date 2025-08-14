@@ -1,15 +1,48 @@
 #include "Canvas.h"
+#include <iostream>
 
 Canvas::Canvas()
 {
+     unsigned char i=0;
+    do
+    {
+        i++;
+        avaliableKeys.push(i);
+        /* code */
+    } while (i!=255);
+    
     // Define all input frames
-    char objectId = 0;
-    components.push_back(UI_Component(++objectId, {1.0f,1.0f,1.0f,1.0f} ));     // Test Component
-    components.push_back(UI_Component(++objectId, {1.0f,8.0f,1.0f,1.0f} ));     // UIBoxComponent(1,8,1,1, ELECTRIC_BLUE), // Camera is 1x1, starting at 1x10
-    components.push_back(UI_Component(++objectId, {4.0f,7.0f,2.0f,1.0f} ));     // UIBoxComponent(4,7,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x7
-    components.push_back(UI_Component(++objectId, {4.0f,9.0f,2.0f,1.0f} ));     // UIBoxComponent(4,9,2,1, ELECTRIC_BLUE), // ConvolveHorz is 2x1, starting at 4x9
-    components.push_back(UI_Component(++objectId, {9.0f,5.0f,2.0f,3.0f} ));      // UIBoxComponent(9,5,2,3, ELECTRIC_BLUE), // SquareConvHorz is 2x3, starting at 9x7
-    components.push_back(UI_Component(++objectId, {9.0f,9.0f,2.0f,3.0f} ));    // UIBoxComponent(9,9,2,3, ELECTRIC_BLUE) // SquareConvolveHorz is 2x3, starting at 9x9
+    AddComponent(CMPNAMES::UNDEFINED, 1,1);
+    AddComponent(CMPNAMES::VIRTUAL_CAMERA, 1,8);
+    AddComponent(CMPNAMES::SP_CONVOLUTION, 4,7);
+    AddComponent(CMPNAMES::SP_CONVOLUTION, 4,9);
+    AddComponent(CMPNAMES::IMG_IMG_IMG_OPERATION, 9,5);
+    AddComponent(CMPNAMES::IMG_IMG_IMG_OPERATION, 9,9);
+}
+
+UIComponentBluePrint Canvas::GetBluePrint(CMPNAMES name)
+{
+    for (int i=0;i<uiComponentBluePrints.size(); ++i)
+    {
+        if (uiComponentBluePrints[i].Name == name)
+            return uiComponentBluePrints[i];
+    }
+    return {UNDEFINED, 1, 1};
+}
+bool Canvas::AddComponent(CMPNAMES name, int cellAnchorX, int cellAnchorY)
+{
+    if (!avaliableKeys.empty()) 
+    {
+        char insertId = avaliableKeys.front();
+        // Add check if position is valid
+        UIComponentBluePrint bluePrint = GetBluePrint(name);
+        std::cout << "Add: " << (int)insertId << " " << (float)cellAnchorX << ", " << (float)cellAnchorY << ", " << (float)bluePrint.Width << ", " << (float)bluePrint.Heigh << std::endl;
+        components.push_back(UI_Component(insertId, { (float)cellAnchorX, (float)cellAnchorY, (float)bluePrint.Width, (float)bluePrint.Heigh} ));
+        avaliableKeys.pop();
+        return true;
+    }
+    return false;
+    
 }
 
 void Canvas::Update()

@@ -14,7 +14,10 @@ typedef enum
 
 } MOUSE_MODE_FLAGS;
 
-// Raises all enter and exit events to listeners
+/**
+ * Interprets key and mouse events to manage game states and transitions, 
+ * facilitating communication with the Canvas for item state changes.
+ */
 class Engine_StateManager
 {
 public:

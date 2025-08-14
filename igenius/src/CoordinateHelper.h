@@ -4,13 +4,16 @@
 #include "raylib.h"
 #include "raymath.h"
 
-
-class CoordinateHelper 
+/**
+ * Provides utility functions for converting between screen coordinates 
+ * and grid coordinates based on physical screen dimensions.
+ */
+class CoordinateHelper
 {
-    public:
-        float pixPr_cm = 1;
-        CoordinateHelper();
-        float CmToPixel(float cm);
+public:
+    float pixPr_cm = 1;
+    CoordinateHelper();
+    float CmToPixel(float cm);
 };
 
 #endif

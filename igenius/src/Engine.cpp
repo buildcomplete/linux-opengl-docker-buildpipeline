@@ -115,7 +115,8 @@ void Engine::HandleStateChanges()
         // Try to select component
         if (IG_MOUSE_SELECTING & stateManager.GetFlags())
         {
-
+            // Why do I currently need to be able to select objects?
+            // If I should be able to set properties etc dynamically, I should probably add some UI library
         }
 
         // Send network command, begin new, select and existing, expand network

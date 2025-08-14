@@ -45,7 +45,10 @@ public:
 };
 
 
-// Keeping references to all managers and executes stuff in the right order
+/**
+ * Serves as the central hub that integrates various components, 
+ * ensuring communication and coordination between them.
+ */
 class Engine
 {
 public:

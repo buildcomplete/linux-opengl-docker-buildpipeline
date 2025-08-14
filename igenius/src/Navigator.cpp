@@ -51,6 +51,7 @@ Vector2 Navigator::GetMousePosWorld()
     return GetScreenToWorld2D(gameMousePos, camera);
 }
 
+
 // Should be called while drawing in camera mode
 void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, float pixPr_cm)
 {
@@ -64,24 +65,32 @@ void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, float pixPr_cm)
 
     if (IG_MOUSE_SELECTING & eMan.GetFlags())
     {
-        for (int r = -2;r<3;++r) 
+        for (int r = -3;r<4;++r) 
         {
-            for (int c = -2;c<3;++c) 
+            for (int c = -3;c<4;++c) 
             {
+                Color circleColor = WHITE; // Determine color depending in wheter or not we are overlapping with component or network
                 Vector2 indicatorPos = {
-                    quantifiedCenter.x + c*pixPr_cm,
-                    quantifiedCenter.y + r*pixPr_cm };
+                    quantifiedCenter.x + r*pixPr_cm,
+                    quantifiedCenter.y + c*pixPr_cm };
 
-                Color circleColor = WHITE;
+                
+                // the quantified center is the upper left vertic, we need to calculate distance as we are in the center of the vertex.
                 float alpha = Clamp(
-                    1.0f - Vector2Distance(worldPos, indicatorPos) / (2.5f * pixPr_cm), 
+                    1.0f - Vector2Distance(Vector2AddValue(indicatorPos, 0.5f * pixPr_cm), worldPos) / (2.2f * pixPr_cm), 
                     0.0f, 
                     1.0f);
-                
-                circleColor.a = (int)floor(255.0f * alpha);
-    
-                if (alpha !=0)
-                    DrawCircleLines( indicatorPos.x, indicatorPos.y, pixPr_cm / 6.0f, circleColor );
+                if (alpha > 0.01)
+                {
+                    float marginF = Clamp(
+                        1.0f - Vector2Distance(Vector2AddValue(indicatorPos, 0.5f * pixPr_cm), worldPos) / (2.5f * pixPr_cm), 
+                        0.2f, 
+                        1.0f);
+                    int margin = marginF * pixPr_cm/5;
+
+                    circleColor.a = (int)floor(255.0f * alpha);
+                    DrawRectangleLines( (int)indicatorPos.x+margin, (int)indicatorPos.y+margin, (int)pixPr_cm-2*margin, (int)pixPr_cm-2*margin, circleColor );
+                }
             }
         }
     }
