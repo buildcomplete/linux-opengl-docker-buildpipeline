@@ -2,6 +2,7 @@
 #include "IG_types.h"
 #include <iostream>
 #include <vector>
+#include "Canvas.h"
 
 Navigator::Navigator()
 {
@@ -10,11 +11,13 @@ Navigator::Navigator()
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
     gameMousePos = {(float)GetScreenWidth() / 2,(float)GetScreenHeight() / 2};
+    pixPr_cm = 10;
     DisableCursor();
 }
 
-void Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm)
-{    
+void Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm_)
+{
+    pixPr_cm = pixPr_cm_;
     if ( eMan.DidEnterState(IG_MOUSE_SCREEN_DRAGGING))
     {
         dragAcceleration.x = dragAcceleration.y = 0;
@@ -51,28 +54,39 @@ Vector2 Navigator::GetMousePosWorld()
     return GetScreenToWorld2D(gameMousePos, camera);
 }
 
+CellPosition Navigator::GetMouseGridPos()
+{
+    Vector2 worldPos = GetMousePosWorld();
+    
+    return { 
+        (int)(worldPos.x / pixPr_cm),
+        (int)(worldPos.y / pixPr_cm)
+    };
+
+}
+
 
 // Should be called while drawing in camera mode
-void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, float pixPr_cm)
+void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, Canvas canvas)
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
     Vector2 worldPos = GetMousePosWorld();
-    Vector2 quantifiedCenter =  { 
-        (float)round(worldPos.x / pixPr_cm) * pixPr_cm,
-        (float)round(worldPos.y / pixPr_cm) * pixPr_cm
-    };
+    CellPosition cPos =  GetMouseGridPos();
+    Vector2 quantifiedCenter =  { cPos.x * pixPr_cm, cPos.y * pixPr_cm };
 
+    
     if (IG_MOUSE_SELECTING & eMan.GetFlags())
     {
         for (int r = -3;r<4;++r) 
         {
             for (int c = -3;c<4;++c) 
             {
-                Color circleColor = WHITE; // Determine color depending in wheter or not we are overlapping with component or network
+
+                Color circleColor = (canvas.GetGridValueAtCell(cPos.x + c, cPos.y + r) == 0) ? WHITE : RED; // Determine color depending in wheter or not we are overlapping with component or network
                 Vector2 indicatorPos = {
-                    quantifiedCenter.x + r*pixPr_cm,
-                    quantifiedCenter.y + c*pixPr_cm };
+                    quantifiedCenter.x + c * pixPr_cm,
+                    quantifiedCenter.y + r * pixPr_cm };
 
                 
                 // the quantified center is the upper left vertic, we need to calculate distance as we are in the center of the vertex.

@@ -41,7 +41,7 @@ void Engine::Render()
         // Setup the back buffer for drawing (clear color and depth buffers)
         ClearBackground(OLIVE_GREEN);
         
-        navigator.DrawCursorWorldGuide(stateManager, coordinateHelper.pixPr_cm);
+        navigator.DrawCursorWorldGuide(stateManager, canvas);
 
         RandomTestDrawings();
 
@@ -56,8 +56,11 @@ void Engine::Render()
     navigator.DrawCursorScreenGuide(stateManager);
 
     // draw some text using the default font
+    CellPosition cell = navigator.GetMouseGridPos();
     char buffer[100];
-    sprintf(buffer, "Image Genius: %.2f", (float)GetRandomValue(0, 100)/100.0f);
+
+    //sprintf(buffer, "Cell: 0x%02X%02X", cell.x, cell.y );
+    sprintf(buffer, "Cell: %d,%d:%d", cell.x, cell.y, canvas.GetGridValueAtCell(cell.x, cell.y) );
     DrawText(buffer, 20,20,20,WHITE);
     
     // end the frame and get ready for the next one  (display frame, poll input, etc...)

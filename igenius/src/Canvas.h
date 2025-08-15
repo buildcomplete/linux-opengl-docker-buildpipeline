@@ -33,9 +33,10 @@ public:
     bool AddComponent(CMPNAMES name, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Update();
     void Draw(CoordinateHelper &);
-    bool IsGridFree(const UIComponentBluePrint &blueprint, unsigned char cellX, unsigned char cellY);
+    bool IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int cellY);
     std::vector<UI_Component> components;
-    unsigned char GetGridIdAtCell(unsigned char cellX, unsigned char cellY);
+    int GetGridIdAtCell(int cellX, int cellY);
+    unsigned char GetGridValueAtCell(int cellX, int cellY);
     static const unsigned char GridWidth = 255;
     static const unsigned char GridHeight = 255;
 
@@ -51,5 +52,12 @@ private:
         {IMG_IMG_IMG_OPERATION, 1, 1},
     };
 };
+
+struct CellPosition
+{
+    int x;
+    int y;
+};
+
 
 #endif
