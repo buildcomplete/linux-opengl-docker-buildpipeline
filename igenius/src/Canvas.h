@@ -68,14 +68,15 @@ public:
     UIComponentBluePrint GetBluePrint(CMPNAMES name);
     bool AddComponent(CMPNAMES name, std::uint8_t cellAnchorX, std::uint8_t cellAnchorY);
     void Update();
-    void Draw(CoordinateHelper &);
+    void Draw(CoordinateHelper &coordinateHelper, bool drawAnchors);
     bool IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int cellY);
     std::vector<UI_Component> components;
-    GridContentInfo GetComponentInfoFor(int cellX, int cellY);
+    GridContentInfo GetCellInfo(int cellX, int cellY);
     void SetGridCellValues(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
+    static void DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm);
 
 private:
     static const std::uint8_t GridWidth = 255;
@@ -95,6 +96,10 @@ private:
         {SP_CONVOLUTION, 2, 1},
         {IMG_IMG_IMG_OPERATION, 1, 1},
     };
+
+    // Realized networks
+    std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(5); 
+
 };
 
 

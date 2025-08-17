@@ -16,7 +16,6 @@ public:
     void StartNewNetwork();
     void CompleteDrawing(Canvas &canvas);
     void AddAnchorPoint(const IG_MouseCoordinates &frameCoord, float pixPr_cm);
-    void DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm);
 
 private:
     int networkDrawPosIdx = 1;
@@ -24,7 +23,6 @@ private:
     CellPosition networkValidToHelper = {0,0};
     std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(5);
     bool anyNewvalidPointInNetwork = false;
-    std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(5); // Move to canvas, realized networks
 };
 
 #endif

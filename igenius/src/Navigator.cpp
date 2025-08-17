@@ -76,7 +76,7 @@ void Navigator::DrawCursorWorldGuide(const IG_MouseCoordinates& frameCoords,cons
             {
 
                 // Determine color depending in wheter or not we are overlapping with component or network
-                Color circleColor = (canvas.GetComponentInfoFor(cPos.x + c, cPos.y + r).componentId == 0) ? WHITE : RED; 
+                Color circleColor = (canvas.GetCellInfo(cPos.x + c, cPos.y + r).componentId == 0) ? WHITE : RED; 
                 Vector2 indicatorPos = {
                     quantifiedCenter.x + c * pixPr_cm,
                     quantifiedCenter.y + r * pixPr_cm };

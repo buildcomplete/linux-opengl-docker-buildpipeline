@@ -1,5 +1,26 @@
 #include "Canvas.h"
 #include <iostream>
+#include <rlgl.h>
+
+
+
+// Small copy paste from raylib to support drawing integer line segments
+// Draw lines sequuence (using gl lines)
+static void DrawLineStripCellPos(const CellPosition *points, int pointCount, Color color, float pixPr_cm)
+{
+    if (pointCount < 2)
+        return; // Security check
+
+    rlBegin(RL_LINES);
+    rlColor4ub(color.r, color.g, color.b, color.a);
+
+    for (int i = 0; i < pointCount - 1; i++)
+    {
+        rlVertex2f(points[i].x * pixPr_cm+ pixPr_cm / 2.0f, points[i].y * pixPr_cm + pixPr_cm / 2.0f );
+        rlVertex2f(points[i + 1].x * pixPr_cm+ pixPr_cm / 2.0f, points[i + 1].y * pixPr_cm+ pixPr_cm / 2.0f);
+    }
+    rlEnd();
+}
 
 Canvas::Canvas()
 {
@@ -67,7 +88,7 @@ void ToggleComponent()
 {
 }
 
-void Canvas::Draw(CoordinateHelper &coordinateHelper)
+void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
 {
     for (int i = 0; i < components.size(); ++i)
     {
@@ -78,6 +99,11 @@ void Canvas::Draw(CoordinateHelper &coordinateHelper)
         int wp = coordinateHelper.CmToPixel(components[i].anchor.width + 2.0f * padding_cm);
         int hp = coordinateHelper.CmToPixel(components[i].anchor.height + 2.0f * padding_cm);
         DrawRectangleLines(xp, yp, wp, hp, ELECTRIC_BLUE);
+    }
+
+    for (int i = 0; i < networks.size(); ++i)
+    {
+        Canvas::DrawNetworkSegment(networks[i], drawAnchors, coordinateHelper.pixPr_cm);
     }
 }
 
@@ -213,7 +239,6 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &anchorPoints, 
 
 bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
 {
-
     if (id == 0 && avaliableNetworkKeys.empty())
     {
         return false;
@@ -221,18 +246,31 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
 
     if (id == 0)
     {
-        id = avaliableComponentKeys.front();
-        avaliableComponentKeys.pop();
+        id = avaliableNetworkKeys.front();
+        avaliableNetworkKeys.pop();
     }
 
     // Update map, this assumes lines are either horizontal, vertical or 45 degress
 
     // store anchore points
+    std::vector<CellPosition> samples = GetNetworkSamplePositions(anchorPoints);
+    for (int i=0;i<samples.size();++i)
+    {
+        gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = id;
+    }
 
+
+    networks.push_back(std::vector<CellPosition>(anchorPoints));
+    std::vector<CellPosition> overlapGridPositions = GetNetworkSamplePositions(anchorPoints);
+    std::cout << "Positions: [" << std::endl;
+    for (int i = 0; i < overlapGridPositions.size(); ++i)
+    {
+        std::cout << overlapGridPositions[i].x << "," << overlapGridPositions[i].y << std::endl;
+    }
     return true;
 }
 
-GridContentInfo Canvas::GetComponentInfoFor(int cellX, int cellY)
+GridContentInfo Canvas::GetCellInfo(int cellX, int cellY)
 {
     if (cellX < 0 || cellY < 0 || cellX > 255 || cellY > 255)
         return {0, 0};
@@ -243,3 +281,17 @@ int Canvas::GetGridIdxAtCell(int cellX, int cellY)
 {
     return cellX + cellY * GridWidth;
 }
+
+void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm)
+{
+    DrawLineStripCellPos(&(network[0]), network.size(), NETGREEN, pixPr_cm);
+    if (drawNodes)
+    {
+        for (int i = 0; i < network.size(); ++i)
+        {
+            DrawCircleLines(network[i].x * pixPr_cm + pixPr_cm / 2.0f, network[i].y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 10.0f, NETGREEN);
+        }
+    }
+}
+
+

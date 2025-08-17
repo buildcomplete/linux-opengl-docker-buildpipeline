@@ -2,9 +2,7 @@
 #include <cmath>
 #include <raymath.h>
 #include "IG_types.h"
-#include <rlgl.h>
 #include <iostream>
-
 
 // END NETWORK DRAWING HELPER METHODS
 
@@ -50,12 +48,7 @@ void Engine_NetworkDrawingManager::Draw(const IG_MouseCoordinates &frameCoord, b
     }
     if (drawnNetwork.size() > 0)
     {
-        DrawNetworkSegment(drawnNetwork, drawMode, pixPr_cm);
-    }
-
-    for (int i = 0; i < networks.size(); ++i)
-    {
-        DrawNetworkSegment(networks[i], drawMode, pixPr_cm);
+        Canvas::DrawNetworkSegment(drawnNetwork, drawMode, pixPr_cm);
     }
 }
 
@@ -70,14 +63,7 @@ void Engine_NetworkDrawingManager::CompleteDrawing(Canvas &canvas)
     // Copy to list of actual networks
     if (drawnNetwork.size() > 1)
     {
-        // canvas.AddNetwork(drawnNetwork);
-        networks.push_back(std::vector<CellPosition>(drawnNetwork));
-        std::vector<CellPosition> overlapGridPositions = canvas.GetNetworkSamplePositions(drawnNetwork);
-        std::cout << "Positions: [" << std::endl;
-        for (int i = 0; i < overlapGridPositions.size(); ++i)
-        {
-            std::cout << overlapGridPositions[i].x << "," << overlapGridPositions[i].y << std::endl;
-        }
+        canvas.AddNetworkSegment(drawnNetwork, 0);
     }
     drawnNetwork.clear();
 }
@@ -100,32 +86,3 @@ void Engine_NetworkDrawingManager::AddAnchorPoint(const IG_MouseCoordinates &fra
     }
 }
 
-// Small copy paste from raylib to support drawing integer line segments
-// Draw lines sequuence (using gl lines)
-void DrawLineStripCellPos(const CellPosition *points, int pointCount, Color color, float pixPr_cm)
-{
-    if (pointCount < 2)
-        return; // Security check
-
-    rlBegin(RL_LINES);
-    rlColor4ub(color.r, color.g, color.b, color.a);
-
-    for (int i = 0; i < pointCount - 1; i++)
-    {
-        rlVertex2f(points[i].x * pixPr_cm+ pixPr_cm / 2.0f, points[i].y * pixPr_cm + pixPr_cm / 2.0f );
-        rlVertex2f(points[i + 1].x * pixPr_cm+ pixPr_cm / 2.0f, points[i + 1].y * pixPr_cm+ pixPr_cm / 2.0f);
-    }
-    rlEnd();
-}
-
-void Engine_NetworkDrawingManager::DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm)
-{
-    DrawLineStripCellPos(&(network[0]), network.size(), NETGREEN, pixPr_cm);
-    if (drawNodes)
-    {
-        for (int i = 0; i < network.size(); ++i)
-        {
-            DrawCircleLines(network[i].x * pixPr_cm + pixPr_cm / 2.0f, network[i].y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 10.0f, NETGREEN);
-        }
-    }
-}

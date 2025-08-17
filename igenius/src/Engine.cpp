@@ -45,7 +45,7 @@ void Engine::Render()
 
         RandomTestDrawings();
 
-        canvas.Draw(coordinateHelper);
+        canvas.Draw(coordinateHelper, MOUSE_MODE_FLAGS::IG_MOUSE_MODE_NETWORK & stateManager.GetFlags());
         networkDrawingManager.Draw(
             frameCoords,
             IG_MOUSE_MODE_NETWORK & stateManager.GetFlags(),
@@ -60,7 +60,8 @@ void Engine::Render()
 
     //sprintf(buffer, "Cell: 0x%02X%02X", cell.x, cell.y );
     const CellPosition& cell = frameCoords.mousePosWorldGrid;
-    sprintf(buffer, "Cell: %d,%d:%d", cell.x, cell.y, canvas.GetComponentInfoFor(cell.x, cell.y).componentId );
+    GridContentInfo info = canvas.GetCellInfo(cell.x, cell.y);
+    sprintf(buffer, "Cell: %d,%d:C=%d, N=%d", cell.x, cell.y, info.componentId, info.networkId );
     DrawText(buffer, 20,20,20,WHITE);
     
     // end the frame and get ready for the next one  (display frame, poll input, etc...)
