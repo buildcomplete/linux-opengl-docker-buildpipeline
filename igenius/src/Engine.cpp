@@ -60,7 +60,7 @@ void Engine::Render()
     char buffer[100];
 
     //sprintf(buffer, "Cell: 0x%02X%02X", cell.x, cell.y );
-    sprintf(buffer, "Cell: %d,%d:%d", cell.x, cell.y, canvas.GetGridValueAtCell(cell.x, cell.y) );
+    sprintf(buffer, "Cell: %d,%d:%d", cell.x, cell.y, canvas.GetComponentInfoFor(cell.x, cell.y).componentId );
     DrawText(buffer, 20,20,20,WHITE);
     
     // end the frame and get ready for the next one  (display frame, poll input, etc...)

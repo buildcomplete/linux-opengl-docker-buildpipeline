@@ -7,7 +7,7 @@ Canvas::Canvas()
     do
     {
         i++;
-        avaliableKeys.push(i);
+        avaliableComponentKeys.push(i);
         /* code */
     } while (i!=255);
     
@@ -31,7 +31,7 @@ UIComponentBluePrint Canvas::GetBluePrint(CMPNAMES name)
 }
 bool Canvas::AddComponent(CMPNAMES name, unsigned char cellAnchorX, unsigned char cellAnchorY)
 {
-    if (avaliableKeys.empty()) 
+    if (avaliableComponentKeys.empty()) 
         return false;
     
     UIComponentBluePrint bluePrint = GetBluePrint(name);
@@ -41,14 +41,13 @@ bool Canvas::AddComponent(CMPNAMES name, unsigned char cellAnchorX, unsigned cha
         return false;
         
 
-    unsigned char insertId = avaliableKeys.front();
+    unsigned char insertId = avaliableComponentKeys.front();
     
     // Update lookup table
     SetGridCellValues(bluePrint, cellAnchorX, cellAnchorY, insertId);
     
-    std::cout << "Add: " << (int)insertId << "<=(" << (float)cellAnchorX << ", " << (float)cellAnchorY << ")(" << (float)bluePrint.Width << ", " << (float)bluePrint.Heigh << ")" << std::endl;
     components.push_back(UI_Component(insertId, { (float)cellAnchorX, (float)cellAnchorY, (float)bluePrint.Width, (float)bluePrint.Heigh} ));
-    avaliableKeys.pop();
+    avaliableComponentKeys.pop();
     return true;
     
 }
@@ -99,7 +98,8 @@ bool Canvas::IsGridFree(const UIComponentBluePrint& blueprint, int cellX, int ce
     {
         for (int y=y0 ;y<y1;++y)
         {
-            if (gridContentRegister[GetGridIdAtCell(x,y) != 0])
+
+            if ( (0 !=  gridContentInfo[GetGridIdxAtCell(x,y)].componentId) || ( 0 != gridContentInfo[GetGridIdxAtCell(x,y)].networkId) )
                 return false;
         }
     }
@@ -107,31 +107,30 @@ bool Canvas::IsGridFree(const UIComponentBluePrint& blueprint, int cellX, int ce
 }
 
 // Sets grid cell values, notice, this fellow do not perform boundaris checks and assumes the where checed elsewhere
-void Canvas::SetGridCellValues(const UIComponentBluePrint& blueprint, unsigned char cellX, unsigned char cellY, unsigned char id)
+void Canvas::SetGridCellValues(const UIComponentBluePrint& blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id)
 {
     int x0 = std::max(0, (int)cellX); // inclusive
     int y0 = std::max(0, (int)cellY); // // inclusive
     int x1 = x0 + blueprint.Width; // Exclusive
     int y1 = y0 + blueprint.Heigh; // Exclusive
-    std::cout << "SetGridCellValues" << x0 << "," << y0 << "," << x1 << "," << y1 << "...";
     
     for (int x=x0 ;x<x1;++x)
     {
         for (int y=y0 ;y<y1;++y)
         {
-            std::cout << x << "," << y << "=" << (int)id;
-            gridContentRegister[GetGridIdAtCell(x, y)] = id; 
+            gridContentInfo[GetGridIdxAtCell(x, y)].componentId = id;
         }
     }
-    std::cout << std::endl;
 }
 
-unsigned char Canvas::GetGridValueAtCell(int cellX, int cellY)
+GridContentInfo Canvas::GetComponentInfoFor(int cellX, int cellY)
 {
-    return gridContentRegister[GetGridIdAtCell(cellX, cellY)];
+    if (cellX < 0 || cellY < 0 || cellX > 255 || cellY > 255)
+        return {0, 0};
+    return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
-int Canvas::GetGridIdAtCell(int cellX, int cellY)
+int Canvas::GetGridIdxAtCell(int cellX, int cellY)
 {
     return cellX + cellY * GridWidth;
 }

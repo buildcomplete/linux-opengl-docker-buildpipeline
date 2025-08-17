@@ -4,8 +4,9 @@
 #include <queue>
 #include "Component.h"
 #include "CoordinateHelper.h"
+#include <cstdint>
 
-typedef enum
+typedef enum : std::int32_t
 {
     // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
     UNDEFINED = 0,
@@ -17,8 +18,35 @@ typedef enum
 struct UIComponentBluePrint
 {
     CMPNAMES Name;
-    unsigned char Width;
-    unsigned char Heigh;
+    std::uint8_t Width;
+    std::uint8_t Heigh;
+};
+
+// Commenting out to decrease level of indirection,
+// if we are going to have more than 3 types of object class we can place,
+// we can reduce memory be introducing this level of additional indirection
+// typedef enum : std::uint8_t
+// {
+//     GF_CLEAR        = 0,
+//     GF_COMPONENT    = 1 << 0,
+//     GF_NETWORK      = 1 << 1,
+// } GridFlags;
+
+// // Grid content info is used to help access to meta data related to what is in a grid area
+// // To get the actual data, request the specific ids from grid register info.
+// // These we will have 255*255 of
+// struct GridRegisterInfo
+// {
+//     GridFlags flags;
+//     std::uint16_t registerIdx;
+// };
+
+// Reference to actual object ids.
+// This we need 255 * 2 of
+struct GridContentInfo
+{
+    std::uint8_t componentId;
+    std::uint8_t networkId;
 };
 
 /**
@@ -30,21 +58,25 @@ class Canvas
 public:
     Canvas();
     UIComponentBluePrint GetBluePrint(CMPNAMES name);
-    bool AddComponent(CMPNAMES name, unsigned char cellAnchorX, unsigned char cellAnchorY);
+    bool AddComponent(CMPNAMES name, std::uint8_t cellAnchorX, std::uint8_t cellAnchorY);
     void Update();
     void Draw(CoordinateHelper &);
     bool IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int cellY);
     std::vector<UI_Component> components;
-    int GetGridIdAtCell(int cellX, int cellY);
-    unsigned char GetGridValueAtCell(int cellX, int cellY);
-    static const unsigned char GridWidth = 255;
-    static const unsigned char GridHeight = 255;
+    GridContentInfo GetComponentInfoFor(int cellX, int cellY);
+    void SetGridCellValues(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
 
 private:
-    void SetGridCellValues(const UIComponentBluePrint &blueprint, unsigned char cellX, unsigned char cellY, unsigned char id);
+    static const std::uint8_t GridWidth = 255;
+    static const std::uint8_t GridHeight = 255;
 
-    unsigned char gridContentRegister[GridWidth * GridHeight] = {0};
-    std::queue<unsigned char> avaliableKeys;
+    void SetGridCellContentInfo(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
+
+    int GetGridIdxAtCell(int cellX, int cellY);
+
+    // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
+    GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
+    std::queue<std::uint8_t> avaliableComponentKeys;
     std::vector<UI_Component> uiComponents;
     std::vector<UIComponentBluePrint> uiComponentBluePrints = {
         {VIRTUAL_CAMERA, 1, 1},
@@ -58,6 +90,5 @@ struct CellPosition
     int x;
     int y;
 };
-
 
 #endif

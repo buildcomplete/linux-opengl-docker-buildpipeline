@@ -83,7 +83,8 @@ void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, Canvas canvas)
             for (int c = -3;c<4;++c) 
             {
 
-                Color circleColor = (canvas.GetGridValueAtCell(cPos.x + c, cPos.y + r) == 0) ? WHITE : RED; // Determine color depending in wheter or not we are overlapping with component or network
+                // Determine color depending in wheter or not we are overlapping with component or network
+                Color circleColor = (canvas.GetComponentInfoFor(cPos.x + c, cPos.y + r).componentId == 0) ? WHITE : RED; 
                 Vector2 indicatorPos = {
                     quantifiedCenter.x + c * pixPr_cm,
                     quantifiedCenter.y + r * pixPr_cm };
