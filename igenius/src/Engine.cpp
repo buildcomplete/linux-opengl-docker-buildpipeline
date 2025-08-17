@@ -24,7 +24,7 @@ void Engine::Init()
 void Engine::UpdateTimeSlice()
 {
     stateManager.UpdateFromInput();
-	navigator.SyncWithState(stateManager, coordinateHelper.pixPr_cm);
+	frameCoords = navigator.SyncWithState(stateManager, coordinateHelper.pixPr_cm);
     HandleStateChanges();
 
     canvas.Update();
@@ -41,13 +41,13 @@ void Engine::Render()
         // Setup the back buffer for drawing (clear color and depth buffers)
         ClearBackground(OLIVE_GREEN);
         
-        navigator.DrawCursorWorldGuide(stateManager, canvas);
+        navigator.DrawCursorWorldGuide(frameCoords, stateManager, canvas);
 
         RandomTestDrawings();
 
         canvas.Draw(coordinateHelper);
         networkDrawingManager.Draw(
-            navigator.GetMousePosWorld(),
+            frameCoords,
             IG_MOUSE_MODE_NETWORK & stateManager.GetFlags(),
             coordinateHelper.pixPr_cm);
     }
@@ -56,10 +56,10 @@ void Engine::Render()
     navigator.DrawCursorScreenGuide(stateManager);
 
     // draw some text using the default font
-    CellPosition cell = navigator.GetMouseGridPos();
     char buffer[100];
 
     //sprintf(buffer, "Cell: 0x%02X%02X", cell.x, cell.y );
+    const CellPosition& cell = frameCoords.mousePosWorldGrid;
     sprintf(buffer, "Cell: %d,%d:%d", cell.x, cell.y, canvas.GetComponentInfoFor(cell.x, cell.y).componentId );
     DrawText(buffer, 20,20,20,WHITE);
     
@@ -125,7 +125,7 @@ void Engine::HandleStateChanges()
         // Send network command, begin new, select and existing, expand network
         if (IG_MOUSE_MODE_NETWORK & stateManager.GetFlags())
         {
-            networkDrawingManager.AddAnchorPoint(navigator.GetMousePosWorld(), coordinateHelper.pixPr_cm);
+            networkDrawingManager.AddAnchorPoint(frameCoords, coordinateHelper.pixPr_cm);
         }
     }
 }

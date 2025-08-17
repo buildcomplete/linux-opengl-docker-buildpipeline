@@ -135,12 +135,17 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
         int dx = p0.x == p1.x ? 0 : p0.x > p1.x ? -1 : 1;
         int dy = p0.y == p1.y ? 0 : p0.y > p1.y ? -1 : 1;
         int n = std::max(std::abs(p0.x - p1.x), std::abs(p0.y - p1.y));
-        for (int j = 0; j < n; ++n)
+        std::cout << "Take" << i << "=[" << p0.x << "," << p0.y << "]-[" << p1.x << "," << p1.y << "]->" << dx << "," << dy << ":" << n << std::endl;
+        for (int j = 0; j < n; ++j)
         {
             result.push_back({p0.x,p0.y});
             // Increment position for next check
             p0.x += dx;
             p0.y += dy;
+        }
+        if (i == nminone-1)
+        {
+            result.push_back({p1.x,p1.y});
         }
     }
     return result;

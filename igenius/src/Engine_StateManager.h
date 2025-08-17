@@ -21,11 +21,11 @@ typedef enum
 class Engine_StateManager
 {
 public:
-    MOUSE_MODE_FLAGS GetFlags();
+    MOUSE_MODE_FLAGS GetFlags() const;
     void UpdateFromInput();
 
-    bool DidEnterState(MOUSE_MODE_FLAGS testState);
-    bool DidExitState(MOUSE_MODE_FLAGS testState);
+    bool DidEnterState(MOUSE_MODE_FLAGS testState) const;
+    bool DidExitState(MOUSE_MODE_FLAGS testState) const;
 
 private:
     MOUSE_MODE_FLAGS flags = IG_MOUSE_SELECTING;

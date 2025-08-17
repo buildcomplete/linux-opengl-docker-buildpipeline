@@ -67,6 +67,7 @@ private:
     Navigator navigator;
 	CoordinateHelper coordinateHelper;
 	Engine_NetworkDrawingManager networkDrawingManager;
+	IG_MouseCoordinates frameCoords;
 	Canvas canvas;
     Texture wabbit;
 	void HandleStateChanges();

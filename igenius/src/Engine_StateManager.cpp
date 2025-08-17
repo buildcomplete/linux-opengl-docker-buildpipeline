@@ -1,7 +1,7 @@
 #include "Engine_StateManager.h"
 #include <raylib.h>
 
-MOUSE_MODE_FLAGS Engine_StateManager::GetFlags()
+MOUSE_MODE_FLAGS Engine_StateManager::GetFlags() const
 {
     return flags;
 }
@@ -19,12 +19,12 @@ void Engine_StateManager::UpdateFromInput()
     flags = targetState;
 }
 
-bool Engine_StateManager::DidEnterState(MOUSE_MODE_FLAGS testState)
+bool Engine_StateManager::DidEnterState(MOUSE_MODE_FLAGS testState) const
 {
     return (testState & flags & flippedFlags);
 }
 
-bool Engine_StateManager::DidExitState(MOUSE_MODE_FLAGS testState)
+bool Engine_StateManager::DidExitState(MOUSE_MODE_FLAGS testState) const
 {
     return (testState & ~flags & flippedFlags);
 }

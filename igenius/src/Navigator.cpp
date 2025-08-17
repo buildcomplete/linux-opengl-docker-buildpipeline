@@ -15,7 +15,7 @@ Navigator::Navigator()
     DisableCursor();
 }
 
-void Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm_)
+IG_MouseCoordinates Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm_)
 {
     pixPr_cm = pixPr_cm_;
     if ( eMan.DidEnterState(IG_MOUSE_SCREEN_DRAGGING))
@@ -47,32 +47,24 @@ void Navigator::SyncWithState(Engine_StateManager& eMan, float pixPr_cm_)
         gameMousePos.x  += md.x;
         gameMousePos.y  += md.y;
     }
-}
 
-Vector2 Navigator::GetMousePosWorld()
-{
-    return GetScreenToWorld2D(gameMousePos, camera);
-}
-
-CellPosition Navigator::GetMouseGridPos()
-{
-    Vector2 worldPos = GetMousePosWorld();
-    
+    Vector2 mwp = GetScreenToWorld2D(gameMousePos, camera);
     return { 
-        (int)(worldPos.x / pixPr_cm),
-        (int)(worldPos.y / pixPr_cm)
-    };
-
+        gameMousePos, 
+        mwp, 
+        { 
+            (int)(mwp.x / pixPr_cm),
+            (int)(mwp.y / pixPr_cm)
+        }};
 }
-
 
 // Should be called while drawing in camera mode
-void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, Canvas canvas)
+void Navigator::DrawCursorWorldGuide(const IG_MouseCoordinates& frameCoords,const  Engine_StateManager& eMan, Canvas canvas)
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
-    Vector2 worldPos = GetMousePosWorld();
-    CellPosition cPos =  GetMouseGridPos();
+    Vector2 worldPos = frameCoords.mousePosWorldCm;
+    CellPosition cPos =  frameCoords.mousePosWorldGrid;
     Vector2 quantifiedCenter =  { cPos.x * pixPr_cm, cPos.y * pixPr_cm };
 
     
@@ -112,7 +104,7 @@ void Navigator::DrawCursorWorldGuide(Engine_StateManager& eMan, Canvas canvas)
 }
 
 // Should be called while drawing in fixed screen coordinates (Outhside camera mode)
-void Navigator::DrawCursorScreenGuide(Engine_StateManager& eMan)
+void Navigator::DrawCursorScreenGuide(const Engine_StateManager& eMan)
 {
     // Draw cross where we are 
     if (IG_MOUSE_SELECTING & eMan.GetFlags() )

@@ -49,13 +49,6 @@ struct GridContentInfo
     std::uint8_t networkId;
 };
 
-
-struct CellPosition
-{
-    int x;
-    int y;
-};
-
 struct NetworkCheckState
 {
     bool IsValid; 

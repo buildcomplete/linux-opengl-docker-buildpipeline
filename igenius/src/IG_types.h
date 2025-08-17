@@ -18,4 +18,18 @@ typedef enum
     PROFILEWITHORIGIN
 } IGDataTypes;
 
+struct CellPosition
+{
+    int x;
+    int y;
+};
+
+struct IG_MouseCoordinates
+{
+    Vector2 mousePosScreenPixel;
+    Vector2 mousePosWorldCm;
+    CellPosition mousePosWorldGrid;
+};
+
+
 #endif

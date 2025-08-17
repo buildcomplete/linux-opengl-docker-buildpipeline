@@ -12,10 +12,10 @@
 class Engine_NetworkDrawingManager
 {
 public:
-    void Draw(Vector2 worldPos, bool drawMode, float pixPr_cm);
+    void Draw(const IG_MouseCoordinates& frameCoord, bool drawMode, float pixPr_cm);
     void StartNewNetwork();
     void CompleteDrawing(Canvas &canvas);
-    void AddAnchorPoint(Vector2 worldPos, float pixPr_cm);
+    void AddAnchorPoint(const IG_MouseCoordinates &frameCoord, float pixPr_cm);
     void DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm);
 
 private:
