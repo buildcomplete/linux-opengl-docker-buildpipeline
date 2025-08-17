@@ -178,17 +178,17 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
     
 }
 
-NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
+NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::uint8_t id)
 {
-    if (anchorPoints.size() < 2)
+    if (samples.size() < 2)
     {
         return {false};
     }
 
     // Check we are not overlapping other networks or crossing components (components or network anchors can be at ends)
 
-    CellPosition ps = anchorPoints[0];
-    CellPosition pn = anchorPoints[anchorPoints.size() - 1];
+    CellPosition ps = samples[0];
+    CellPosition pn = samples[samples.size() - 1];
 
     // Check what we are connecting to, if anything, in the ends
     GridContentInfo startInfo = gridContentInfo[GetGridIdxAtCell(ps.x, ps.y)];
@@ -208,33 +208,29 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &anchorPoints, 
     // 3) Component input/output should be compatible
     // 4) There should only be allowed networks in the beggining or end of the network
 
-    int nminone = anchorPoints.size() - 1;
-    for (int i = 0; i < nminone; ++i)
+    for (int i=0;i<samples.size()-1;++i)
     {
-        CellPosition p0 = anchorPoints[i];
-        CellPosition p1 = anchorPoints[i + 1];
-        int dx = p0.x == p1.x ? 0 : p0.x > p1.x ? -1 : 1;
-        int dy = p0.y == p1.y ? 0 : p0.y > p1.y ? -1 : 1;
-        int n = std::max(std::abs(p0.x - p1.x), std::abs(p0.y - p1.y));
-        for (int j = 0; j < n; ++n)
+        GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)];
+        if (id != 0 && (cposInfo.networkId != 0 && cposInfo.networkId != id))
         {
-            GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(p0.x, p0.y)];
-            if (id != 0 && (cposInfo.networkId != 0 && cposInfo.networkId != id))
-            {
-                return {false};
-            }
-
-            // If there is a component except at extremes, this is not valid
-            if ( cposInfo.componentId != 0 && p0.x != ps.x && p0.y != ps.y )
-            {
-                return {false};
-            }
-
-            // Increment position for next check
-            p0.x += dx;
-            p0.y += dy;
+            return {false};
         }
+
+        // If there is a component except at extremes, this is not valid
+        if ( cposInfo.componentId != 0 && i !=0 && i != (samples.size()-1))
+        {
+            return {false};
+        }
+
+        // If there is a network except at extremes, this is not valid
+        if ( cposInfo.networkId != 0 && i !=0 && i != (samples.size()-1))
+        {
+            return {false};
+        }
+        
+
     }
+    return {true, id, startInfo, endInfo};
 }
 
 bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
@@ -244,6 +240,13 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
         return false;
     }
 
+    std::vector<CellPosition> samples = GetNetworkSamplePositions(anchorPoints);
+    auto checkInfo = CheckNetwork(samples, id );
+    id = checkInfo.finalId;
+
+    if (!checkInfo.IsValid)
+        return false;
+
     if (id == 0)
     {
         id = avaliableNetworkKeys.front();
@@ -251,22 +254,23 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     }
 
     // Update map, this assumes lines are either horizontal, vertical or 45 degress
-
-    // store anchore points
-    std::vector<CellPosition> samples = GetNetworkSamplePositions(anchorPoints);
+    
     for (int i=0;i<samples.size();++i)
     {
         gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = id;
     }
 
+   
 
+    // store anchore points
     networks.push_back(std::vector<CellPosition>(anchorPoints));
-    std::vector<CellPosition> overlapGridPositions = GetNetworkSamplePositions(anchorPoints);
-    std::cout << "Positions: [" << std::endl;
-    for (int i = 0; i < overlapGridPositions.size(); ++i)
-    {
-        std::cout << overlapGridPositions[i].x << "," << overlapGridPositions[i].y << std::endl;
-    }
+    
+    // std::vector<CellPosition> overlapGridPositions = GetNetworkSamplePositions(anchorPoints);
+    // std::cout << "Positions: [" << std::endl;
+    // for (int i = 0; i < overlapGridPositions.size(); ++i)
+    // {
+    //     std::cout << overlapGridPositions[i].x << "," << overlapGridPositions[i].y << std::endl;
+    // }
     return true;
 }
 
