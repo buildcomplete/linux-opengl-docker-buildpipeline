@@ -2,10 +2,11 @@
 #include <cmath>
 #include <raymath.h>
 #include "IG_types.h"
+#include <rlgl.h>
 
 
 // BEGIN NETWORK DRAWING HELPERS, SHOULD BE MOVED SOMEWHERE ELSE
-Vector2 QuantifiedNetworkPos(Vector2 worldPos, float pixPr_cm)
+CellPosition QuantifiedNetworkPos(Vector2 worldPos, float pixPr_cm)
 {
     Vector2 quantifiedCenter =  { 
         (float)round(worldPos.x / pixPr_cm) * pixPr_cm,
@@ -15,7 +16,7 @@ Vector2 QuantifiedNetworkPos(Vector2 worldPos, float pixPr_cm)
     Vector2 delta = Vector2Subtract(worldPos, quantifiedCenter);
     float dxs = delta.x <= 0 ? -.5f : .5f;
     float dys = delta.y <= 0 ? -.5f : .5f;
-    return Vector2Add(quantifiedCenter, {dxs * pixPr_cm, dys * pixPr_cm});
+    return {(int)(quantifiedCenter.x +dxs * pixPr_cm), (int)(quantifiedCenter.y +dys * pixPr_cm) };
 }
 
 
@@ -29,7 +30,7 @@ void Engine_NetworkDrawingManager::Draw(Vector2 worldPos, bool drawMode, float p
     // But this is only the drawing function, so here we only draw connection to other network, and it is not possible to create illigal connections
     if (drawMode)
     {
-        Vector2 netPos = QuantifiedNetworkPos(worldPos, pixPr_cm);
+        CellPosition netPos = QuantifiedNetworkPos(worldPos, pixPr_cm);
 
         Color circleColor = ELECTRIC_BLUE;
         circleColor.a = 155;
@@ -37,8 +38,11 @@ void Engine_NetworkDrawingManager::Draw(Vector2 worldPos, bool drawMode, float p
 
         if (drawnNetwork.size() != 0 )
         {
-            Vector2 to = QuantifiedNetworkPos(worldPos, pixPr_cm);
-            Vector2 from = networkDrawPos[networkDrawPosIdx];
+            CellPosition toC =  QuantifiedNetworkPos(worldPos, pixPr_cm);
+            CellPosition fromC = networkDrawPos[networkDrawPosIdx];
+            
+            Vector2 to = {(float)toC.x, (float)toC.y};
+            Vector2 from =  {(float)fromC.x, (float)fromC.y};
             // Only allow 0,45,90,.. degrees etc.
             Vector2 distance = Vector2Subtract(from,to);
             bool horzOrVert = abs(distance.x) < 0.1 || abs(distance.y) < 0.1;
@@ -47,7 +51,8 @@ void Engine_NetworkDrawingManager::Draw(Vector2 worldPos, bool drawMode, float p
 
             if ( distOk && (horzOrVert || diagonal))
             {
-                networkValidToHelper = to;
+                // this should be moved to update state
+                networkValidToHelper = toC;
                 anyNewvalidPointInNetwork= true;
             }
             if (distOk)
@@ -62,12 +67,12 @@ void Engine_NetworkDrawingManager::Draw(Vector2 worldPos, bool drawMode, float p
     }
     if (drawnNetwork.size() > 0)
     {
-        DrawLineStrip(&(drawnNetwork[0]), drawnNetwork.size(), NETGREEN );
+        DrawNetworkSegment(drawnNetwork, drawMode, pixPr_cm);
     }
 
     for (int i=0;i<networks.size();  ++i)
     {
-        DrawLineStrip(&(networks[i][0]), networks[i].size(), NETGREEN );
+        DrawNetworkSegment(networks[i], drawMode, pixPr_cm);
     }
 }
 
@@ -77,12 +82,13 @@ void Engine_NetworkDrawingManager::StartNewNetwork()
     drawnNetwork.clear();
 }
 
-void Engine_NetworkDrawingManager::CompleteDrawing()
+void Engine_NetworkDrawingManager::CompleteDrawing(Canvas& canvas)
 {
     // Copy to list of actual networks
     if (drawnNetwork.size() > 1)
     {
-        networks.push_back(std::vector<Vector2>(drawnNetwork));
+        //canvas.AddNetwork(drawnNetwork);
+        networks.push_back(std::vector<CellPosition>(drawnNetwork));
     }
     drawnNetwork.clear();
 }
@@ -106,3 +112,34 @@ void Engine_NetworkDrawingManager::AddAnchorPoint(Vector2 worldPos, float pixPr_
         anyNewvalidPointInNetwork=false;
     }
 }
+
+// Small copy paste from raylib to support drawing integer line segments
+// Draw lines sequuence (using gl lines)
+void DrawLineStripCellPos(const CellPosition *points, int pointCount, Color color)
+{
+    if (pointCount < 2) return; // Security check
+
+    rlBegin(RL_LINES);
+        rlColor4ub(color.r, color.g, color.b, color.a);
+
+        for (int i = 0; i < pointCount - 1; i++)
+        {
+            rlVertex2i(points[i].x, points[i].y);
+            rlVertex2i(points[i + 1].x, points[i + 1].y);
+        }
+    rlEnd();
+}
+
+void Engine_NetworkDrawingManager::DrawNetworkSegment(std::vector<CellPosition>& network, bool drawNodes, float pixPr_cm)
+{
+    DrawLineStripCellPos(&(network[0]), network.size(), NETGREEN );
+    if (drawNodes)
+    {
+        for (int i=0;i<network.size(); ++i)
+        {
+            DrawCircleLines(network[i].x, network[i].y, pixPr_cm / 10.0f, NETGREEN);
+        }
+    }
+}
+
+

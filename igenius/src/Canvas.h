@@ -49,6 +49,21 @@ struct GridContentInfo
     std::uint8_t networkId;
 };
 
+
+struct CellPosition
+{
+    int x;
+    int y;
+};
+
+struct NetworkCheckState
+{
+    bool IsValid; 
+    std::uint8_t finalId; // input id if not assigned to any other networks
+    GridContentInfo networkStartNodeInfo;
+    GridContentInfo networkEndNodeInfo;
+};
+
 /**
  * Represents the drawing area for components and manages a grid structure
  * to track item types in each cell for rendering and interaction.
@@ -65,6 +80,9 @@ public:
     std::vector<UI_Component> components;
     GridContentInfo GetComponentInfoFor(int cellX, int cellY);
     void SetGridCellValues(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
+    std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
+    NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
+    bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
 
 private:
     static const std::uint8_t GridWidth = 255;
@@ -77,6 +95,7 @@ private:
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
     std::queue<std::uint8_t> avaliableComponentKeys;
+    std::queue<std::uint8_t> avaliableNetworkKeys;
     std::vector<UI_Component> uiComponents;
     std::vector<UIComponentBluePrint> uiComponentBluePrints = {
         {VIRTUAL_CAMERA, 1, 1},
@@ -85,10 +104,5 @@ private:
     };
 };
 
-struct CellPosition
-{
-    int x;
-    int y;
-};
 
 #endif

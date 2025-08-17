@@ -110,7 +110,7 @@ void Engine::HandleStateChanges()
 
     if (stateManager.DidExitState(IG_MOUSE_MODE_NETWORK))
     {
-        networkDrawingManager.CompleteDrawing();
+        networkDrawingManager.CompleteDrawing(canvas);
     }
 
     if (stateManager.DidEnterState(IG_MOUSE_TRY_COMMAND))
