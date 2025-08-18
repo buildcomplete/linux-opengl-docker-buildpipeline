@@ -7,44 +7,31 @@
 #include <set>
 #include "IG_types.h"
 #include <cstdint>
+#include "ComponentBluePrint.h"
 
-typedef enum : std::int32_t
+
+// class Component 
+// {
+// public:
+//     unsigned char id = 0;
+
+//     // I am using a string because I have a vague idea
+//     // that it makes it more extensible to add new component types in the future
+//     // without relying on enums etc.
+//     std::string componentType;
+
+//     // Datatype in input, and wheter or not a data field is optional
+//     std::vector<IOSpec> inputTypes;
+//     IGDataTypes outputType;
+// };
+
+struct UI_Component 
 {
-    // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
-    UNDEFINED = 0,
-    VIRTUAL_CAMERA = 1,
-    SP_CONVOLUTION = 2,
-    IMG_IMG_IMG_OPERATION = 3,
-} CMPNAMES;
-
-struct IOSpec
-{
-   IGDataTypes type;
-   bool required; 
-};
-class Component 
-{
-public:
-    unsigned char id;
-
-    // I am using a string because I have a vague idea
-    // that it makes it more extensible to add new component types in the future
-    // without relying on enums etc.
-    std::string componentType;
-
-    // Datatype in input, and wheter or not a data field is optional
-    std::vector<IOSpec> inputTypes;
-    IGDataTypes outputType;
-};
-
-class UI_Component 
-{
-public:
-    UI_Component(unsigned char id, Rectangle anchor_ );
-    const unsigned char c_id;
-    Rectangle anchor;
-
-
+    std::uint8_t c_id = 0;
+    CellPosition anchor = {0,0};
+    ComponentBluePrint bluePrint;
+    // UI_Component(std::uint8_t c_id_, CellPosition anchor_, ComponentBluePrint bluePrint_) : c_id(c_id_), anchor(anchor_), bluePrint(bluePrint_) 
+    // {}
 };
 
 

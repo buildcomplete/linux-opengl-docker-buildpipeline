@@ -28,8 +28,8 @@ Canvas::Canvas()
     do
     {
         i++;
-        avaliableComponentKeys.push(i);
-        avaliableNetworkKeys.push(i);
+        avaliableComponentKeys.insert(i);
+        avaliableNetworkKeys.insert(i);
         /* code */
     } while (i != 255);
 }
@@ -44,13 +44,14 @@ bool Canvas::AddComponent(const ComponentBluePrint& bluePrint, unsigned char cel
     if (!IsGridFree(bluePrint, cellAnchorX, cellAnchorY))
         return false;
 
-    unsigned char insertId = avaliableComponentKeys.front();
+    std::uint8_t insertId = *(avaliableComponentKeys.begin());
 
     // Update lookup table
     SetGridCellValues(bluePrint, cellAnchorX, cellAnchorY, insertId);
 
-    components.push_back(UI_Component(insertId, {(float)cellAnchorX, (float)cellAnchorY, (float)bluePrint.Width, (float)bluePrint.Heigh}));
-    avaliableComponentKeys.pop();
+    components[insertId] = new UI_Component({insertId, {cellAnchorX, cellAnchorY}, bluePrint});
+    avaliableComponentKeys.erase(insertId);
+    inUseComponentKeys.insert(insertId);
     return true;
 }
 
@@ -72,14 +73,16 @@ void ToggleComponent()
 
 void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
 {
-    for (int i = 0; i < components.size(); ++i)
+    for (const auto& i : inUseComponentKeys)
     {
+        const auto X = (components[i]);
         // This is only updated when changing monitor, so could be a fixed calculation
         const float padding_cm = 0.1f;
-        int xp = coordinateHelper.CmToPixel(components[i].anchor.x - padding_cm);
-        int yp = coordinateHelper.CmToPixel(components[i].anchor.y - padding_cm);
-        int wp = coordinateHelper.CmToPixel(components[i].anchor.width + 2.0f * padding_cm);
-        int hp = coordinateHelper.CmToPixel(components[i].anchor.height + 2.0f * padding_cm);
+        int xp = coordinateHelper.CmToPixel(X->anchor.x - padding_cm);
+        int yp = coordinateHelper.CmToPixel(X->anchor.y - padding_cm);
+        int wp = coordinateHelper.CmToPixel(X->bluePrint.Width + 2.0f * padding_cm);
+        int hp = coordinateHelper.CmToPixel(X->bluePrint.Height + 2.0f * padding_cm);
+
         DrawRectangleLines(xp, yp, wp, hp, ELECTRIC_BLUE);
     }
 
@@ -94,7 +97,7 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
     int x0 = std::max(0, cellX);   // inclusive
     int y0 = std::max(0, cellY);   // // inclusive
     int x1 = x0 + blueprint.Width; // Exclusive
-    int y1 = y0 + blueprint.Heigh; // Exclusive
+    int y1 = y0 + blueprint.Height; // Exclusive
     if (x1 >= (int)GridWidth || y1 >= (int)GridHeight)
         return false;
 
@@ -116,7 +119,7 @@ void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t
     int x0 = std::max(0, (int)cellX); // inclusive
     int y0 = std::max(0, (int)cellY); // // inclusive
     int x1 = x0 + blueprint.Width;    // Exclusive
-    int y1 = y0 + blueprint.Heigh;    // Exclusive
+    int y1 = y0 + blueprint.Height;    // Exclusive
 
     for (int x = x0; x < x1; ++x)
     {
@@ -143,7 +146,6 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
         int dx = p0.x == p1.x ? 0 : p0.x > p1.x ? -1 : 1;
         int dy = p0.y == p1.y ? 0 : p0.y > p1.y ? -1 : 1;
         int n = std::max(std::abs(p0.x - p1.x), std::abs(p0.y - p1.y));
-        std::cout << "Take" << i << "=[" << p0.x << "," << p0.y << "]-[" << p1.x << "," << p1.y << "]->" << dx << "," << dy << ":" << n << std::endl;
         for (int j = 0; j < n; ++j)
         {
             result.push_back({p0.x,p0.y});
@@ -230,8 +232,8 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
 
     if (id == 0)
     {
-        id = avaliableNetworkKeys.front();
-        avaliableNetworkKeys.pop();
+        id = *(avaliableNetworkKeys.begin());
+        avaliableNetworkKeys.erase(id);
     }
 
     // Update map, this assumes lines are either horizontal, vertical or 45 degress
@@ -255,14 +257,14 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     return true;
 }
 
-GridContentInfo Canvas::GetCellInfo(int cellX, int cellY)
+GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
 {
     if (cellX < 0 || cellY < 0 || cellX > 255 || cellY > 255)
         return {0, 0};
     return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
-int Canvas::GetGridIdxAtCell(int cellX, int cellY)
+int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
 {
     return cellX + cellY * GridWidth;
 }
@@ -279,4 +281,11 @@ void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNod
     }
 }
 
-
+Canvas::~Canvas()
+{
+    std::cout << "Destrying canvas, hope you are exiting" << std::endl;
+    for (auto i:inUseComponentKeys)
+    {
+        delete components[i];
+    }
+}

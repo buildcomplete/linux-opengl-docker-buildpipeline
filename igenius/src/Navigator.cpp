@@ -59,7 +59,7 @@ IG_MouseCoordinates Navigator::SyncWithState(Engine_StateManager& eMan, float pi
 }
 
 // Should be called while drawing in camera mode
-void Navigator::DrawCursorWorldGuide(const IG_MouseCoordinates& frameCoords,const  Engine_StateManager& eMan, Canvas canvas)
+void Navigator::DrawCursorWorldGuide(const IG_MouseCoordinates& frameCoords,const  Engine_StateManager& eMan, const Canvas& canvas)
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is

@@ -16,7 +16,7 @@ class Navigator {
 
         Navigator();
         IG_MouseCoordinates SyncWithState(Engine_StateManager &eMan, float pixPr_cm_);
-        void DrawCursorWorldGuide(const IG_MouseCoordinates& frameCoords, const Engine_StateManager& eMan, Canvas canvas);
+        void DrawCursorWorldGuide(const IG_MouseCoordinates &frameCoords, const Engine_StateManager &eMan, const Canvas &canvas);
         void DrawCursorScreenGuide(const Engine_StateManager& eMan);
         Camera2D camera = { 0 };
 

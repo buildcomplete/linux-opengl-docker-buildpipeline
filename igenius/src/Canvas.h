@@ -54,13 +54,15 @@ public:
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Draw(CoordinateHelper &coordinateHelper, bool drawAnchors);
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
-    std::vector<UI_Component> components;
-    GridContentInfo GetCellInfo(int cellX, int cellY);
+    UI_Component* components[256] = {nullptr}; 
+    GridContentInfo GetCellInfo(int cellX, int cellY) const;
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
     static void DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm);
+
+    ~Canvas();
 
 private:
     static const std::uint8_t GridWidth = 255;
@@ -68,15 +70,15 @@ private:
 
     void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
 
-    int GetGridIdxAtCell(int cellX, int cellY);
+    int GetGridIdxAtCell(int cellX, int cellY) const;
 
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
-    std::queue<std::uint8_t> avaliableComponentKeys;
-    std::queue<std::uint8_t> avaliableNetworkKeys;
-    std::vector<UI_Component> uiComponents;
-
-
+    std::set<std::uint8_t> avaliableComponentKeys;
+    std::set<std::uint8_t> avaliableNetworkKeys;
+    std::set<std::uint8_t> inUseComponentKeys;
+    std::set<std::uint8_t> inUseNetworkKeys;
+   
     // Realized networks
     std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(5); 
 
