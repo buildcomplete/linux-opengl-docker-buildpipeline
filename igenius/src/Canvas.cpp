@@ -32,31 +32,13 @@ Canvas::Canvas()
         avaliableNetworkKeys.push(i);
         /* code */
     } while (i != 255);
-
-    // Define all input frames
-    AddComponent(CMPNAMES::UNDEFINED, 1, 1);
-    AddComponent(CMPNAMES::VIRTUAL_CAMERA, 1, 8);
-    AddComponent(CMPNAMES::SP_CONVOLUTION, 4, 7);
-    AddComponent(CMPNAMES::SP_CONVOLUTION, 4, 9);
-    AddComponent(CMPNAMES::IMG_IMG_IMG_OPERATION, 9, 5);
-    AddComponent(CMPNAMES::IMG_IMG_IMG_OPERATION, 9, 9);
 }
 
-UIComponentBluePrint Canvas::GetBluePrint(CMPNAMES name)
-{
-    for (int i = 0; i < uiComponentBluePrints.size(); ++i)
-    {
-        if (uiComponentBluePrints[i].Name == name)
-            return uiComponentBluePrints[i];
-    }
-    return {UNDEFINED, 1, 1};
-}
-bool Canvas::AddComponent(CMPNAMES name, unsigned char cellAnchorX, unsigned char cellAnchorY)
+
+bool Canvas::AddComponent(const ComponentBluePrint& bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY)
 {
     if (avaliableComponentKeys.empty())
         return false;
-
-    UIComponentBluePrint bluePrint = GetBluePrint(name);
 
     // Add check if position is valid
     if (!IsGridFree(bluePrint, cellAnchorX, cellAnchorY))
@@ -107,7 +89,7 @@ void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
     }
 }
 
-bool Canvas::IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int cellY)
+bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY)
 {
     int x0 = std::max(0, cellX);   // inclusive
     int y0 = std::max(0, cellY);   // // inclusive
@@ -129,7 +111,7 @@ bool Canvas::IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int ce
 }
 
 // Sets grid cell values, notice, this fellow do not perform boundaris checks and assumes the where checed elsewhere
-void Canvas::SetGridCellValues(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id)
+void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id)
 {
     int x0 = std::max(0, (int)cellX); // inclusive
     int y0 = std::max(0, (int)cellY); // // inclusive
@@ -207,6 +189,7 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
     // 2) There should only be allowed a component in the beginning or end of the network
     // 3) Component input/output should be compatible
     // 4) There should only be allowed networks in the beggining or end of the network
+    // 5) We need to add special check when moving diagonal as we might miss other diagonals
 
     for (int i=0;i<samples.size()-1;++i)
     {
@@ -227,8 +210,6 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
         {
             return {false};
         }
-        
-
     }
     return {true, id, startInfo, endInfo};
 }

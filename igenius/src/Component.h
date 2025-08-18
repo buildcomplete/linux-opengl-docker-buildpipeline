@@ -6,7 +6,22 @@
 #include <string>
 #include <set>
 #include "IG_types.h"
+#include <cstdint>
 
+typedef enum : std::int32_t
+{
+    // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
+    UNDEFINED = 0,
+    VIRTUAL_CAMERA = 1,
+    SP_CONVOLUTION = 2,
+    IMG_IMG_IMG_OPERATION = 3,
+} CMPNAMES;
+
+struct IOSpec
+{
+   IGDataTypes type;
+   bool required; 
+};
 class Component 
 {
 public:
@@ -18,7 +33,7 @@ public:
     std::string componentType;
 
     // Datatype in input, and wheter or not a data field is optional
-    std::vector<std::pair<IGDataTypes, bool>> inputTypes;
+    std::vector<IOSpec> inputTypes;
     IGDataTypes outputType;
 };
 
@@ -28,10 +43,10 @@ public:
     UI_Component(unsigned char id, Rectangle anchor_ );
     const unsigned char c_id;
     Rectangle anchor;
-    std::vector<Vector2> inputAnchors;
-    Vector2 outputAnchor;
 
-    bool Inside(Vector2 pWorld);
+
 };
+
+
 
 #endif

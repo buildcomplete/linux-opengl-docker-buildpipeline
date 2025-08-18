@@ -5,22 +5,7 @@
 #include "Component.h"
 #include "CoordinateHelper.h"
 #include <cstdint>
-
-typedef enum : std::int32_t
-{
-    // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
-    UNDEFINED = 0,
-    VIRTUAL_CAMERA = 1,
-    SP_CONVOLUTION = 2,
-    IMG_IMG_IMG_OPERATION = 3,
-} CMPNAMES;
-
-struct UIComponentBluePrint
-{
-    CMPNAMES Name;
-    std::uint8_t Width;
-    std::uint8_t Heigh;
-};
+#include "ComponentFactory.h"
 
 // Commenting out to decrease level of indirection,
 // if we are going to have more than 3 types of object class we can place,
@@ -65,14 +50,13 @@ class Canvas
 {
 public:
     Canvas();
-    UIComponentBluePrint GetBluePrint(CMPNAMES name);
-    bool AddComponent(CMPNAMES name, std::uint8_t cellAnchorX, std::uint8_t cellAnchorY);
     void Update();
+    bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Draw(CoordinateHelper &coordinateHelper, bool drawAnchors);
-    bool IsGridFree(const UIComponentBluePrint &blueprint, int cellX, int cellY);
+    bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
     std::vector<UI_Component> components;
     GridContentInfo GetCellInfo(int cellX, int cellY);
-    void SetGridCellValues(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
+    void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
@@ -82,7 +66,7 @@ private:
     static const std::uint8_t GridWidth = 255;
     static const std::uint8_t GridHeight = 255;
 
-    void SetGridCellContentInfo(const UIComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
+    void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
 
     int GetGridIdxAtCell(int cellX, int cellY);
 
@@ -91,11 +75,7 @@ private:
     std::queue<std::uint8_t> avaliableComponentKeys;
     std::queue<std::uint8_t> avaliableNetworkKeys;
     std::vector<UI_Component> uiComponents;
-    std::vector<UIComponentBluePrint> uiComponentBluePrints = {
-        {VIRTUAL_CAMERA, 1, 1},
-        {SP_CONVOLUTION, 2, 1},
-        {IMG_IMG_IMG_OPERATION, 1, 1},
-    };
+
 
     // Realized networks
     std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(5); 

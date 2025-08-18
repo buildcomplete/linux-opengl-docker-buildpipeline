@@ -8,9 +8,9 @@ IG Host loop
 void InitRaylibWindow()
 {
 	// Tell the window to use vsync and work on high DPI displays
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI );
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI | FLAG_FULLSCREEN_MODE);
 
-	int screenWidth = 800, screenHeight = 600;
+	int screenWidth = GetMonitorWidth(0), screenHeight = GetMonitorHeight(0);
 
 	// Create the window and OpenGL context
 	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
