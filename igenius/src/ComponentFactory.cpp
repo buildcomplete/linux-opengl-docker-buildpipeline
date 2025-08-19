@@ -3,7 +3,7 @@
 #include <vector>
 // Initialize the static member outside the class definition
 const std::vector<ComponentBluePrint> ComponentFactory::componentBluePrints = {
-    ComponentBluePrint(VIRTUAL_CAMERA, 1, 1, {{DT_IMAGE, true}}, {DT_NONE, false}),
+    ComponentBluePrint(VIRTUAL_CAMERA, 1, 1, {{DT_NONE, true}}, {DT_IMAGE, false}),
     ComponentBluePrint(SP_CONVOLUTION, 2, 1, {{DT_IMAGE, true}}, {DT_IMAGE, true}),
     ComponentBluePrint(IMG_IMG_IMG_OPERATION, 2, 3, {{DT_IMAGE, true}, {DT_IMAGE, true}}, {DT_IMAGE, true}),
 };

@@ -30,18 +30,21 @@ struct ComponentBluePrint
 
     ComponentBluePrint()
         : Name(CMPNAMES::UNDEFINED), Width(1), Height(1),
-          inputDataTypes({{IGDataTypes::DT_NONE,false}}), outputDataType({IGDataTypes::DT_NONE,false}) {}
+          inputDataTypes({{IGDataTypes::DT_NONE,false}}), 
+          outputDataType({IGDataTypes::DT_NONE,false}) {}
 
     // Constructor to initialize all member variables
     ComponentBluePrint(CMPNAMES name, std::uint8_t width, std::uint8_t height,
                        std::initializer_list<IOSpec> inputTypes, IOSpec outputTypes)
         : Name(name), Width(width), Height(height),
-          inputDataTypes(inputTypes), outputDataType(outputTypes) {}
+          inputDataTypes(inputTypes), 
+          outputDataType(outputTypes) {}
 
     // Copy constructor
     ComponentBluePrint(const ComponentBluePrint &other)
         : Name(other.Name), Width(other.Width), Height(other.Height),
-          inputDataTypes(other.inputDataTypes), outputDataType(other.outputDataType) {}
+          inputDataTypes(other.inputDataTypes),
+          outputDataType(other.outputDataType) {}
 
     // Copy assignment operator
     ComponentBluePrint &operator=(const ComponentBluePrint &other)

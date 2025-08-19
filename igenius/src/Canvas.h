@@ -56,6 +56,7 @@ public:
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
     UI_Component* components[256] = {nullptr}; 
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
+    UI_Component *GetComponent(int id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);

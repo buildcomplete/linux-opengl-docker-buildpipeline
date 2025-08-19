@@ -264,6 +264,15 @@ GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
     return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
+UI_Component* Canvas::GetComponent(int id)
+{
+    if (inUseComponentKeys.find(id) != inUseComponentKeys.end())
+    {
+        return components[id];
+    }
+    return nullptr;
+}
+
 int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
 {
     return cellX + cellY * GridWidth;

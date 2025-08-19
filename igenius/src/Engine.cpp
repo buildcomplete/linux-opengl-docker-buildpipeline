@@ -71,7 +71,12 @@ void Engine::Render()
     GridContentInfo info = canvas.GetCellInfo(cell.x, cell.y);
     sprintf(buffer, "Cell: %d,%d:C=%d, N=%d", cell.x, cell.y, info.componentId, info.networkId );
     DrawText(buffer, 20,20,20,WHITE);
-    
+    auto component = canvas.GetComponent(info.componentId);
+    if (component != nullptr)
+    {
+        sprintf(buffer, "Component ctx: %d = %d -> %d", component->c_id, component->bluePrint.inputDataTypes[0].type, component->bluePrint.outputDataType );
+        DrawText(buffer, 20,40,20,WHITE);
+    }    
     // end the frame and get ready for the next one  (display frame, poll input, etc...)
     EndDrawing();
 }
