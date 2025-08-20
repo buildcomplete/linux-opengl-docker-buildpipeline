@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 #include "IG_types.h"
 #include <cstdio>
 
@@ -10,9 +9,6 @@ Engine::Engine()
 
 void Engine::Init()
 {
-	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
-	SearchAndSetResourceDir("resources");
-
 	// Load a texture from the resources directory
 	wabbit = LoadTexture("wabbit_alpha.png");
  
@@ -74,7 +70,7 @@ void Engine::Render()
     auto component = canvas.GetComponent(info.componentId);
     if (component != nullptr)
     {
-        sprintf(buffer, "Component ctx: %d = %d -> %d", component->c_id, component->bluePrint.inputDataTypes[0].type, component->bluePrint.outputDataType );
+        sprintf(buffer, "Component ctx: %d = %d -> %d", component->id, component->bluePrint.inputDataTypes[0].type, (int)(component->bluePrint.outputDataType.type) );
         DrawText(buffer, 20,40,20,WHITE);
     }    
     // end the frame and get ready for the next one  (display frame, poll input, etc...)

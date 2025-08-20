@@ -6,6 +6,7 @@
 #include "CoordinateHelper.h"
 #include <cstdint>
 #include "ComponentFactory.h"
+#include <memory>
 
 // Commenting out to decrease level of indirection,
 // if we are going to have more than 3 types of object class we can place,
@@ -54,9 +55,9 @@ public:
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Draw(CoordinateHelper &coordinateHelper, bool drawAnchors);
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
-    UI_Component* components[256] = {nullptr}; 
+    std::unique_ptr<UI_Component> components[256]; 
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
-    UI_Component *GetComponent(int id);
+    UI_Component* GetComponent(int id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
@@ -68,6 +69,7 @@ public:
 private:
     static const std::uint8_t GridWidth = 255;
     static const std::uint8_t GridHeight = 255;
+    Texture cameraTexture;
 
     void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
 

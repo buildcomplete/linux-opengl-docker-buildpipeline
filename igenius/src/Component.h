@@ -8,31 +8,58 @@
 #include "IG_types.h"
 #include <cstdint>
 #include "ComponentBluePrint.h"
+#include "CoordinateHelper.h"
 
 
 // class Component 
 // {
 // public:
-//     unsigned char id = 0;
-
-//     // I am using a string because I have a vague idea
-//     // that it makes it more extensible to add new component types in the future
-//     // without relying on enums etc.
-//     std::string componentType;
+//     std::uint8_t id = 0;
 
 //     // Datatype in input, and wheter or not a data field is optional
 //     std::vector<IOSpec> inputTypes;
 //     IGDataTypes outputType;
+
 // };
 
-struct UI_Component 
+// lightweight non-owning context
+struct RenderContext {
+    CoordinateHelper& ch;
+    Texture& cameraTexture;
+    // // optional helpers/wrappers for your C API:
+    // void DrawRectangle(int x, int y, int w, int h, Color c) const {
+    //     ::DrawRectangle(x,y,w,h,c);
+    // }
+    // void DrawTexturePro(const Texture& tex, Rect src, Rect dst, Vec2 origin, float rot, Color tint) const {
+    //     ::DrawTexturePro(tex, src, dst, origin, rot, tint);
+    // }
+};
+
+class UI_Component 
 {
-    std::uint8_t c_id = 0;
+public:
+    std::uint8_t id = 0;
     CellPosition anchor = {0,0};
     ComponentBluePrint bluePrint;
-    // UI_Component(std::uint8_t c_id_, CellPosition anchor_, ComponentBluePrint bluePrint_) : c_id(c_id_), anchor(anchor_), bluePrint(bluePrint_) 
-    // {}
+
+    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ ) 
+        : id(id_), anchor(anchor_), bluePrint(bluePrint_) {}
+    
+    virtual void Draw(const RenderContext&) const;
 };
+
+namespace UI_Components
+{
+    class VirtualCameraUI : public UI_Component
+    {
+    public:
+        VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ ) 
+            : UI_Component(id_, anchor_, bluePrint_) {}
+        virtual void Draw(const RenderContext&) const override; 
+    };
+}
+
+
 
 
 

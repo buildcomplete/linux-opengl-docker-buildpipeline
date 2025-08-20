@@ -32,6 +32,7 @@ Canvas::Canvas()
         avaliableNetworkKeys.insert(i);
         /* code */
     } while (i != 255);
+    cameraTexture = LoadTexture("game_camera_transparent2.png");
 }
 
 
@@ -49,7 +50,9 @@ bool Canvas::AddComponent(const ComponentBluePrint& bluePrint, unsigned char cel
     // Update lookup table
     SetGridCellValues(bluePrint, cellAnchorX, cellAnchorY, insertId);
 
-    components[insertId] = new UI_Component({insertId, {cellAnchorX, cellAnchorY}, bluePrint});
+    //components[insertId] = new UI_Component({insertId, {cellAnchorX, cellAnchorY}, bluePrint});
+    components[insertId] = ComponentFactory::CreateUI_Component(bluePrint,insertId, {cellAnchorX, cellAnchorY});
+    
     avaliableComponentKeys.erase(insertId);
     inUseComponentKeys.insert(insertId);
     return true;
@@ -73,17 +76,10 @@ void ToggleComponent()
 
 void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
 {
+    RenderContext rc = {coordinateHelper, cameraTexture};
     for (const auto& i : inUseComponentKeys)
     {
-        const auto X = (components[i]);
-        // This is only updated when changing monitor, so could be a fixed calculation
-        const float padding_cm = 0.1f;
-        int xp = coordinateHelper.CmToPixel(X->anchor.x - padding_cm);
-        int yp = coordinateHelper.CmToPixel(X->anchor.y - padding_cm);
-        int wp = coordinateHelper.CmToPixel(X->bluePrint.Width + 2.0f * padding_cm);
-        int hp = coordinateHelper.CmToPixel(X->bluePrint.Height + 2.0f * padding_cm);
-
-        DrawRectangleLines(xp, yp, wp, hp, ELECTRIC_BLUE);
+        components[i]->Draw(rc);
     }
 
     for (int i = 0; i < networks.size(); ++i)
@@ -268,7 +264,7 @@ UI_Component* Canvas::GetComponent(int id)
 {
     if (inUseComponentKeys.find(id) != inUseComponentKeys.end())
     {
-        return components[id];
+        return components[id].get();
     }
     return nullptr;
 }
@@ -293,8 +289,7 @@ void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNod
 Canvas::~Canvas()
 {
     std::cout << "Destrying canvas, hope you are exiting" << std::endl;
-    for (auto i:inUseComponentKeys)
-    {
-        delete components[i];
-    }
+    // It is unloaded when window is closed, or engine is closed, not sure,
+    // but unloadung manually throws an exception
+	//UnloadTexture(cameraTexture);
 }

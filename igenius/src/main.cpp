@@ -4,6 +4,7 @@ IG Host loop
 
 #include "raylib.h"
 #include "Engine.h"
+#include <resource_dir.h>
 
 void InitRaylibWindow()
 {
@@ -16,6 +17,9 @@ void InitRaylibWindow()
 	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
 
 	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+
+	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
+	SearchAndSetResourceDir("resources");
 }
 
 int main ()

@@ -17,3 +17,15 @@ ComponentBluePrint ComponentFactory::GetBluePrint(CMPNAMES name)
     }
     return ComponentBluePrint(UNDEFINED, 1, 1, {{DT_NONE, false}}, {DT_NONE, false});
 }
+
+std::unique_ptr<UI_Component> ComponentFactory::CreateUI_Component(ComponentBluePrint blueprint, std::uint8_t id, CellPosition anchor)
+{
+    switch (blueprint.Name)
+    {
+    case CMPNAMES::VIRTUAL_CAMERA:
+        return std::make_unique<UI_Components::VirtualCameraUI>(id, anchor, blueprint);
+    
+    default:
+        return std::make_unique<UI_Component>(id, anchor, blueprint );
+    }
+}
