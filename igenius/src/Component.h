@@ -55,6 +55,13 @@ namespace UI_Components
         VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
         virtual void Draw(const RenderContext&) const override; 
     };
+
+    class SP_CONVOLUTIONUI : public UI_Component
+    {
+    public:
+        SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
+        virtual void Draw(const RenderContext&) const override; 
+    };
 }
 
 

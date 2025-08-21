@@ -4,7 +4,7 @@
 // Initialize the static member outside the class definition
 const std::vector<ComponentBluePrint> ComponentFactory::componentBluePrints = {
     ComponentBluePrint(VIRTUAL_CAMERA, 1, 1, {}, {DT_IMAGE, false}),
-    ComponentBluePrint(SP_CONVOLUTION, 3, 2, {{DT_IMAGE, true}}, {DT_IMAGE, true}),
+    ComponentBluePrint(SP_CONVOLUTION, 3, 3, {{DT_IMAGE, true}}, {DT_IMAGE, true}),
     ComponentBluePrint(IMG_IMG_IMG_OPERATION, 2, 3, {{DT_IMAGE, true}, {DT_IMAGE, true}}, {DT_IMAGE, true}),
 };
 
@@ -24,6 +24,9 @@ std::unique_ptr<UI_Component> ComponentFactory::CreateUI_Component(ComponentBlue
     {
     case CMPNAMES::VIRTUAL_CAMERA:
         return std::make_unique<UI_Components::VirtualCameraUI>(id, anchor, blueprint);
+    case CMPNAMES::SP_CONVOLUTION:
+        return std::make_unique<UI_Components::SP_CONVOLUTIONUI>(id, anchor, blueprint);
+
     
     default:
         return std::make_unique<UI_Component>(id, anchor, blueprint );
