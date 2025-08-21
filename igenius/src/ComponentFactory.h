@@ -1,6 +1,6 @@
 #ifndef IG_COMPONENT_FACTORY_H
 #define IG_COMPONENT_FACTORY_H
-#include "Component.h"
+#include "components/Component.h"
 #include "ComponentBluePrint.h"
 #include <memory>
 

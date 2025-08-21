@@ -1,6 +1,66 @@
 #include "Component.h"
 #include <iostream>
 #include <algorithm>
+#include "rshapes.c"
+
+// Mod of DrawCircleSectorLines as I dont wont the cap,
+// 
+// Draw a piece of a circle outlines
+void DrawCircleSelectorLines(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color)
+{
+    if (startAngle == endAngle) return;
+    if (radius <= 0.0f) radius = 0.1f;  // Avoid div by zero issue
+
+    // Function expects (endAngle > startAngle)
+    if (endAngle < startAngle)
+    {
+        // Swap values
+        float tmp = startAngle;
+        startAngle = endAngle;
+        endAngle = tmp;
+    }
+
+    int minSegments = (int)ceilf((endAngle - startAngle)/90);
+
+    if (segments < minSegments)
+    {
+        // Calculate the maximum angle between segments based on the error rate (usually 0.5f)
+        float th = acosf(2*powf(1 - SMOOTH_CIRCLE_ERROR_RATE/radius, 2) - 1);
+        segments = (int)((endAngle - startAngle)*ceilf(2*PI/th)/360);
+
+        if (segments <= 0) segments = minSegments;
+    }
+
+    float stepLength = (endAngle - startAngle)/(float)segments;
+    float angle = startAngle;
+    bool showCapLines=true;
+    float opositeAngle = endAngle + 90;
+    rlBegin(RL_LINES);
+        if (showCapLines)
+        {
+            rlColor4ub(color.r, color.g, color.b, color.a);
+            rlVertex2f(center.x + cosf(DEG2RAD*opositeAngle)*radius, center.y + sinf(DEG2RAD*opositeAngle)*radius);
+            rlVertex2f(center.x + cosf(DEG2RAD*angle)*radius, center.y + sinf(DEG2RAD*angle)*radius);
+        }
+
+        for (int i = 0; i < segments; i++)
+        {
+            rlColor4ub(color.r, color.g, color.b, color.a);
+
+            rlVertex2f(center.x + cosf(DEG2RAD*angle)*radius, center.y + sinf(DEG2RAD*angle)*radius);
+            rlVertex2f(center.x + cosf(DEG2RAD*(angle + stepLength))*radius, center.y + sinf(DEG2RAD*(angle + stepLength))*radius);
+
+            angle += stepLength;
+        }
+
+        if (showCapLines)
+        {
+            rlColor4ub(color.r, color.g, color.b, color.a);
+            rlVertex2f(center.x + cosf(DEG2RAD*opositeAngle)*radius, center.y + sinf(DEG2RAD*opositeAngle)*radius);
+            rlVertex2f(center.x + cosf(DEG2RAD*angle)*radius, center.y + sinf(DEG2RAD*angle)*radius);
+        }
+    rlEnd();
+}
 
 
 UI_Component::UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
@@ -93,5 +153,17 @@ void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
         float y_out = rc.ch.CmToPixel((float)anchor.y + (float)bluePrint.Height/2.0f) ;
         float outPosX = xp+wp;
         DrawCircleLinesV({outPosX, y_out}, rc.ch.pixPr_cm/8.0f, WHITE);
-    } 
+    }
+
+    // At the center of the components, draw convolution widget that both show the current signal, 
+    // and shows the shape of the current signal in the center
+    // We should be able to reach on click on the selector for selecting signal,
+    // And to listen for click on direction selectors
+    float cx = rc.ch.CmToPixel((float)anchor.x+(float)bluePrint.Width/2.0f);
+    float cy = rc.ch.CmToPixel((float)anchor.y + (float)bluePrint.Height/2.0f);
+    
+    float t = Wrap(GetTime(),0.0f, 4.0f) * 90;
+    // rotate every 4 second;
+
+    DrawCircleSelectorLines({cx,cy}, rc.ch.pixPr_cm*0.75f, 90+t, 270+t, 1, WHITE );
 }

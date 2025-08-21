@@ -2,7 +2,7 @@
 #define IG_CANVAS_H
 #include <vector>
 #include <queue>
-#include "Component.h"
+#include "components/Component.h"
 #include "CoordinateHelper.h"
 #include <cstdint>
 #include "ComponentFactory.h"
