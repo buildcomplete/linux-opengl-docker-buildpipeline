@@ -70,7 +70,8 @@ void Engine::Render()
     auto component = canvas.GetComponent(info.componentId);
     if (component != nullptr)
     {
-        sprintf(buffer, "Component ctx: %d = %d -> %d", component->id, component->bluePrint.inputDataTypes[0].type, (int)(component->bluePrint.outputDataType.type) );
+        int inputDT =  component->bluePrint.inputDataTypes.size() == 0 ? 0 : component->bluePrint.inputDataTypes[0].type;
+        sprintf(buffer, "Component id: %02x = %d -> %d", component->id, inputDT, (int)(component->bluePrint.outputDataType.type) );
         DrawText(buffer, 20,40,20,WHITE);
     }    
     // end the frame and get ready for the next one  (display frame, poll input, etc...)

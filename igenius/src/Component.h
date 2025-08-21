@@ -42,8 +42,7 @@ public:
     CellPosition anchor = {0,0};
     ComponentBluePrint bluePrint;
 
-    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ ) 
-        : id(id_), anchor(anchor_), bluePrint(bluePrint_) {}
+    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
     
     virtual void Draw(const RenderContext&) const;
 };
@@ -53,8 +52,7 @@ namespace UI_Components
     class VirtualCameraUI : public UI_Component
     {
     public:
-        VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ ) 
-            : UI_Component(id_, anchor_, bluePrint_) {}
+        VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
         virtual void Draw(const RenderContext&) const override; 
     };
 }
