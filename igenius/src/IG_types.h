@@ -20,18 +20,23 @@ typedef enum : std::uint32_t
     DT_PROFILEWITHORIGIN   = 1 << 8
 } IGDataTypes;
 
+typedef enum : std::uint32_t
+{
+    IG_MOUSE_ZERO                   = 0,
+    IG_MOUSE_SELECTING 			    = 1 << 0, //1
+    IG_MOUSE_SCREEN_DRAGGING 		= 1 << 1, // 2
+    IG_MOUSE_MODE_NETWORK			= 1 << 2, // 4
+    // Try to execute command from mouse cursor depending on state...
+    IG_MOUSE_TRY_COMMAND			= 1 << 3, // 8
+    IG_MOUSE_POSITION_COMPONENT 	= 1 << 4, // 16
+    IG_MOUSE_DELETE                 = 1 << 5, // 32
+
+} MOUSE_MODE_FLAGS;
+
 struct CellPosition
 {
     int x;
     int y;
 };
-
-struct IG_MouseCoordinates
-{
-    Vector2 mousePosScreenPixel;
-    Vector2 mousePosWorldCm;
-    CellPosition mousePosWorldGrid;
-};
-
 
 #endif

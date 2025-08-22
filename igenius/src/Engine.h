@@ -6,6 +6,10 @@
 #include "CoordinateHelper.h"
 #include "Canvas.h"
 #include "Engine_NetworkDrawingManager.h"
+#include "context/NavigationContext.h"
+#include "context/RenderContext.h"
+#include "context/StateContext.h"
+
 
 /**
  * Serves as the central hub that integrates various components, 
@@ -29,10 +33,13 @@ private:
     Navigator navigator;
 	CoordinateHelper coordinateHelper;
 	Engine_NetworkDrawingManager networkDrawingManager;
-	IG_MouseCoordinates frameCoords;
 	Canvas canvas;
     Texture wabbit;
+    Texture cameraTexture;
 	void HandleStateChanges();
+	
+    StateContext stateContext;
+    NavigationContext navigationContext;
 	
 };
 

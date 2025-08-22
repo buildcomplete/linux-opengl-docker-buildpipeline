@@ -32,7 +32,6 @@ Canvas::Canvas()
         avaliableNetworkKeys.insert(i);
         /* code */
     } while (i != 255);
-    cameraTexture = LoadTexture("game_camera_transparent2.png");
 }
 
 
@@ -74,9 +73,8 @@ void ToggleComponent()
 {
 }
 
-void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
+void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const StateContext& sc)
 {
-    RenderContext rc = {coordinateHelper, cameraTexture};
     for (const auto& i : inUseComponentKeys)
     {
         components[i]->Draw(rc);
@@ -84,7 +82,7 @@ void Canvas::Draw(CoordinateHelper &coordinateHelper, bool drawAnchors)
 
     for (int i = 0; i < networks.size(); ++i)
     {
-        Canvas::DrawNetworkSegment(networks[i], drawAnchors, coordinateHelper.pixPr_cm);
+        Canvas::DrawNetworkSegment(networks[i], sc, rc.pixPr_cm);
     }
 }
 
@@ -274,10 +272,10 @@ int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
     return cellX + cellY * GridWidth;
 }
 
-void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm)
+void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, const StateContext& sc, float pixPr_cm)
 {
     DrawLineStripCellPos(&(network[0]), network.size(), NETGREEN, pixPr_cm);
-    if (drawNodes)
+    if (sc.IsInState(MOUSE_MODE_FLAGS::IG_MOUSE_MODE_NETWORK))
     {
         for (int i = 0; i < network.size(); ++i)
         {

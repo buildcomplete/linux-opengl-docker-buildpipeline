@@ -9,6 +9,10 @@
 #include <cstdint>
 #include "ComponentBluePrint.h"
 #include "CoordinateHelper.h"
+#include "context/NavigationContext.h"
+#include "context/RenderContext.h"
+#include "context/StateContext.h"
+
 
 // class Component
 // {
@@ -20,20 +24,6 @@
 //     IGDataTypes outputType;
 
 // };
-
-// lightweight non-owning context
-struct RenderContext
-{
-    CoordinateHelper &ch;
-    Texture &cameraTexture;
-    // // optional helpers/wrappers for your C API:
-    // void DrawRectangle(int x, int y, int w, int h, Color c) const {
-    //     ::DrawRectangle(x,y,w,h,c);
-    // }
-    // void DrawTexturePro(const Texture& tex, Rect src, Rect dst, Vec2 origin, float rot, Color tint) const {
-    //     ::DrawTexturePro(tex, src, dst, origin, rot, tint);
-    // }
-};
 
 class UI_Component
 {

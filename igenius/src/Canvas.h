@@ -7,6 +7,10 @@
 #include <cstdint>
 #include "ComponentFactory.h"
 #include <memory>
+#include "Engine_StateManager.h"
+#include "context/NavigationContext.h"
+#include "context/RenderContext.h"
+#include "context/StateContext.h"
 
 // Commenting out to decrease level of indirection,
 // if we are going to have more than 3 types of object class we can place,
@@ -53,7 +57,7 @@ public:
     Canvas();
     void Update();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
-    void Draw(CoordinateHelper &coordinateHelper, bool drawAnchors);
+    void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc);
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
     std::unique_ptr<UI_Component> components[256]; 
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
@@ -62,18 +66,19 @@ public:
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
-    static void DrawNetworkSegment(std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm);
+    static void DrawNetworkSegment(std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm);
 
     ~Canvas();
 
 private:
     static const std::uint8_t GridWidth = 255;
     static const std::uint8_t GridHeight = 255;
-    Texture cameraTexture;
+    
 
     void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
 
     int GetGridIdxAtCell(int cellX, int cellY) const;
+
 
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
