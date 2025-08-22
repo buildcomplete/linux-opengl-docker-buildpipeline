@@ -4,8 +4,8 @@
 
 
 
-// Small copy paste from raylib to support drawing integer line segments
-// Draw lines sequuence (using gl lines)
+// Small copy paste from raylib to support drawing integer line segments in cm space
+// Draw lines sequence (using gl lines)
 static void DrawLineStripCellPos(const CellPosition *points, int pointCount, Color color, float pixPr_cm)
 {
     if (pointCount < 2)

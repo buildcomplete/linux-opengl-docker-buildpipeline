@@ -10,8 +10,7 @@
 #include "ComponentBluePrint.h"
 #include "CoordinateHelper.h"
 
-
-// class Component 
+// class Component
 // {
 // public:
 //     std::uint8_t id = 0;
@@ -23,9 +22,10 @@
 // };
 
 // lightweight non-owning context
-struct RenderContext {
-    CoordinateHelper& ch;
-    Texture& cameraTexture;
+struct RenderContext
+{
+    CoordinateHelper &ch;
+    Texture &cameraTexture;
     // // optional helpers/wrappers for your C API:
     // void DrawRectangle(int x, int y, int w, int h, Color c) const {
     //     ::DrawRectangle(x,y,w,h,c);
@@ -35,16 +35,21 @@ struct RenderContext {
     // }
 };
 
-class UI_Component 
+class UI_Component
 {
 public:
     std::uint8_t id = 0;
-    CellPosition anchor = {0,0};
+    CellPosition anchor = {0, 0};
     ComponentBluePrint bluePrint;
 
-    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
-    
-    virtual void Draw(const RenderContext&) const;
+    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+
+    virtual void Draw(const RenderContext &) const;
+
+    void DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const;
+
+protected:
+    void DrawStandardSockets(const RenderContext &rc, float padding_cm) const;
 };
 
 namespace UI_Components
@@ -52,20 +57,25 @@ namespace UI_Components
     class VirtualCameraUI : public UI_Component
     {
     public:
-        VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
-        virtual void Draw(const RenderContext&) const override; 
+        VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+        virtual void Draw(const RenderContext &) const override;
+        void DrawStandardComponentBox(const RenderContext &rc) const;
     };
 
     class SP_CONVOLUTIONUI : public UI_Component
     {
     public:
-        SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint& bluePrint_ );
-        virtual void Draw(const RenderContext&) const override; 
+        SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+        virtual void Draw(const RenderContext &) const override;
     };
+
+    class IMG_IMG_IMG_OPERATIONUI : public UI_Component
+    {
+    public:
+        IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+        virtual void Draw(const RenderContext &) const override;
+    };
+
 }
-
-
-
-
 
 #endif
