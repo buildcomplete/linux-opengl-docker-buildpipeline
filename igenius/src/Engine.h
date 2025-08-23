@@ -20,7 +20,7 @@ class Engine
 public:
     Engine();
     void Init();
-    void UpdateTimeSlice();
+    void HandleEvents();
     void Render();
     void RandomTestDrawings();
     void Shutdown();
@@ -34,9 +34,8 @@ private:
 	CoordinateHelper coordinateHelper;
 	Engine_NetworkDrawingManager networkDrawingManager;
 	Canvas canvas;
-    Texture wabbit;
     Texture cameraTexture;
-	void HandleStateChanges();
+	void InjectStateChanges();
 	
     StateContext stateContext;
     NavigationContext navigationContext;

@@ -11,7 +11,7 @@
 class Engine_StateManager
 {
 public:
-    StateContext UpdateFromInput();
+    StateContext HandleEvents();
 private:
    StateContext state;
 };

@@ -10,12 +10,7 @@ Engine::Engine()
 void Engine::Init()
 {
 	// Load a texture from the resources directory
-	wabbit = LoadTexture("wabbit_alpha.png");
     cameraTexture = LoadTexture("game_camera_transparent2.png");
- 
-    // navigator = Navigator();
-	// coordinateHelper = CoordinateHelper();
-	// stateManager = IG_Engine_StateManager();
 
      // Define input components
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::UNDEFINED), 1, 1);
@@ -26,11 +21,11 @@ void Engine::Init()
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 9);
 }
 
-void Engine::UpdateTimeSlice()
+void Engine::HandleEvents()
 {
-    stateContext = stateManager.UpdateFromInput();
-	navigationContext = navigator.SyncWithState(stateContext, coordinateHelper.pixPr_cm);
-    HandleStateChanges();
+    stateContext = stateManager.HandleEvents();
+	navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
+    InjectStateChanges();
 
     canvas.Update();
 }
@@ -82,9 +77,6 @@ void Engine::Render()
 
 void Engine::RandomTestDrawings()
 {
-    // draw our texture to the screen
-    DrawTexture(wabbit, 400, 200, WHITE);
-
     Vector2 points[5] = {
         {-10.0f, -10.0f},
         {-10.0f, 10.0f},
@@ -98,7 +90,7 @@ void Engine::Shutdown()
 {
     // cleanup
 	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
+	UnloadTexture(cameraTexture);
 
     // destroy the window and cleanup the OpenGL context
 	CloseWindow();
@@ -114,11 +106,11 @@ Engine::~Engine()
 	
 }
 
-void Engine::HandleStateChanges()
+void Engine::InjectStateChanges()
 {
     if (stateContext.DidEnterState(IG_MOUSE_MODE_NETWORK))
     {
-        networkDrawingManager.StartNewNetwork();
+        networkDrawingManager.StartDrawing();
     }
 
     if (stateContext.DidExitState(IG_MOUSE_MODE_NETWORK))

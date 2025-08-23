@@ -13,7 +13,7 @@ class Engine_NetworkDrawingManager
 {
 public:
     void Draw(const NavigationContext& navC, const RenderContext& rc, const StateContext& sc);
-    void StartNewNetwork();
+    void StartDrawing();
     void CompleteDrawing(Canvas &canvas);
     void AddAnchorPoint(const NavigationContext &frameCoord, float pixPr_cm);
 

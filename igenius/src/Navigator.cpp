@@ -15,7 +15,7 @@ Navigator::Navigator()
     DisableCursor();
 }
 
-NavigationContext Navigator::SyncWithState(StateContext& sc, float pixPr_cm_)
+NavigationContext Navigator::HandleEvents(StateContext& sc, float pixPr_cm_)
 {
     pixPr_cm = pixPr_cm_;
     if ( sc.DidEnterState(IG_MOUSE_SCREEN_DRAGGING))

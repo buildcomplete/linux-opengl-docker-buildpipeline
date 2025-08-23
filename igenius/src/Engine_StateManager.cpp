@@ -1,7 +1,7 @@
 #include "Engine_StateManager.h"
 #include <raylib.h>
 
-StateContext Engine_StateManager::UpdateFromInput()
+StateContext Engine_StateManager::HandleEvents()
 {
     MOUSE_MODE_FLAGS targetState = IG_MOUSE_ZERO;
     targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_SPACE)) ? IG_MOUSE_SCREEN_DRAGGING : IG_MOUSE_ZERO));

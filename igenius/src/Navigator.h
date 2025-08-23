@@ -17,7 +17,7 @@ class Navigator {
     public:
 
         Navigator();
-        NavigationContext SyncWithState(StateContext &sc, float pixPr_cm_);
+        NavigationContext HandleEvents(StateContext &sc, float pixPr_cm_);
         void DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas);
         void DrawCursorScreenGuide(const StateContext &sc);
         Camera2D camera = { 0 };

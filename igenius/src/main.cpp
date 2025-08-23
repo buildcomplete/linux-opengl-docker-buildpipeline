@@ -36,7 +36,7 @@ int main ()
 	// game loop
 	while (!engine.ShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		engine.UpdateTimeSlice();
+		engine.HandleEvents();
 		engine.Render();
 	}
 

@@ -53,7 +53,7 @@ void Engine_NetworkDrawingManager::Draw(const NavigationContext& navCtx, const R
     }
 }
 
-void Engine_NetworkDrawingManager::StartNewNetwork()
+void Engine_NetworkDrawingManager::StartDrawing()
 {
     // when starting network mode, reset current drawing state (or connect to existing network later on...)
     drawnNetwork.clear();
