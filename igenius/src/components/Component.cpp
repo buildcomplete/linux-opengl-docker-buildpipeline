@@ -138,7 +138,10 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
     
     if (isCapturing)
     {
-        DrawRectangle(x0, y0, wp,hp, ELECTRIC_BLUE );
+        float pad = rc.CmToPixel(0.3);
+        float padX = rc.CmToPixel(0.1);
+        const Color electricBlueTransparant = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 50};
+        DrawRectangle(x0+pad+padX, y0+pad, wp-2*pad,hp-2*pad, electricBlueTransparant );
     }
 
 
