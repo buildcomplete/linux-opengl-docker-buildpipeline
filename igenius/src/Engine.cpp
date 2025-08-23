@@ -126,6 +126,15 @@ void Engine::InjectStateChanges()
         //     // Why do I currently need to be able to select objects?
         //     // If I should be able to set properties etc dynamically, I should probably add some UI library
         // }
+        auto info = canvas.GetCellInfo(navigationContext.mousePosWorldGrid);
+        if (info.componentId != 0)
+        {
+            RenderContext rc = {
+                coordinateHelper.pixPr_cm, 
+                cameraTexture
+            };
+            canvas.GetComponent(info.componentId)->TryStartCommand(stateContext, navigationContext, rc);
+        }
 
         // Send network command, begin new, select and existing, expand network
         if (stateContext.IsInState(IG_MOUSE_MODE_NETWORK))

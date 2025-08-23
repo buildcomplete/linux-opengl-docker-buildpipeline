@@ -30,6 +30,7 @@ typedef enum : std::uint32_t
     IG_MOUSE_TRY_COMMAND			= 1 << 3, // 8
     IG_MOUSE_POSITION_COMPONENT 	= 1 << 4, // 16
     IG_MOUSE_DELETE                 = 1 << 5, // 32
+    IG_MOUSE_APPLYING_COMMAND       = 1 << 6 // 64
 
 } MOUSE_MODE_FLAGS;
 

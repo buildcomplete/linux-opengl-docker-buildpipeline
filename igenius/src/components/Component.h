@@ -36,6 +36,11 @@ public:
 
     virtual void Draw(const RenderContext &) const;
 
+    // Handles when the user start a new command over a component,
+    // Thew component might or might not react to it,
+    // if it react, it should return true **transfering** the mouse controll to the component
+    virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx);
+
     void DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const;
 
 protected:

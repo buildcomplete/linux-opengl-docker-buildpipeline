@@ -107,7 +107,7 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
     return true;
 }
 
-// Sets grid cell values, notice, this fellow do not perform boundaris checks and assumes the where checed elsewhere
+// Sets grid cell values, notice, this fellow do not perform boundary checks and assumes the where checed elsewhere
 void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id)
 {
     int x0 = std::max(0, (int)cellX); // inclusive
@@ -124,6 +124,7 @@ void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t
     }
 }
 
+// Transform a sequence of network anchor point into all the sections in the grid
 std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints)
 {
     if (anchorPoints.size() < 2)
@@ -156,6 +157,7 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
     
 }
 
+// This should be in the networkDrawingManager, canvas should just update the cells.
 NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::uint8_t id)
 {
     if (samples.size() < 2)
@@ -251,6 +253,10 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     return true;
 }
 
+GridContentInfo Canvas::GetCellInfo(CellPosition cp) const
+{
+    return GetCellInfo(cp.x, cp.y);
+}
 GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
 {
     if (cellX < 0 || cellY < 0 || cellX > 255 || cellY > 255)

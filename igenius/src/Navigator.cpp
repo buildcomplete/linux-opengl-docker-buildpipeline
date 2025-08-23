@@ -51,11 +51,10 @@ NavigationContext Navigator::HandleEvents(StateContext& sc, float pixPr_cm_)
     Vector2 mwp = GetScreenToWorld2D(gameMousePos, camera);
     context = { 
         gameMousePos, // mousePosScreenPixel
-        mwp, //mousePosWorldCm
-        { // mousePosWorldGrid
-            (int)(mwp.x / pixPr_cm),
-            (int)(mwp.y / pixPr_cm)
-        }};
+        mwp, //mousePosWorldPixels
+        {mwp.x/pixPr_cm,mwp.y/pixPr_cm},  //mousePosWorldCm,
+        { (int)(mwp.x / pixPr_cm), (int)(mwp.y / pixPr_cm)} // mousePosWorldGrid
+    };
     return context;
 }
 
@@ -64,7 +63,7 @@ void Navigator::DrawCursorWorldGuide(const  StateContext& sc, const Canvas& canv
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
-    Vector2 worldPos = context.mousePosWorldCm;
+    Vector2 worldPos = context.mousePosWorldPixels;
     CellPosition cPos =  context.mousePosWorldGrid;
     Vector2 quantifiedCenter =  { cPos.x * pixPr_cm, cPos.y * pixPr_cm };
 

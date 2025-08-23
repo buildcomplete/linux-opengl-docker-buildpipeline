@@ -59,7 +59,8 @@ public:
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc);
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
-    std::unique_ptr<UI_Component> components[256]; 
+    std::unique_ptr<UI_Component> components[256];
+    GridContentInfo GetCellInfo(CellPosition cp) const;
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
     UI_Component* GetComponent(int id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);

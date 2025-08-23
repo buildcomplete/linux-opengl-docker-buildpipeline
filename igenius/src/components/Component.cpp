@@ -76,6 +76,15 @@ void UI_Component::Draw(const RenderContext &rc) const
     DrawStandardSockets(rc, padding_cm);
 }
 
+bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationContext& navCtx, const RenderContext& rndCtx)
+{
+    Vector2 offset = Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
+    std::cout << "Clicked component: " << id << " mousePosWorldCm: " << navCtx.mousePosWorldCm.x << ", " << navCtx.mousePosWorldCm.y << std::endl;
+    std::cout << "Clicked component: " << id << " anchor: " << anchor.x << ", " << anchor.y << std::endl;
+    std::cout << "Clicked component: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
+    return false;
+}
+
 void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const
 {
     int xp = rc.CmToPixel(anchor.x + padding_cm);

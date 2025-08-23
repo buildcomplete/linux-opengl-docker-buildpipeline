@@ -7,6 +7,7 @@
 struct NavigationContext
 {
     Vector2 mousePosScreenPixel;
+    Vector2 mousePosWorldPixels;
     Vector2 mousePosWorldCm;
     CellPosition mousePosWorldGrid;
 };
