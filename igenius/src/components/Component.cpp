@@ -135,7 +135,13 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
     float y0 = rc.CmToPixel(anchor.y);
     float wp = rc.CmToPixel(bluePrint.Width);
     float hp = rc.CmToPixel(bluePrint.Height);
-    //DrawTexture(cameraTexture, 200, 300, WHITE);
+    
+    if (isCapturing)
+    {
+        DrawRectangle(x0, y0, wp,hp, ELECTRIC_BLUE );
+    }
+
+
     DrawTexturePro(rc.cameraTexture, 
         {(float)0,(float)0,(float)rc.cameraTexture.width, (float)rc.cameraTexture.height},  
         {x0, y0, wp, hp},
@@ -143,7 +149,16 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
         0,
         WHITE);
 
+    
     DrawStandardSockets(rc, 0);
+}
+
+bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx)
+{
+    Vector2 offset = Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
+    std::cout << "Clicked camera: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
+    isCapturing = !isCapturing;
+    return false;
 }
 
 UI_Components::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
