@@ -32,7 +32,7 @@
 // };
 
 // Reference to actual object ids.
-// This we need 255 * 2 of
+// This we need 255  of
 struct GridContentInfo
 {
     std::uint8_t componentId;
@@ -55,7 +55,6 @@ class Canvas
 {
 public:
     Canvas();
-    void Update();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
     void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc);
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);

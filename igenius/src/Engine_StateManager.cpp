@@ -15,3 +15,12 @@ StateContext Engine_StateManager::HandleEvents()
     return state;
 }
 
+void Engine_StateManager::SetFocusComponent(UI_Component *c)
+{
+    focusedComponent = c;
+}
+
+UI_Component* Engine_StateManager::GetFocusComponent()
+{
+    return focusedComponent;
+}

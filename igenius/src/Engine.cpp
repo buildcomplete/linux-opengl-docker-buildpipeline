@@ -18,6 +18,7 @@ void Engine::Init()
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::SP_CONVOLUTION), 4, 7);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::SP_CONVOLUTION), 4, 9);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 5);
+    canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 9);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::DRAWING_COMPONENT), 2, 1);
 }
 
@@ -25,9 +26,18 @@ void Engine::HandleEvents()
 {
     stateContext = stateManager.HandleEvents();
 	navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
+    
+    auto c = stateManager.GetFocusComponent();
+    if (c != nullptr)
+    {
+        bool keepFocus = c->HandleEventsWhileFocused(stateContext, navigationContext);
+        if (!keepFocus)
+        {
+            stateManager.SetFocusComponent(nullptr);
+        }
+    }
+    
     InjectStateChanges();
-
-    canvas.Update();
 }
 
 void Engine::Render()
@@ -133,11 +143,13 @@ void Engine::InjectStateChanges()
             auto info = canvas.GetCellInfo(navigationContext.mousePosWorldGrid);
             if (info.componentId != 0)
             {
-                RenderContext rc = {
-                    coordinateHelper.pixPr_cm, 
-                    cameraTexture
-                };
-                canvas.GetComponent(info.componentId)->TryStartCommand(stateContext, navigationContext, rc);
+                {
+                    auto c = canvas.GetComponent(info.componentId);
+                    if (c->TryStartCommand(stateContext, navigationContext))
+                    {
+                        stateManager.SetFocusComponent(c);
+                    }
+                }
             }
         }
         if (stateContext.IsInState(IG_MOUSE_MODE_NETWORK))

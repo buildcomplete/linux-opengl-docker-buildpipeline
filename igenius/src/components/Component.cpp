@@ -99,13 +99,23 @@ Vector2 UI_Component::GetCursorOffset( const NavigationContext& navCtx)
     return  Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
 }
 
-bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationContext& navCtx, const RenderContext& rndCtx)
+bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationContext& navCtx)
 {
     Vector2 offset =GetCursorOffset(navCtx);
     std::cout << "Clicked component: " << id << " mousePosWorldCm: " << navCtx.mousePosWorldCm.x << ", " << navCtx.mousePosWorldCm.y << std::endl;
     std::cout << "Clicked component: " << id << " anchor: " << anchor.x << ", " << anchor.y << std::endl;
     std::cout << "Clicked component: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
     return false;
+}
+
+bool UI_Component::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
+{
+   // Put code in these overrrides to to hanle events, including keypresses etc.
+   // it would be nice to abstract away keypresses into named actions...
+   // Those named actions are actually the stateContext, flipped
+   // return true to keep focus for events, return false to release focus, 
+   // this method will not be called again before the same component returns true after TryStartCommand
+   return false;
 }
 
 void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const
@@ -178,7 +188,7 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
     DrawStandardSockets(rc, 0);
 }
 
-bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx)
+bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     Vector2 offset = Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
     std::cout << "Clicked camera: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
@@ -287,10 +297,44 @@ void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc) const
     {
         DrawLineStripCMPro(&strokes[0], strokes.size(), WHITE, rc.pixPr_cm, {(float)anchor.x, (float)anchor.y});
     }
+
+    if (strokes.size() > 0 && isDrawing)
+    {
+        DrawLineStripCMPro(&currentMouseMove[0], 2, YELLOW, rc.pixPr_cm, {(float)anchor.x, (float)anchor.y});
+    }
+
+    for (auto p : strokes)
+    {
+        DrawCircleLines(rc.CmToPixel( anchor.x+ p.x), rc.CmToPixel( anchor.y+ p.y), rc.pixPr_cm/8.0f, YELLOW); 
+    }
 }
 
-bool UI_Components::DrawingSurfaceComponent::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx)
+bool UI_Components::DrawingSurfaceComponent::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
-    strokes.push_back(GetCursorOffset(navCtx));
+    currentMouseMove[0] = GetCursorOffset(navCtx);
+    currentMouseMove[1] = currentMouseMove[0];
+    strokes.push_back(currentMouseMove[0]);
+    isDrawing=true;
+    return true;
+}
+
+bool UI_Components::DrawingSurfaceComponent::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
+{
+    if (IsKeyPressed(KEY_C))
+    {
+        strokes.clear();
+        isDrawing=false;
+        return false;
+    }
+
+    if (IsKeyPressed(KEY_S))
+    {
+        // SAve strokes, exit dedicated controll
+        isDrawing=false;
+        return false;
+    }
+    
+    currentMouseMove[1] = Vector2Min({(float)bluePrint.Width,(float)bluePrint.Width}, GetCursorOffset(navCtx));
+    
     return true;
 }

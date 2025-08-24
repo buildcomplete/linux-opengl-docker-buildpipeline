@@ -57,21 +57,7 @@ bool Canvas::AddComponent(const ComponentBluePrint& bluePrint, unsigned char cel
     return true;
 }
 
-void Canvas::Update()
-{
-    // Update location of mouse according to screen, gameworld in Component and network coordinates
 
-    // Perform detection of what objects are selected
-}
-
-// Select / deselect component
-// Multiple components can be selected
-// We could, read the state here, and handle the logic
-// Or we could manage that outside in the engine, and just inform when an event occured
-// centralized or decentralized...
-void ToggleComponent()
-{
-}
 
 void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const StateContext& sc)
 {
@@ -238,8 +224,6 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     {
         gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = id;
     }
-
-   
 
     // store anchore points
     networks.push_back(std::vector<CellPosition>(anchorPoints));

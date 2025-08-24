@@ -1,7 +1,8 @@
 #ifndef ENGINE_STATEMANAGER_H
 #define ENGINE_STATEMANAGER_H
 #include "IG_types.h"
-    #include "context/StateContext.h"
+#include "context/StateContext.h"
+#include "components/Component.h"
 
 
 /**
@@ -12,8 +13,12 @@ class Engine_StateManager
 {
 public:
     StateContext HandleEvents();
+    void SetFocusComponent(UI_Component* c);
+    UI_Component* GetFocusComponent();
+
 private:
    StateContext state;
+   UI_Component* focusedComponent = nullptr;
 };
 
 
