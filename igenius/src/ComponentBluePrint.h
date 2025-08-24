@@ -7,11 +7,11 @@
 
 typedef enum : std::int32_t
 {
-    // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
     UNDEFINED = 0,
-    VIRTUAL_CAMERA = 1,
+    VIRTUAL_CAMERA = 1, // read from a folder, but inputs defined from code, not ui, behaves like a simple camera (start / stop)
     SP_CONVOLUTION = 2,
     IMG_IMG_IMG_OPERATION = 3,
+    DRAWING_COMPONENT = 4, // Special component to make drawings to use on the components as strokes
 } CMPNAMES;
 
 struct IOSpec

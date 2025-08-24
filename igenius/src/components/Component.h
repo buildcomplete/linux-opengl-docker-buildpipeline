@@ -36,6 +36,8 @@ public:
 
     virtual void Draw(const RenderContext &) const;
 
+    Vector2 GetCursorOffset(const NavigationContext &navCtx);
+
     // Handles when the user start a new command over a component,
     // Thew component might or might not react to it,
     // if it react, it should return true **transfering** the mouse controll to the component
@@ -54,7 +56,6 @@ namespace UI_Components
     public:
         VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
         virtual void Draw(const RenderContext &) const override;
-        void DrawStandardComponentBox(const RenderContext &rc) const;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx) override;
     private:
         bool isCapturing = false;
@@ -72,6 +73,16 @@ namespace UI_Components
     public:
         IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
         virtual void Draw(const RenderContext &) const override;
+    };
+
+    class DrawingSurfaceComponent : public UI_Component
+    {
+    public:
+        DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+        virtual void Draw(const RenderContext &) const override;
+        virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx) override;
+    private:
+        std::vector<Vector2> strokes;
     };
 
 }

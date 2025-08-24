@@ -3,6 +3,24 @@
 #include <algorithm>
 #include "rshapes.c"
 
+// Small copy paste from raylib to support drawing line segments in cm space with offset
+// Draw lines sequence (using gl lines)
+static void DrawLineStripCMPro(const Vector2 *points, int pointCount, Color color, float pixPr_cm, const Vector2 offsetCm)
+{
+    if (pointCount < 2)
+        return; // Security check
+
+    rlBegin(RL_LINES);
+    rlColor4ub(color.r, color.g, color.b, color.a);
+
+    for (int i = 0; i < pointCount - 1; i++)
+    {
+        rlVertex2f((offsetCm.x + points[i].x) * pixPr_cm, (offsetCm.y + points[i].y) * pixPr_cm );
+        rlVertex2f((offsetCm.x+points[i + 1].x) * pixPr_cm, (offsetCm.y+points[i + 1].y) * pixPr_cm);
+    }
+    rlEnd();
+}
+
 // Mod of DrawCircleSectorLines as I dont wont the cap,
 // 
 // Draw a piece of a circle outlines
@@ -76,9 +94,14 @@ void UI_Component::Draw(const RenderContext &rc) const
     DrawStandardSockets(rc, padding_cm);
 }
 
+Vector2 UI_Component::GetCursorOffset( const NavigationContext& navCtx) 
+{
+    return  Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
+}
+
 bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationContext& navCtx, const RenderContext& rndCtx)
 {
-    Vector2 offset = Vector2Subtract( navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
+    Vector2 offset =GetCursorOffset(navCtx);
     std::cout << "Clicked component: " << id << " mousePosWorldCm: " << navCtx.mousePosWorldCm.x << ", " << navCtx.mousePosWorldCm.y << std::endl;
     std::cout << "Clicked component: " << id << " anchor: " << anchor.x << ", " << anchor.y << std::endl;
     std::cout << "Clicked component: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
@@ -144,7 +167,6 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
         DrawRectangle(x0+pad+padX, y0+pad, wp-2*pad,hp-2*pad, electricBlueTransparant );
     }
 
-
     DrawTexturePro(rc.cameraTexture, 
         {(float)0,(float)0,(float)rc.cameraTexture.width, (float)rc.cameraTexture.height},  
         {x0, y0, wp, hp},
@@ -173,7 +195,7 @@ UI_Components::IMG_IMG_IMG_OPERATIONUI::IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_
 
 void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
 {
-   const float padding_cm = 0.1f;
+    const float padding_cm = 0.1f;
     int xp = rc.CmToPixel(anchor.x + padding_cm);
     int yp = rc.CmToPixel(anchor.y+0.5f);
     int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
@@ -249,4 +271,26 @@ void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc) const
     DrawCircleSelectorLines({cx,cy}, rc.pixPr_cm*0.75f, 90+t, 270+t, 1, WHITE );
 }
 
+UI_Components::DrawingSurfaceComponent::DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+     : UI_Component(id_, anchor_, bluePrint_) {}
 
+void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc) const
+{
+    const float padding_cm = 0.0f;
+    int xp = rc.CmToPixel(anchor.x + padding_cm);
+    int yp = rc.CmToPixel(anchor.y);
+    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
+    int hp = rc.CmToPixel(bluePrint.Height);
+    DrawRectangleLines(xp + 1, yp + 1, wp - 2, hp - 2, ELECTRIC_BLUE);
+
+    if (strokes.size() > 1)
+    {
+        DrawLineStripCMPro(&strokes[0], strokes.size(), WHITE, rc.pixPr_cm, {(float)anchor.x, (float)anchor.y});
+    }
+}
+
+bool UI_Components::DrawingSurfaceComponent::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx, const RenderContext &rndCtx)
+{
+    strokes.push_back(GetCursorOffset(navCtx));
+    return true;
+}
