@@ -86,6 +86,8 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
         
         float deltaV = 360.0f / (float)segments;
 
+        std::string exampleSymbols = "+-/x|:";
+
         char buffer[100];
         sprintf(buffer, "Segments: %d DeltaVL %f", segments, deltaV );
         DrawText(buffer, 20,60,20,WHITE);
@@ -108,13 +110,17 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
                 p3y = sinf(DEG2RAD*endAngle)*r2Px,
                 p4x = cosf(DEG2RAD*startAngle)*r2Px, 
                 p4y = sinf(DEG2RAD*startAngle)*r2Px;
+            
+            // Draw line between the inner and outer radius
+            DrawLine(p1x, p1y, p4x, p4y, WHITE);
+            DrawLine(p2x, p2y, p3x, p3y, WHITE);
 
+            // Draw segments defining each outer radius
             for (int ii=0;ii<subSegments;++ii)
             {
                 float startAngle2 = startAngle + subAngle * (float)ii;
                 float endAngle2 = startAngle  + subAngle * (float)(ii+1);
-                
-                
+
                 float 
                     pp1x = cosf(DEG2RAD*startAngle2)*r1Px, 
                     pp1y = sinf(DEG2RAD*startAngle2)*r1Px,
@@ -128,11 +134,18 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
                 DrawLine(pp3x, pp3y, pp4x, pp4y, WHITE);
 
             }
-            sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
-            DrawText(buffer, -220,80+20*i,20,WHITE);
+            //sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
+            //DrawText(buffer, -220,80+20*i,20,WHITE);
+           
+            float 
+                tx = cosf(DEG2RAD*(startAngle + deltaV/2.0f))*(r1Px+r2Px)/2.0, 
+                ty = sinf(DEG2RAD*(startAngle + deltaV/2.0f))*(r1Px+r2Px)/2.0;
+            sprintf(buffer, "%c", exampleSymbols[i % exampleSymbols.length()] );
+            int fSize = 120;
+            int tw = MeasureText(buffer, fSize);
+            DrawText(buffer, tx-tw/2, ty-fSize/2, fSize, NETGREEN);
             
-            DrawLine(p1x, p1y, p4x, p4y, WHITE);
-            DrawLine(p2x, p2y, p3x, p3y, WHITE);
+            
         }
     }
 }
