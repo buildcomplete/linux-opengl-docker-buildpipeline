@@ -21,8 +21,7 @@ static void DrawLineStripCMPro(const Vector2 *points, int pointCount, Color colo
     rlEnd();
 }
 
-// Mod of DrawCircleSectorLines as I dont wont the cap,
-// 
+// Mod of DrawCircleSectorLines as I dont wont to draw a kind of thumb button
 // Draw a piece of a circle outlines
 void DrawCircleSelectorLines(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color)
 {
@@ -338,3 +337,13 @@ bool UI_Components::DrawingSurfaceComponent::HandleEventsWhileFocused(const Stat
     
     return true;
 }
+
+//UI_Selectors::DrawRadialMenu(const Vector2 center, float rStart, float rend, std::vector<std::fun
+
+
+void UI_Selector::BeginExpand()
+{
+    startExpansionTime = GetTime();
+    animState = UI_ANIM_STATE::UITEM_EXPANDING;
+}
+

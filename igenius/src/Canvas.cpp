@@ -70,6 +70,57 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
     {
         Canvas::DrawNetworkSegment(networks[i], sc, rc.pixPr_cm);
     }
+
+    // HACK TEST OF DRAWING RADIAL MENU
+    {
+        static int segments = 4;
+        float r1CM = 10; // Perhaps should be a function of screen size ?
+        float r1Px = rc.CmToPixel(r1CM);
+        float r2CM = 3; // Perhaps should be a function of screen size ?
+        float r2Px = rc.CmToPixel(r2CM);
+        
+        if (IsKeyPressed(KEY_EQUAL))
+            segments++;
+        if (IsKeyPressed(KEY_MINUS))
+            segments--;
+        
+        float deltaV = 360.0f / (float)segments;
+
+        char buffer[100];
+        sprintf(buffer, "Segments: %d DeltaVL %f", segments, deltaV );
+        DrawText(buffer, 20,60,20,WHITE);
+
+
+        //int subSegments = floor(18.0/segments)+1;
+
+        // Calculate segment bounds, zero centered, so offset should be added when drawing.
+        for (int i=0; i< segments; ++i)
+        {
+            float startAngle = (float)i * deltaV;
+            float endAngle = startAngle + deltaV;
+            float midAngle = (startAngle + endAngle)/2.0f;
+            float 
+                p1x = cosf(DEG2RAD*startAngle)*r1Px, 
+                p1y = sinf(DEG2RAD*startAngle)*r1Px,
+                p12x = cosf(DEG2RAD*midAngle)*r1Px, 
+                p12y = sinf(DEG2RAD*midAngle)*r1Px,
+                p2x = cosf(DEG2RAD*endAngle)*r1Px, 
+                p2y = sinf(DEG2RAD*endAngle)*r1Px,
+                p3x = cosf(DEG2RAD*endAngle)*r2Px, 
+                p3y = sinf(DEG2RAD*endAngle)*r2Px,
+                p4x = cosf(DEG2RAD*startAngle)*r2Px, 
+                p4y = sinf(DEG2RAD*startAngle)*r2Px;
+
+            sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
+            DrawText(buffer, -220,80+20*i,20,WHITE);
+            
+            DrawLine(p1x, p1y, p12x, p12y, WHITE);
+            DrawLine(p12x, p12y, p2x, p2y, WHITE);
+            DrawLine(p2x, p2y, p3x, p3y, WHITE);
+            DrawLine(p3x, p3y, p4x, p4y, WHITE);
+            DrawLine(p4x, p4y, p1x, p1y, WHITE);
+        }
+    }
 }
 
 bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY)

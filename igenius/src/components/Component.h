@@ -12,6 +12,9 @@
 #include "context/NavigationContext.h"
 #include "context/RenderContext.h"
 #include "context/StateContext.h"
+#include <functional>
+#include <cstdint>
+
 
 
 // class Component
@@ -88,7 +91,42 @@ namespace UI_Components
         Vector2 currentMouseMove[2] = {0};
         bool isDrawing = false;
     };
-
 }
+
+typedef enum : std::uint8_t
+{
+    UITEM_CLOSED,
+    UITEM_EXPANDING,
+    UITEM_OPEN,
+    UITEM_CLOSING
+} UI_ANIM_STATE;
+
+class UI_Selector
+{
+private:
+	double transitionTime = 1.0; // time in second for open/close animation
+	double startExpansionTime;
+	UI_ANIM_STATE animState = UI_ANIM_STATE::UITEM_CLOSED;
+public:
+	virtual void Draw(); // Draws the components
+	virtual void BeginExpand(); // Start expanding a menu item.
+};
+
+class UI_RadialMenu : public UI_Selector
+{
+
+protected:
+    int DrawRadialMenu(const Vector2& center, float radiusStart, float radiusEnd, std::vector<std::function<void()>> menuDrawingFunctions);
+};
+
+class UI_RadialMenuConvolution
+{
+
+};
+
+class UI_RadialMenuDrawingComponent : public UI_Selector
+{
+	virtual void Draw();
+};
 
 #endif

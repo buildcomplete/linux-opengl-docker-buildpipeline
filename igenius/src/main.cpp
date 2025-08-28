@@ -9,14 +9,20 @@ IG Host loop
 void InitRaylibWindow()
 {
 	// Tell the window to use vsync and work on high DPI displays
-	//SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI | FLAG_FULLSCREEN_MODE);
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI );
+	//SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
-	//int screenWidth = GetMonitorWidth(0), screenHeight = GetMonitorHeight(0);
-	int screenWidth = 640, screenHeight = 480;
+	SetWindowMonitor(1);
+	int screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
+	//int screenWidth = 640, screenHeight = 480;
 
 	// Create the window and OpenGL context
 	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
+	
+	screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
+	SetWindowPosition(100, 100);
+	SetWindowMonitor(1);
+	ToggleFullscreen();
 
 	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
 
