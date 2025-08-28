@@ -75,9 +75,9 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
     {
         Vector2 origoCM = {0,0};
         static int segments = 4;
-        float r1CM = 10; // Perhaps should be a function of screen size ?
+        float r1CM = 7; // Perhaps should be a function of screen size ?
         float r1Px = rc.CmToPixel(r1CM);
-        float r2CM = 3; // Perhaps should be a function of screen size ?
+        float r2CM = 2; // Perhaps should be a function of screen size ?
         float r2Px = rc.CmToPixel(r2CM);
         
         if (IsKeyPressed(KEY_EQUAL))
@@ -105,12 +105,25 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
         sprintf(buffer, "Segments: %.1d DeltaVL %.1f MouseAngle: %.1f", segments, deltaV, mouseAngle );
         DrawText(buffer, 20,60,20,WHITE);
 
+        float gapPx = rc.CmToPixel(0.2f);
+        float gapDegR1 = (gapPx / r1Px) * RAD2DEG;// Angular gap in degrees
+        float gapDegR2 = (gapPx / r2Px) * RAD2DEG;// Angular gap in degrees
+
         // Calculate segment bounds, zero centered, so offset should be added when drawing.
         for (int i=0; i< segments; ++i)
         {
-            float startAngle = (float)i * deltaV;
-            float endAngle = startAngle + deltaV;
-            float subAngle = (endAngle-startAngle) / subSegments;
+            float startAngleReal = (float)i * deltaV;
+            float endAngleReal = startAngleReal + deltaV;
+            
+            // Inset by half the gap on each side
+            float startAngleR1 = startAngleReal + gapDegR1 * 0.5f;
+            float endAngleR1 = endAngleReal - gapDegR1 * 0.5f;
+            float subAngleR1 = (endAngleR1-startAngleR1) / subSegments;
+            
+            float startAngleR2 = startAngleReal + gapDegR2 * 0.5f;
+            float endAngleR2 = endAngleReal - gapDegR2 * 0.5f;
+            float subAngleR2 = (endAngleR2-startAngleR2) / subSegments;
+            
             Color segmentColor = segmentColors[i%nSegmentColors];
 
             // if (startAngle < mouseAngle && mouseAngle < endAngle  )
@@ -119,14 +132,14 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
             // }
 
             float 
-                p1x = cosf(DEG2RAD*startAngle)*r1Px, 
-                p1y = sinf(DEG2RAD*startAngle)*r1Px,
-                p2x = cosf(DEG2RAD*endAngle)*r1Px, 
-                p2y = sinf(DEG2RAD*endAngle)*r1Px,
-                p3x = cosf(DEG2RAD*endAngle)*r2Px, 
-                p3y = sinf(DEG2RAD*endAngle)*r2Px,
-                p4x = cosf(DEG2RAD*startAngle)*r2Px, 
-                p4y = sinf(DEG2RAD*startAngle)*r2Px;
+                p1x = cosf(DEG2RAD*startAngleR1)*r1Px, 
+                p1y = sinf(DEG2RAD*startAngleR1)*r1Px,
+                p2x = cosf(DEG2RAD*endAngleR1)*r1Px, 
+                p2y = sinf(DEG2RAD*endAngleR1)*r1Px,
+                p3x = cosf(DEG2RAD*endAngleR2)*r2Px, 
+                p3y = sinf(DEG2RAD*endAngleR2)*r2Px,
+                p4x = cosf(DEG2RAD*startAngleR2)*r2Px, 
+                p4y = sinf(DEG2RAD*startAngleR2)*r2Px;
             
             // Draw line between the inner and outer radius
             DrawLine(p1x, p1y, p4x, p4y, segmentColor);
@@ -135,18 +148,20 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
             // Draw segments defining each outer radius
             for (int ii=0;ii<subSegments;++ii)
             {
-                float startAngle2 = startAngle + subAngle * (float)ii;
-                float endAngle2 = startAngle  + subAngle * (float)(ii+1);
+                float startAngle2_R1 = startAngleR1 + subAngleR1 * (float)ii;
+                float endAngle2_R1 = startAngleR1  + subAngleR1 * (float)(ii+1);
+                float startAngle2_R2 = startAngleR2 + subAngleR2 * (float)ii;
+                float endAngle2_R2 = startAngleR2  + subAngleR2 * (float)(ii+1);
 
                 float 
-                    pp1x = cosf(DEG2RAD*startAngle2)*r1Px, 
-                    pp1y = sinf(DEG2RAD*startAngle2)*r1Px,
-                    pp2x = cosf(DEG2RAD*endAngle2)*r1Px, 
-                    pp2y = sinf(DEG2RAD*endAngle2)*r1Px,
-                    pp3x = cosf(DEG2RAD*endAngle2)*r2Px, 
-                    pp3y = sinf(DEG2RAD*endAngle2)*r2Px,
-                    pp4x = cosf(DEG2RAD*startAngle2)*r2Px, 
-                    pp4y = sinf(DEG2RAD*startAngle2)*r2Px;
+                    pp1x = cosf(DEG2RAD*startAngle2_R1)*r1Px, 
+                    pp1y = sinf(DEG2RAD*startAngle2_R1)*r1Px,
+                    pp2x = cosf(DEG2RAD*endAngle2_R1)*r1Px, 
+                    pp2y = sinf(DEG2RAD*endAngle2_R1)*r1Px,
+                    pp3x = cosf(DEG2RAD*endAngle2_R2)*r2Px, 
+                    pp3y = sinf(DEG2RAD*endAngle2_R2)*r2Px,
+                    pp4x = cosf(DEG2RAD*startAngle2_R2)*r2Px, 
+                    pp4y = sinf(DEG2RAD*startAngle2_R2)*r2Px;
                 DrawLine(pp1x, pp1y, pp2x, pp2y, segmentColor);
                 DrawLine(pp3x, pp3y, pp4x, pp4y, segmentColor);
 
@@ -155,8 +170,8 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
             //DrawText(buffer, -220,80+20*i,20,WHITE);
            
             float 
-                tx = cosf(DEG2RAD*(startAngle + deltaV/2.0f))*(r1Px+r2Px)/2.0, 
-                ty = sinf(DEG2RAD*(startAngle + deltaV/2.0f))*(r1Px+r2Px)/2.0;
+                tx = cosf(DEG2RAD*(startAngleR1 + deltaV/2.0f))*(r1Px+r2Px)/2.0, 
+                ty = sinf(DEG2RAD*(startAngleR1 + deltaV/2.0f))*(r1Px+r2Px)/2.0;
             sprintf(buffer, "%c", exampleSymbols[i % exampleSymbols.length()] );
             int fSize = 120;
             int tw = MeasureText(buffer, fSize);
