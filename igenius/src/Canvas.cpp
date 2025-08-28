@@ -73,6 +73,7 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
 
     // HACK TEST OF DRAWING RADIAL MENU
     {
+        Vector2 origoCM = {0,0};
         static int segments = 4;
         float r1CM = 10; // Perhaps should be a function of screen size ?
         float r1Px = rc.CmToPixel(r1CM);
@@ -87,20 +88,36 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
         float deltaV = 360.0f / (float)segments;
 
         std::string exampleSymbols = "+-/x|:";
-
-        char buffer[100];
-        sprintf(buffer, "Segments: %d DeltaVL %f", segments, deltaV );
-        DrawText(buffer, 20,60,20,WHITE);
-
-
+        Color segmentColors[] {RED, GREEN, YELLOW, PURPLE, PINK};
+        int nSegmentColors = 5;
         int subSegments = floor(18.0/segments)+1;
+
+        // Determine segment color based on mouse position.
+        // Calculate if a segment is selected based in angle and radius
+
+        Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
+        float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
+         if (mouseAngle < 0)
+             mouseAngle = 360 + mouseAngle;
+
+        
+        char buffer[100];
+        sprintf(buffer, "Segments: %.1d DeltaVL %.1f MouseAngle: %.1f", segments, deltaV, mouseAngle );
+        DrawText(buffer, 20,60,20,WHITE);
 
         // Calculate segment bounds, zero centered, so offset should be added when drawing.
         for (int i=0; i< segments; ++i)
         {
             float startAngle = (float)i * deltaV;
             float endAngle = startAngle + deltaV;
-            float subAngle = (startAngle-endAngle) / subSegments;
+            float subAngle = (endAngle-startAngle) / subSegments;
+            Color segmentColor = segmentColors[i%nSegmentColors];
+
+            // if (startAngle < mouseAngle && mouseAngle < endAngle  )
+            // {
+            //     segmentColor = NETGREEN;
+            // }
+
             float 
                 p1x = cosf(DEG2RAD*startAngle)*r1Px, 
                 p1y = sinf(DEG2RAD*startAngle)*r1Px,
@@ -112,8 +129,8 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
                 p4y = sinf(DEG2RAD*startAngle)*r2Px;
             
             // Draw line between the inner and outer radius
-            DrawLine(p1x, p1y, p4x, p4y, WHITE);
-            DrawLine(p2x, p2y, p3x, p3y, WHITE);
+            DrawLine(p1x, p1y, p4x, p4y, segmentColor);
+            DrawLine(p2x, p2y, p3x, p3y, segmentColor);
 
             // Draw segments defining each outer radius
             for (int ii=0;ii<subSegments;++ii)
@@ -130,8 +147,8 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
                     pp3y = sinf(DEG2RAD*endAngle2)*r2Px,
                     pp4x = cosf(DEG2RAD*startAngle2)*r2Px, 
                     pp4y = sinf(DEG2RAD*startAngle2)*r2Px;
-                DrawLine(pp1x, pp1y, pp2x, pp2y, WHITE);
-                DrawLine(pp3x, pp3y, pp4x, pp4y, WHITE);
+                DrawLine(pp1x, pp1y, pp2x, pp2y, segmentColor);
+                DrawLine(pp3x, pp3y, pp4x, pp4y, segmentColor);
 
             }
             //sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
