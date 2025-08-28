@@ -91,19 +91,17 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
         DrawText(buffer, 20,60,20,WHITE);
 
 
-        //int subSegments = floor(18.0/segments)+1;
+        int subSegments = floor(18.0/segments)+1;
 
         // Calculate segment bounds, zero centered, so offset should be added when drawing.
         for (int i=0; i< segments; ++i)
         {
             float startAngle = (float)i * deltaV;
             float endAngle = startAngle + deltaV;
-            float midAngle = (startAngle + endAngle)/2.0f;
+            float subAngle = (startAngle-endAngle) / subSegments;
             float 
                 p1x = cosf(DEG2RAD*startAngle)*r1Px, 
                 p1y = sinf(DEG2RAD*startAngle)*r1Px,
-                p12x = cosf(DEG2RAD*midAngle)*r1Px, 
-                p12y = sinf(DEG2RAD*midAngle)*r1Px,
                 p2x = cosf(DEG2RAD*endAngle)*r1Px, 
                 p2y = sinf(DEG2RAD*endAngle)*r1Px,
                 p3x = cosf(DEG2RAD*endAngle)*r2Px, 
@@ -111,14 +109,30 @@ void Canvas::Draw(const NavigationContext& navC, const RenderContext& rc, const 
                 p4x = cosf(DEG2RAD*startAngle)*r2Px, 
                 p4y = sinf(DEG2RAD*startAngle)*r2Px;
 
+            for (int ii=0;ii<subSegments;++ii)
+            {
+                float startAngle2 = startAngle + subAngle * (float)ii;
+                float endAngle2 = startAngle  + subAngle * (float)(ii+1);
+                
+                
+                float 
+                    pp1x = cosf(DEG2RAD*startAngle2)*r1Px, 
+                    pp1y = sinf(DEG2RAD*startAngle2)*r1Px,
+                    pp2x = cosf(DEG2RAD*endAngle2)*r1Px, 
+                    pp2y = sinf(DEG2RAD*endAngle2)*r1Px,
+                    pp3x = cosf(DEG2RAD*endAngle2)*r2Px, 
+                    pp3y = sinf(DEG2RAD*endAngle2)*r2Px,
+                    pp4x = cosf(DEG2RAD*startAngle2)*r2Px, 
+                    pp4y = sinf(DEG2RAD*startAngle2)*r2Px;
+                DrawLine(pp1x, pp1y, pp2x, pp2y, WHITE);
+                DrawLine(pp3x, pp3y, pp4x, pp4y, WHITE);
+
+            }
             sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
             DrawText(buffer, -220,80+20*i,20,WHITE);
             
-            DrawLine(p1x, p1y, p12x, p12y, WHITE);
-            DrawLine(p12x, p12y, p2x, p2y, WHITE);
+            DrawLine(p1x, p1y, p4x, p4y, WHITE);
             DrawLine(p2x, p2y, p3x, p3y, WHITE);
-            DrawLine(p3x, p3y, p4x, p4y, WHITE);
-            DrawLine(p4x, p4y, p1x, p1y, WHITE);
         }
     }
 }
