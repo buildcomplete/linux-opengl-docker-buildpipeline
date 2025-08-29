@@ -56,6 +56,7 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
 
 void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
 {
+    DrawFPS(-200, -200);
     for (const auto &i : inUseComponentKeys)
     {
         components[i]->Draw(rc);
@@ -66,11 +67,17 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
         Canvas::DrawNetworkSegment(networks[i], sc, rc.pixPr_cm);
     }
 
+    static bool enableRadialHack = true;
+    if (IsKeyPressed(KEY_H))
+        enableRadialHack= !enableRadialHack;
+
     // HACK TEST OF DRAWING RADIAL MENU
+    if (enableRadialHack)
     {
         static Vector2 origoCM = {10, 10};
         static int segments = 4;
         static double startTime = GetTime();
+        
 
         if (IsKeyPressed(KEY_EQUAL))
             segments++;
