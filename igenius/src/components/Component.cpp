@@ -328,7 +328,7 @@ bool UI_Components::DrawingSurfaceComponent::HandleEventsWhileFocused(const Stat
 
     if (IsKeyPressed(KEY_S))
     {
-        // SAve strokes, exit dedicated controll
+        // Save strokes, exit dedicated controll
         isDrawing=false;
         return false;
     }
