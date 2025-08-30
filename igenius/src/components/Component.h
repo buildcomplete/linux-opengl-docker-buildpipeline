@@ -131,7 +131,8 @@ public:
 
     // Returns the calculated segment index, -1 if nothing is selected
     static int GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int segments);
-	virtual void Draw();
+    static void DrawRadialMenu(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc, const Vector2 &origoCM, int segments, double startTime, float scale, float rOutCm, float rInCm);
+    virtual void Draw();
 };
 
 #endif

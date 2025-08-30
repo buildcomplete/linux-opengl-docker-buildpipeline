@@ -90,112 +90,12 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
 
         float scale = Lerp(0.1, 1, Clamp(GetTime() - startTime, 0, 0.25) / .25f);
         float rOutCm = 7 * scale; // Perhaps should be a function of screen size ?
-        float gapPx = rc.CmToPixel(0.2f * scale);
+        
         float rInCm = 2 * scale; // Perhaps should be a function of screen size ?
+        UI_RadialMenuDrawingComponent::DrawRadialMenu(navC, rc, sc, origoCM, segments, startTime, scale, rOutCm, rInCm);
 
         // End input parameters
-
-        // Calculate selected segment from mouse/cursor position
-        int selectedSegment = UI_RadialMenuDrawingComponent::GetSelectedSegment(origoCM, navC, rInCm, rOutCm, segments);
-
-        Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
-        float r1Px = rc.CmToPixel(rOutCm);
-        float r2Px = rc.CmToPixel(rInCm);
         
-        float deltaV = 360.0f / (float)segments;
-
-        std::string exampleSymbols = "+-/x|:";
-        Color segmentColors[]{RED, ELECTRIC_BLUE, YELLOW, PURPLE, PINK};
-        int nSegmentColors = 5;
-        int subSegments = floor(18.0 / segments) + 1;
-
-        float gapDegR1 = (gapPx / r1Px) * RAD2DEG; // Angular gap in degrees
-        float gapDegR2 = (gapPx / r2Px) * RAD2DEG; // Angular gap in degrees
-
-        // Calculate segment bounds, zero centered, so offset should be added when drawing.
-        for (int i = 0; i < segments; ++i)
-        {
-            float startAngleReal = (float)i * deltaV;
-            float endAngleReal = startAngleReal + deltaV;
-
-            // Inset by half the gap on each side
-            float startAngleR1 = startAngleReal + gapDegR1 * 0.5f;
-            float endAngleR1 = endAngleReal - gapDegR1 * 0.5f;
-            float subAngleR1 = (endAngleR1 - startAngleR1) / subSegments;
-
-            float startAngleR2 = startAngleReal + gapDegR2 * 0.5f;
-            float endAngleR2 = endAngleReal - gapDegR2 * 0.5f;
-            float subAngleR2 = (endAngleR2 - startAngleR2) / subSegments;
-
-            Color segmentColor = segmentColors[i % nSegmentColors];
-
-
-             char buffer[150];
-            sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", segments, deltaV,  selectedSegment);
-            DrawText(buffer, 20, 60, 20, WHITE);
-
-            //if (startAngleReal < mouseAngle && mouseAngle < endAngleReal && segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
-            if (selectedSegment == i)
-            {
-                segmentColor = NETGREEN;
-            }
-
-            float
-                p1x = cosf(DEG2RAD * startAngleR1) * r1Px,
-                p1y = sinf(DEG2RAD * startAngleR1) * r1Px,
-                p2x = cosf(DEG2RAD * endAngleR1) * r1Px,
-                p2y = sinf(DEG2RAD * endAngleR1) * r1Px,
-                p3x = cosf(DEG2RAD * endAngleR2) * r2Px,
-                p3y = sinf(DEG2RAD * endAngleR2) * r2Px,
-                p4x = cosf(DEG2RAD * startAngleR2) * r2Px,
-                p4y = sinf(DEG2RAD * startAngleR2) * r2Px;
-
-            // Draw line between the inner and outer radius
-            DrawLine(p1x + origoPx.x, p1y + origoPx.y, p4x + origoPx.x, p4y + origoPx.y, segmentColor);
-            DrawLine(p2x + origoPx.x, p2y + origoPx.y, p3x + origoPx.x, p3y + origoPx.y, segmentColor);
-
-            // Draw segments defining each outer radius
-            for (int ii = 0; ii < subSegments; ++ii)
-            {
-                float startAngle2_R1 = startAngleR1 + subAngleR1 * (float)ii;
-                float endAngle2_R1 = startAngleR1 + subAngleR1 * (float)(ii + 1);
-                float startAngle2_R2 = startAngleR2 + subAngleR2 * (float)ii;
-                float endAngle2_R2 = startAngleR2 + subAngleR2 * (float)(ii + 1);
-
-                float
-                    pp1x = cosf(DEG2RAD * startAngle2_R1) * r1Px,
-                    pp1y = sinf(DEG2RAD * startAngle2_R1) * r1Px,
-                    pp2x = cosf(DEG2RAD * endAngle2_R1) * r1Px,
-                    pp2y = sinf(DEG2RAD * endAngle2_R1) * r1Px,
-                    pp3x = cosf(DEG2RAD * endAngle2_R2) * r2Px,
-                    pp3y = sinf(DEG2RAD * endAngle2_R2) * r2Px,
-                    pp4x = cosf(DEG2RAD * startAngle2_R2) * r2Px,
-                    pp4y = sinf(DEG2RAD * startAngle2_R2) * r2Px;
-
-                Vector2 p1 = {pp1x + origoPx.x, pp1y + origoPx.y};
-                Vector2 p2 = {pp2x + origoPx.x, pp2y + origoPx.y};
-                Vector2 p3 = {pp3x + origoPx.x, pp3y + origoPx.y};
-                Vector2 p4 = {pp4x + origoPx.x, pp4y + origoPx.y};
-
-                // Fill quad slice between inner/outer angles
-                DrawTriangle(p1, p3, p2, {segmentColor.r, segmentColor.g, segmentColor.b, 100});
-                DrawTriangle(p1, p4, p3, {segmentColor.r, segmentColor.g, segmentColor.b, 100});
-
-                DrawLine(pp1x + origoPx.x, pp1y + origoPx.y, pp2x + origoPx.x, pp2y + origoPx.y, segmentColor);
-                DrawLine(pp3x + origoPx.x, pp3y + origoPx.y, pp4x + origoPx.x, pp4y + origoPx.y, segmentColor);
-            }
-            // sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
-            // DrawText(buffer, -220,80+20*i,20,WHITE);
-
-            // Text positions
-            float
-                tx = cosf(DEG2RAD * (startAngleR1 + deltaV / 2.0f)) * (r1Px + r2Px) / 2.0 + origoPx.x,
-                ty = sinf(DEG2RAD * (startAngleR1 + deltaV / 2.0f)) * (r1Px + r2Px) / 2.0 + origoPx.y;
-            sprintf(buffer, "%c", exampleSymbols[i % exampleSymbols.length()]);
-            int fSize = (int)ceil(120 * scale);
-            int tw = MeasureText(buffer, fSize);
-            DrawText(buffer, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
-        }
     }
 }
 
