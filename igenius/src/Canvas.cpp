@@ -56,7 +56,6 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
 
 void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
 {
-    DrawFPS(-200, -200);
     for (const auto &i : inUseComponentKeys)
     {
         components[i]->Draw(rc);
@@ -89,14 +88,36 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
             origoCM = navC.mousePosWorldCm;
         }
 
-        Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
         float scale = Lerp(0.1, 1, Clamp(GetTime() - startTime, 0, 0.25) / .25f);
+        float rOutCm = 7 * scale; // Perhaps should be a function of screen size ?
+        float gapPx = rc.CmToPixel(0.2f * scale);
+        float rInCm = 2 * scale; // Perhaps should be a function of screen size ?
 
-        float r1CM = 7 * scale; // Perhaps should be a function of screen size ?
-        float r1Px = rc.CmToPixel(r1CM);
-        float r2CM = 2 * scale; // Perhaps should be a function of screen size ?
-        float r2Px = rc.CmToPixel(r2CM);
+        // End input parameters
 
+        // Calculate selected segment from mouse/cursor position
+        int selectedSegment = -1;
+        
+        {
+            Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
+            float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
+            float
+                segmentDistSQMin = rInCm * rInCm,
+                segmentDistSQMax = rOutCm * rOutCm,
+                cursorOrigoeDistSQ = Vector2DistanceSqr({0, 0}, origoToMouse);
+
+            if (segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
+            {
+                if (mouseAngle < 0)
+                    mouseAngle = 360 + mouseAngle;
+                selectedSegment = (mouseAngle / 360.0) * segments;
+            }        
+        }
+        
+        Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
+        float r1Px = rc.CmToPixel(rOutCm);
+        float r2Px = rc.CmToPixel(rInCm);
+        
         float deltaV = 360.0f / (float)segments;
 
         std::string exampleSymbols = "+-/x|:";
@@ -104,17 +125,6 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
         int nSegmentColors = 5;
         int subSegments = floor(18.0 / segments) + 1;
 
-        // Determine segment color based on mouse position.
-        // Calculate if a segment is selected based in angle and radius
-
-        Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
-        float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
-        if (mouseAngle < 0)
-            mouseAngle = 360 + mouseAngle;
-
-       
-
-        float gapPx = rc.CmToPixel(0.2f * scale);
         float gapDegR1 = (gapPx / r1Px) * RAD2DEG; // Angular gap in degrees
         float gapDegR2 = (gapPx / r2Px) * RAD2DEG; // Angular gap in degrees
 
@@ -134,16 +144,14 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
             float subAngleR2 = (endAngleR2 - startAngleR2) / subSegments;
 
             Color segmentColor = segmentColors[i % nSegmentColors];
-            float
-                segmentDistSQMin = r2CM * r2CM,
-                segmentDistSQMax = r1CM * r1CM,
-                cursorOrigoeDistSQ = Vector2DistanceSqr({0, 0}, origoToMouse);
+
 
              char buffer[150];
-            sprintf(buffer, "Segments: %.1d DeltaVL %.1f MouseAngle: %.1f MouseDSQ: %.1f segmentDistSQMin: %.1f, segmentDistSQMax: %.1f, ", segments, deltaV, mouseAngle, cursorOrigoeDistSQ, segmentDistSQMin, segmentDistSQMax);
+            sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", segments, deltaV,  selectedSegment);
             DrawText(buffer, 20, 60, 20, WHITE);
 
-            if (startAngleReal < mouseAngle && mouseAngle < endAngleReal && segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
+            //if (startAngleReal < mouseAngle && mouseAngle < endAngleReal && segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
+            if (selectedSegment == i)
             {
                 segmentColor = NETGREEN;
             }
