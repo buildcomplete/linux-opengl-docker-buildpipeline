@@ -347,3 +347,20 @@ void UI_Selector::BeginExpand()
     animState = UI_ANIM_STATE::UITEM_EXPANDING;
 }
 
+int UI_RadialMenuDrawingComponent::GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int segments)
+{
+    Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
+    float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
+    float
+        segmentDistSQMin = rInCm * rInCm,
+        segmentDistSQMax = rOutCm * rOutCm,
+        cursorOrigoeDistSQ = Vector2DistanceSqr({0, 0}, origoToMouse);
+
+    if (segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
+    {
+        if (mouseAngle < 0)
+            mouseAngle = 360 + mouseAngle;
+        return (mouseAngle / 360.0) * segments;
+    }
+    return -1;
+}

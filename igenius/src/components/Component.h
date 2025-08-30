@@ -126,6 +126,11 @@ class UI_RadialMenuConvolution
 
 class UI_RadialMenuDrawingComponent : public UI_Selector
 {
+public:
+
+
+    // Returns the calculated segment index, -1 if nothing is selected
+    static int GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int segments);
 	virtual void Draw();
 };
 

@@ -96,24 +96,8 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
         // End input parameters
 
         // Calculate selected segment from mouse/cursor position
-        int selectedSegment = -1;
-        
-        {
-            Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
-            float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
-            float
-                segmentDistSQMin = rInCm * rInCm,
-                segmentDistSQMax = rOutCm * rOutCm,
-                cursorOrigoeDistSQ = Vector2DistanceSqr({0, 0}, origoToMouse);
+        int selectedSegment = UI_RadialMenuDrawingComponent::GetSelectedSegment(origoCM, navC, rInCm, rOutCm, segments);
 
-            if (segmentDistSQMin < cursorOrigoeDistSQ && cursorOrigoeDistSQ < segmentDistSQMax)
-            {
-                if (mouseAngle < 0)
-                    mouseAngle = 360 + mouseAngle;
-                selectedSegment = (mouseAngle / 360.0) * segments;
-            }        
-        }
-        
         Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
         float r1Px = rc.CmToPixel(rOutCm);
         float r2Px = rc.CmToPixel(rInCm);
