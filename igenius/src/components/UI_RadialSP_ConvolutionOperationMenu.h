@@ -5,8 +5,9 @@
 class UI_RadialSPConvolutionperationMenu : public UI_RadialMenuDrawingComponent
 {
 public:
-    UI_RadialSPConvolutionperationMenu();
-    virtual void HandleClick(int idx) override;
+
+    UI_RadialSPConvolutionperationMenu(ClickHandler clickHandler);
+    //virtual void HandleClick(int idx) override;
     const std::string SegmentOperations = "123456";
 
 protected:

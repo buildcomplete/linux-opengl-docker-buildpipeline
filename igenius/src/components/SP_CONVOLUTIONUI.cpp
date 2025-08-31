@@ -1,9 +1,11 @@
 #include "components/SP_CONVOLUTIONUI.h"
 #include "SP_CONVOLUTIONUI.h"
+#include <iostream>
 
 UI_Components::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_) {}
-
+    : UI_Component(id_, anchor_, bluePrint_), 
+      menu([this](int idx) { OnMenuSelectOperationClick(idx); }) 
+    {}
 
 void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
 {
@@ -47,7 +49,10 @@ void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
 }
 bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
-    menu.Show({anchor.x + bluePrint.Width/2.0f, anchor.y + bluePrint.Height/2.0f} );
+    if (!menu.IsVisible())
+    {
+        menu.Show({anchor.x + bluePrint.Width/2.0f, anchor.y + bluePrint.Height/2.0f} );
+    }
     return true;
 }
 
@@ -55,10 +60,17 @@ bool UI_Components::SP_CONVOLUTIONUI::HandleEventsWhileFocused(const StateContex
 {
     menu.HandleEventsAndTime(stCtx, navCtx);
 
-    return true;
+    return menu.IsVisible();
 }
 
 void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc) const
 {
     menu.Draw(rc);
+}
+
+void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex)
+{
+    std::cout << "void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex= " << segmentIndex << ")" << std::endl;
+
+    menu.Hide();
 }

@@ -55,6 +55,11 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
     return true;
 }
 
+void canvasTestClickHandler(int it)
+{
+    std::cout << "> void canvasTestClickHandler(int " << it<< ")" << std::endl;
+}
+
 void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
 {
     for (const auto &i : inUseComponentKeys)
@@ -68,7 +73,7 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     }
 
     static bool enableRadialHack = true;
-    static auto rMenu = UI_RadialIMGIMGOperationMenu();
+    static auto rMenu = UI_RadialIMGIMGOperationMenu(canvasTestClickHandler);
     if (IsKeyPressed(KEY_H))
     {
         if (rMenu.IsVisible())

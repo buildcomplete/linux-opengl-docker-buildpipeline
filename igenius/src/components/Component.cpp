@@ -300,7 +300,14 @@ bool UI_Components::DrawingSurfaceComponent::HandleEventsWhileFocused(const Stat
 
 // UI_Selectors::DrawRadialMenu(const Vector2 center, float rStart, float rend, std::vector<std::fun
 
-void UI_Selector::Show(const Vector2 origoCM_ )
+void UI_Selector::HandleClickInternal(int idx)
+{
+    if (onClickHandler) {
+        onClickHandler(idx);
+    }
+}
+
+void UI_Selector::Show(const Vector2 origoCM_)
 {
     transitionStartTime = GetTime();
     animState = UI_ANIM_STATE::UITEM_EXPANDING;
@@ -320,11 +327,10 @@ bool UI_Selector::IsVisible()
     return animState != UI_ANIM_STATE::UITEM_CLOSED;
 }
 
-UI_RadialMenuDrawingComponent::UI_RadialMenuDrawingComponent(std::vector<RadialMenuSegmentColors> segments_, float rOutCm_, float rInCm_)
-    : segments(segments_), rOutCm(rOutCm_), rInCm(rInCm_)
+UI_RadialMenuDrawingComponent::UI_RadialMenuDrawingComponent(ClickHandler clickHandler_, std::vector<RadialMenuSegmentColors> segments_, float rOutCm_, float rInCm_)
+    : UI_Selector(clickHandler_), segments(segments_), rOutCm(rOutCm_), rInCm(rInCm_)
 {
 }
-
 
 void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) 
 {
@@ -339,7 +345,7 @@ void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCt
         if (stCtx.DidEnterState(MOUSE_MODE_FLAGS::IG_MOUSE_TRY_COMMAND) && hoveredSegment != -1)
         {
             selectedSegment = hoveredSegment;
-            HandleClick(selectedSegment);
+            HandleClickInternal(selectedSegment);
         }
     }
 };
@@ -451,6 +457,11 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const RenderContext &rc, int 
 
         DrawSegmentIcon(rc, i, startAngleReal, endAngleReal, r1Px, r2Px);
     }
+}
+
+UI_Selector::UI_Selector(ClickHandler clickHandler_) 
+    : onClickHandler(clickHandler_)
+{
 }
 
 void UI_Selector::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx)

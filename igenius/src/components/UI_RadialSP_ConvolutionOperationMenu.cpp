@@ -4,22 +4,20 @@
 
 const Color hoverGreen = {NETGREEN.r, NETGREEN.g, NETGREEN.b, 100};
 const Color bgGrey = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 100};
-UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu()
-    : UI_RadialMenuDrawingComponent({
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'A' // Defined in SegmentOperations
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'B'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'C'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'D'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'E'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}  // 'F'
-                                    }, 
-                                    7,
-                                    3)
-{ }
-
-void UI_RadialSPConvolutionperationMenu::HandleClick(int idx)
+UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu(ClickHandler clickHandler)
+    : UI_RadialMenuDrawingComponent(
+          clickHandler,
+          {
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'A' // Defined in SegmentOperations
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'B'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'C'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'D'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'E'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}  // 'F'
+          },
+          7,
+          3)
 {
-    std::cout << "> Now configure the operation to be applied for CONVOLUTION Operation is: '" << SegmentOperations[idx % SegmentOperations.length()] << "'" << std::endl;
 }
 
 void UI_RadialSPConvolutionperationMenu::DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const

@@ -101,6 +101,18 @@ typedef enum : std::uint8_t
 
 class UI_Selector
 {
+public:
+    using ClickHandler = std::function<void(int segmentIndex)>;
+
+    UI_Selector(ClickHandler clickHandler_);
+
+    
+    virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
+    virtual void Draw(const RenderContext &rc) const = 0; // Draws the components
+    void Show(Vector2 origo);  // Start expanding a menu item.
+    void Hide(); // Start closing a menu item.
+    bool IsVisible();
+
 protected:
     double transitionTime = .25; // time in second for animations
     double transitionStartTime;
@@ -108,14 +120,9 @@ protected:
 
     UI_ANIM_STATE animState = UI_ANIM_STATE::UITEM_CLOSED;
     Vector2 origoCM = {0};
+    ClickHandler onClickHandler;
 
-public:
-    virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
-    virtual void Draw(const RenderContext &rc) const = 0; // Draws the components
-    virtual void HandleClick(int idx) = 0; // Called when a meny is clicked, to be implemented in actual menu, 
-    void Show(Vector2 origo);                                                           // Start expanding a menu item.
-    void Hide();                                                           // Start closing a menu item.
-    bool IsVisible();
+    void HandleClickInternal(int idx); // Called when a menu is clicked, fires the clickHandler
 };
 
 struct RadialMenuSegmentColors
@@ -128,7 +135,7 @@ struct RadialMenuSegmentColors
 class UI_RadialMenuDrawingComponent : public UI_Selector
 {
 public:
-    UI_RadialMenuDrawingComponent(std::vector<RadialMenuSegmentColors> segments, float rOutCm, float rInCm);
+    UI_RadialMenuDrawingComponent(ClickHandler clickHandler_, std::vector<RadialMenuSegmentColors> segments, float rOutCm, float rInCm);
 
     // Returns the calculated segment index, -1 if nothing is selected
     int GetHoverSegment(const NavigationContext &navC) const;

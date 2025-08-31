@@ -3,23 +3,22 @@
 
 const Color hoverGreen = {NETGREEN.r, NETGREEN.g, NETGREEN.b, 100};
 const Color bgGrey = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 100};
-UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu()
-    : UI_RadialMenuDrawingComponent({
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '+' // Defined in SegmentOperations
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '-'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '/'
-                                        {ELECTRIC_BLUE, bgGrey, hoverGreen}  // 'X'
-                                    }, 
-                                    7,
-                                    3)
-{ }
-
-void UI_RadialIMGIMGOperationMenu::HandleClick(int idx)
+UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu(ClickHandler clickHandler_)
+    : UI_RadialMenuDrawingComponent(
+          clickHandler_,
+          {
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '+' // Defined in SegmentOperations
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '-'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '/'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}  // 'X'
+          },
+          7,
+          3)
 {
-    std::cout << "> Now configure the operation to be applied for IMGIMG Operation is: '" << SegmentOperations[idx % SegmentOperations.length()] << "'" << std::endl;
 }
 
-void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const 
+
+void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
 {
     float deltaV = endAngle - startAngle;
     Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};

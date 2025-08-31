@@ -15,5 +15,6 @@ namespace UI_Components
 
     private:
         UI_RadialSPConvolutionperationMenu menu;
+        void OnMenuSelectOperationClick(int segmentIndex);
     };
 }

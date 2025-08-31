@@ -5,8 +5,7 @@
 class UI_RadialIMGIMGOperationMenu : public UI_RadialMenuDrawingComponent
 {
 public:
-    UI_RadialIMGIMGOperationMenu();
-    virtual void HandleClick(int idx) override;
+    UI_RadialIMGIMGOperationMenu(ClickHandler clickHandler);
     const std::string SegmentOperations = "+-/x";
 
 protected:
