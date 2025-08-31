@@ -8,12 +8,12 @@ UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu(ClickHand
     : UI_RadialMenuDrawingComponent(
           clickHandler,
           {
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'A' // Defined in SegmentOperations
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'B'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'C'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'D'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // 'E'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}  // 'F'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Edge"' // Defined in SegmentOperations
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Box 3"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Box 5"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Gauss 3",'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Gauss 5"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}  // ', "Laplacian 1D"'
           },
           7,
           3)
@@ -28,9 +28,8 @@ void UI_RadialSPConvolutionperationMenu::DrawSegmentIcon(const RenderContext &rc
         tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
         ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
 
-    char buffer[2];
-    sprintf(buffer, "%c", SegmentOperations[segmentIndex % SegmentOperations.length()]);
-    int fSize = (int)ceil(120 * expansionProgress);
-    int tw = MeasureText(buffer, fSize);
-    DrawText(buffer, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
+    int fSize = (int)ceil(30 * expansionProgress);
+    int tw = MeasureText(SegmentOperations[segmentIndex].c_str(), fSize);
+    DrawText(SegmentOperations[segmentIndex].c_str(), tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
+
 }

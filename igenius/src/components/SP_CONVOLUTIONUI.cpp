@@ -70,7 +70,7 @@ void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc) const
 
 void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex)
 {
-    std::cout << "void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex= " << segmentIndex << ")" << std::endl;
+    std::cout << "** void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex= " << segmentIndex << ")" << std::endl;
 
     menu.Hide();
 }

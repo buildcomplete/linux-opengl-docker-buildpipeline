@@ -8,7 +8,7 @@ public:
 
     UI_RadialSPConvolutionperationMenu(ClickHandler clickHandler);
     //virtual void HandleClick(int idx) override;
-    const std::string SegmentOperations = "123456";
+    const std::vector<std::string> SegmentOperations = {"Edge", "Box 3", "Box 5", "Gauss 3", "Gauss 5", "Laplacian 1D" };
 
 protected:
     virtual void DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const override;
