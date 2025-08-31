@@ -15,8 +15,6 @@
 #include <functional>
 #include <cstdint>
 
-
-
 // class Component
 // {
 // public:
@@ -61,6 +59,7 @@ namespace UI_Components
         VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
         virtual void Draw(const RenderContext &) const override;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx) override;
+
     private:
         bool isCapturing = false;
     };
@@ -86,6 +85,7 @@ namespace UI_Components
         virtual void Draw(const RenderContext &) const override;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx) override;
         virtual bool HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx) override;
+
     private:
         std::vector<Vector2> strokes;
         Vector2 currentMouseMove[2] = {0};
@@ -103,36 +103,56 @@ typedef enum : std::uint8_t
 
 class UI_Selector
 {
-private:
-	double transitionTime = 1.0; // time in second for open/close animation
-	double startExpansionTime;
-	UI_ANIM_STATE animState = UI_ANIM_STATE::UITEM_CLOSED;
-public:
-	virtual void Draw(); // Draws the components
-	virtual void BeginExpand(); // Start expanding a menu item.
-};
-
-class UI_RadialMenu : public UI_Selector
-{
-
 protected:
-    int DrawRadialMenu(const Vector2& center, float radiusStart, float radiusEnd, std::vector<std::function<void()>> menuDrawingFunctions);
+    double transitionTime = .25; // time in second for animations
+    double transitionStartTime;
+    float expansionProgress = 0;
+
+    UI_ANIM_STATE animState = UI_ANIM_STATE::UITEM_CLOSED;
+    Vector2 origoCM = {0};
+
+public:
+    void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
+    virtual void Draw(const NavigationContext &navC, const RenderContext &rc) = 0; // Draws the components
+    void Show(Vector2 origo);                                                           // Start expanding a menu item.
+    void Hide();                                                           // Start closing a menu item.
+    bool IsVisible();
 };
 
-class UI_RadialMenuConvolution
+struct RadialMenuSegmentColors
 {
-
+    Color edgeColor;
+    Color backgroundColor;
+    Color hoverColor;
 };
 
 class UI_RadialMenuDrawingComponent : public UI_Selector
 {
 public:
-
+    UI_RadialMenuDrawingComponent(std::vector<RadialMenuSegmentColors> segments, float rOutCm, float rInCm);
 
     // Returns the calculated segment index, -1 if nothing is selected
-    static int GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int segments);
-    static void DrawRadialMenu(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc, const Vector2 &origoCM, int segments, double startTime, float scale, float rOutCm, float rInCm);
-    virtual void Draw();
+    static int GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int nSegments);
+    virtual void Draw(const NavigationContext &navC, const RenderContext &rc) override;
+    
+    virtual void DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) = 0;
+
+protected:
+    std::vector<RadialMenuSegmentColors> segments;
+    float rOutCm;
+    float rInCm;
+private:
+    void DrawRadialMenu(const NavigationContext &navC, const RenderContext &rc, int segments);
+
+};
+
+class UI_RadialIMGIMGOperationMenu : public UI_RadialMenuDrawingComponent
+{
+public:
+    UI_RadialIMGIMGOperationMenu();
+
+protected:
+    virtual void DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) override;
 };
 
 #endif

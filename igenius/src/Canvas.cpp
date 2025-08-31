@@ -67,32 +67,21 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     }
 
     static bool enableRadialHack = true;
+    static auto rMenu = UI_RadialIMGIMGOperationMenu();
     if (IsKeyPressed(KEY_H))
-        enableRadialHack= !enableRadialHack;
+    {
+        if (rMenu.IsVisible())
+            rMenu.Hide();
+        else
+            rMenu.Show(navC.mousePosWorldCm);
+    }
+     
 
     // HACK TEST OF DRAWING RADIAL MENU
-    if (enableRadialHack)
+    
     {
-        static Vector2 origoCM = {10, 10};
-        static int segments = 4;
-        static double startTime = GetTime();
-        
-
-        if (IsKeyPressed(KEY_EQUAL))
-            segments++;
-        if (IsKeyPressed(KEY_MINUS))
-            segments--;
-        if (IsKeyPressed(KEY_R))
-        {
-            startTime = GetTime();
-            origoCM = navC.mousePosWorldCm;
-        }
-
-        float scale = Lerp(0.1, 1, Clamp(GetTime() - startTime, 0, 0.25) / .25f);
-        float rOutCm = 7 * scale; // Perhaps should be a function of screen size ?
-        
-        float rInCm = 2 * scale; // Perhaps should be a function of screen size ?
-        UI_RadialMenuDrawingComponent::DrawRadialMenu(navC, rc, sc, origoCM, segments, startTime, scale, rOutCm, rInCm);
+        rMenu.HandleEventsAndTime(sc, navC);
+        rMenu.Draw(navC, rc);
 
         // End input parameters
         
