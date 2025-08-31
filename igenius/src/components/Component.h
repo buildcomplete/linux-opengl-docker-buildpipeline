@@ -38,6 +38,7 @@ public:
     UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
 
     virtual void Draw(const RenderContext &) const;
+    virtual void FocusedDraw(const RenderContext &) const;
 
     Vector2 GetCursorOffset(const NavigationContext &navCtx);
 

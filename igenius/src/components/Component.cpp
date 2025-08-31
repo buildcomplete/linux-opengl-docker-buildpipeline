@@ -95,6 +95,8 @@ void UI_Component::Draw(const RenderContext &rc) const
     DrawStandardSockets(rc, padding_cm);
 }
 
+void UI_Component::FocusedDraw(const RenderContext &) const { }
+
 Vector2 UI_Component::GetCursorOffset(const NavigationContext &navCtx)
 {
     return Vector2Subtract(navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
@@ -322,6 +324,7 @@ UI_RadialMenuDrawingComponent::UI_RadialMenuDrawingComponent(std::vector<RadialM
     : segments(segments_), rOutCm(rOutCm_), rInCm(rInCm_)
 {
 }
+
 
 void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) 
 {

@@ -61,6 +61,12 @@ void Engine::Render()
 
         canvas.Draw(navigationContext, rc, stateContext);
         networkDrawingManager.Draw(navigationContext,rc,stateContext);
+
+        auto focusedComponent = stateManager.GetFocusComponent();
+        if (focusedComponent != nullptr)
+        {
+            stateManager.GetFocusComponent()->FocusedDraw(rc);
+        }
     }
     EndMode2D();
 

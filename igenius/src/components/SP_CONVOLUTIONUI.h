@@ -11,7 +11,8 @@ namespace UI_Components
         virtual void Draw(const RenderContext &) const override;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx) override;
         virtual bool HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx) override;
-        
+        virtual void FocusedDraw(const RenderContext &) const override;
+
     private:
         UI_RadialSPConvolutionperationMenu menu;
     };

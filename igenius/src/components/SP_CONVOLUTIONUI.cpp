@@ -43,7 +43,6 @@ void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
     // rotate every 4 second;
 
     DrawCircleSelectorLines({cx, cy}, rc.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
-    menu.Draw(rc);
     //menu.Draw(rc);
 }
 bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
@@ -55,5 +54,11 @@ bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx,
 bool UI_Components::SP_CONVOLUTIONUI::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     menu.HandleEventsAndTime(stCtx, navCtx);
+
     return true;
+}
+
+void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc) const
+{
+    menu.Draw(rc);
 }
