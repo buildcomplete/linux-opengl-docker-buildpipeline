@@ -1,6 +1,7 @@
 #ifndef IG_COMPONENT_FACTORY_H
 #define IG_COMPONENT_FACTORY_H
 #include "components/Component.h"
+#include "components/SP_CONVOLUTIONUI.h"
 #include "ComponentBluePrint.h"
 #include <memory>
 

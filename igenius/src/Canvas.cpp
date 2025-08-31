@@ -1,6 +1,7 @@
 #include "Canvas.h"
 #include <iostream>
 #include <rlgl.h>
+#include "components/UI_RadialIMGIMGOperationMenu.h"
 
 // Small copy paste from raylib to support drawing integer line segments in cm space
 // Draw lines sequence (using gl lines)
@@ -81,7 +82,7 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     
     {
         rMenu.HandleEventsAndTime(sc, navC);
-        rMenu.Draw(navC, rc);
+        rMenu.Draw(rc);
 
         // End input parameters
         

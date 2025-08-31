@@ -196,51 +196,10 @@ bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, 
     return false;
 }
 
-UI_Components::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_) {}
 
 UI_Components::IMG_IMG_IMG_OPERATIONUI::IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
     : UI_Component(id_, anchor_, bluePrint_) {}
 
-void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
-{
-    const float padding_cm = 0.1f;
-    int xp = rc.CmToPixel(anchor.x + padding_cm);
-    int yp = rc.CmToPixel(anchor.y + 0.5f);
-    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
-    int hp = rc.CmToPixel(2);
-    DrawRectangleLines(xp + 1, yp + 1, wp - 2, hp - 2, ELECTRIC_BLUE);
-
-    // Draw sockets on the edge as circles
-    // In theory the sockets could be on any locations, but for simplicity we add them here
-    // The socket shape depends on the type
-    // The socket color changes with socket number
-
-    // Input sockets on the left,
-    float ys0 = yp + hp / 2.0f;
-    float inPosX = xp;
-    DrawCircleLinesV({inPosX, ys0}, rc.pixPr_cm / 8.0f, WHITE);
-
-    // output on the right
-    if (bluePrint.outputDataType.type != DT_NONE)
-    {
-        float y_out = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
-        float outPosX = xp + wp;
-        DrawCircleLinesV({outPosX, y_out}, rc.pixPr_cm / 8.0f, WHITE);
-    }
-
-    // At the center of the components, draw convolution widget that both show the current signal,
-    // and shows the shape of the current signal in the center
-    // We should be able to reach on click on the selector for selecting signal,
-    // And to listen for click on direction selectors
-    float cx = rc.CmToPixel((float)anchor.x + (float)bluePrint.Width / 2.0f);
-    float cy = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
-
-    float t = Wrap(GetTime(), 0.0f, 4.0f) * 90;
-    // rotate every 4 second;
-
-    DrawCircleSelectorLines({cx, cy}, rc.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
-}
 
 void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc) const
 {
@@ -364,37 +323,6 @@ UI_RadialMenuDrawingComponent::UI_RadialMenuDrawingComponent(std::vector<RadialM
 {
 }
 
-UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu()
-    : UI_RadialMenuDrawingComponent({
-                                        {WHITE, GRAY, NETGREEN}, // '+'
-                                        {BLACK, GRAY, NETGREEN}, // '-'
-                                        {WHITE, GRAY, NETGREEN}, // '/'
-                                        {BLACK, GRAY, NETGREEN}
-                                    }, // '*'
-                                    7,
-                                    3)
-{
-}
-void UI_RadialIMGIMGOperationMenu::HandleClick(int idx)
-{
-    std::cout << "> Now configure the operation to be applied for IMGIMG Operation is: '" << SegmentOperations[idx % SegmentOperations.length()] << "'" << std::endl;
-}
-
-void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx)
-{
-    float deltaV = endAngle - startAngle;
-    Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
-    float
-        tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
-        ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
-
-    char buffer[2];
-    sprintf(buffer, "%c", SegmentOperations[segmentIndex % SegmentOperations.length()]);
-    int fSize = (int)ceil(120 * expansionProgress);
-    int tw = MeasureText(buffer, fSize);
-    DrawText(buffer, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
-}
-
 void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) 
 {
     UI_Selector::HandleEventsAndTime( stCtx, navCtx);
@@ -413,7 +341,7 @@ void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCt
     }
 };
 
-int UI_RadialMenuDrawingComponent::GetHoverSegment(const NavigationContext &navC)
+int UI_RadialMenuDrawingComponent::GetHoverSegment(const NavigationContext &navC) const 
 {
     Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
     float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
@@ -432,7 +360,7 @@ int UI_RadialMenuDrawingComponent::GetHoverSegment(const NavigationContext &navC
 }
 
 // Static main function, to be changed to get drawing functions instead of "int segments"
-void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC, const RenderContext &rc, int nSegments)
+void UI_RadialMenuDrawingComponent::DrawRadialMenu(const RenderContext &rc, int nSegments) const 
 {
     float gapPx = rc.CmToPixel(0.2f * expansionProgress);
     // Calculate selected segment from mouse/cursor position
@@ -444,8 +372,7 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
 
     float deltaV = 360.0f / (float)nSegments;
 
-    Color segmentColors[]{RED, ELECTRIC_BLUE, YELLOW, PURPLE, PINK};
-    int nSegmentColors = 5;
+    
     int subSegments = floor(18.0 / nSegments) + 1;
 
     float gapDegR1 = (gapPx / r1Px) * RAD2DEG; // Angular gap in degrees
@@ -466,15 +393,13 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
         float endAngleR2 = endAngleReal - gapDegR2 * 0.5f;
         float subAngleR2 = (endAngleR2 - startAngleR2) / subSegments;
 
-        Color segmentColor = segmentColors[i % nSegmentColors];
+        auto segmentColor = segments[i];
+        Color bgColor = (i!=hoveredSegment) ? segmentColor.backgroundColor : segmentColor.hoverColor;
 
         char buffer[150];
         sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", nSegments, deltaV, hoveredSegment);
         DrawText(buffer, 20, 60, 20, WHITE);
-        if (hoveredSegment == i)
-        {
-            segmentColor = NETGREEN;
-        }
+
 
         float
             p1x = cosf(DEG2RAD * startAngleR1) * r1Px,
@@ -487,8 +412,8 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
             p4y = sinf(DEG2RAD * startAngleR2) * r2Px;
 
         // Draw line between the inner and outer radius
-        DrawLine(p1x + origoPx.x, p1y + origoPx.y, p4x + origoPx.x, p4y + origoPx.y, segmentColor);
-        DrawLine(p2x + origoPx.x, p2y + origoPx.y, p3x + origoPx.x, p3y + origoPx.y, segmentColor);
+        DrawLine(p1x + origoPx.x, p1y + origoPx.y, p4x + origoPx.x, p4y + origoPx.y, segmentColor.edgeColor);
+        DrawLine(p2x + origoPx.x, p2y + origoPx.y, p3x + origoPx.x, p3y + origoPx.y, segmentColor.edgeColor);
 
         // Draw segments defining each outer radius
         for (int ii = 0; ii < subSegments; ++ii)
@@ -514,19 +439,14 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
             Vector2 p4 = {pp4x + origoPx.x, pp4y + origoPx.y};
 
             // Fill quad slice between inner/outer angles
-            DrawTriangle(p1, p3, p2, {segmentColor.r, segmentColor.g, segmentColor.b, 100});
-            DrawTriangle(p1, p4, p3, {segmentColor.r, segmentColor.g, segmentColor.b, 100});
+            DrawTriangle(p1, p3, p2, bgColor);
+            DrawTriangle(p1, p4, p3, bgColor);
 
-            DrawLine(pp1x + origoPx.x, pp1y + origoPx.y, pp2x + origoPx.x, pp2y + origoPx.y, segmentColor);
-            DrawLine(pp3x + origoPx.x, pp3y + origoPx.y, pp4x + origoPx.x, pp4y + origoPx.y, segmentColor);
+            DrawLine(pp1x + origoPx.x, pp1y + origoPx.y, pp2x + origoPx.x, pp2y + origoPx.y, segmentColor.edgeColor);
+            DrawLine(pp3x + origoPx.x, pp3y + origoPx.y, pp4x + origoPx.x, pp4y + origoPx.y, segmentColor.edgeColor);
         }
-        // sprintf(buffer, "startAngle %f Endangle: %f", startAngle, endAngle );
-        // DrawText(buffer, -220,80+20*i,20,WHITE);
 
-        // Text positions
-        // Here we should call the draw function for the representation of the symbol to show inside the slice.
-        // DrawSegmentGraphics(...)
-        DrawSegmentIcon(navC, rc, i, startAngleReal, endAngleReal, r1Px, r2Px);
+        DrawSegmentIcon(rc, i, startAngleReal, endAngleReal, r1Px, r2Px);
     }
 }
 
@@ -553,11 +473,10 @@ void UI_Selector::HandleEventsAndTime(const StateContext &stCtx, const Navigatio
     }
 }
 
-void UI_RadialMenuDrawingComponent::Draw(const NavigationContext &navC, const RenderContext &rc)
+void UI_RadialMenuDrawingComponent::Draw(const RenderContext &rc) const 
 {
     if (UI_ANIM_STATE::UITEM_CLOSED == animState)
         return;
 
-   
-    DrawRadialMenu(navC, rc, segments.size());
+    DrawRadialMenu(rc, segments.size());
 }
