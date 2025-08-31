@@ -375,6 +375,11 @@ UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu()
                                     3)
 {
 }
+void UI_RadialIMGIMGOperationMenu::HandleClick(int idx)
+{
+    std::cout << "> Now configure the operation to be applied for IMGIMG Operation is: '" << SegmentOperations[idx % SegmentOperations.length()] << "'" << std::endl;
+}
+
 void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx)
 {
     float deltaV = endAngle - startAngle;
@@ -383,16 +388,32 @@ void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const NavigationContext &navC
         tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
         ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
 
-    std::string exampleSymbols = "+-/x|:";
-
     char buffer[2];
-    sprintf(buffer, "%c", exampleSymbols[segmentIndex % exampleSymbols.length()]);
+    sprintf(buffer, "%c", SegmentOperations[segmentIndex % SegmentOperations.length()]);
     int fSize = (int)ceil(120 * expansionProgress);
     int tw = MeasureText(buffer, fSize);
     DrawText(buffer, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
+}
+
+void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) 
+{
+    UI_Selector::HandleEventsAndTime( stCtx, navCtx);
+    
+    if (UI_ANIM_STATE::UITEM_OPEN == animState )
+    {
+        // update segment id
+        hoveredSegment = UI_RadialMenuDrawingComponent::GetHoverSegment(navCtx);
+
+        // handle click
+        if (stCtx.DidEnterState(MOUSE_MODE_FLAGS::IG_MOUSE_TRY_COMMAND) && hoveredSegment != -1)
+        {
+            selectedSegment = hoveredSegment;
+            HandleClick(selectedSegment);
+        }
+    }
 };
 
-int UI_RadialMenuDrawingComponent::GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int segments)
+int UI_RadialMenuDrawingComponent::GetHoverSegment(const NavigationContext &navC)
 {
     Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
     float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
@@ -405,7 +426,7 @@ int UI_RadialMenuDrawingComponent::GetSelectedSegment(const Vector2 &origoCM, co
     {
         if (mouseAngle < 0)
             mouseAngle = 360 + mouseAngle;
-        return (mouseAngle / 360.0) * segments;
+        return (mouseAngle / 360.0) * segments.size();
     }
     return -1;
 }
@@ -415,7 +436,7 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
 {
     float gapPx = rc.CmToPixel(0.2f * expansionProgress);
     // Calculate selected segment from mouse/cursor position
-    int selectedSegment = UI_RadialMenuDrawingComponent::GetSelectedSegment(origoCM, navC, rInCm * expansionProgress, rOutCm * expansionProgress, nSegments);
+   
 
     Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
     float r1Px = rc.CmToPixel(rOutCm) * expansionProgress;
@@ -448,9 +469,9 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const NavigationContext &navC
         Color segmentColor = segmentColors[i % nSegmentColors];
 
         char buffer[150];
-        sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", nSegments, deltaV, selectedSegment);
+        sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", nSegments, deltaV, hoveredSegment);
         DrawText(buffer, 20, 60, 20, WHITE);
-        if (selectedSegment == i)
+        if (hoveredSegment == i)
         {
             segmentColor = NETGREEN;
         }
@@ -530,7 +551,6 @@ void UI_Selector::HandleEventsAndTime(const StateContext &stCtx, const Navigatio
             animState = UI_ANIM_STATE::UITEM_CLOSED;
         }
     }
-    //std::cout << "Anim state: " << (int)animState << " ExpansionProgress:"  << expansionProgress << std::endl;
 }
 
 void UI_RadialMenuDrawingComponent::Draw(const NavigationContext &navC, const RenderContext &rc)

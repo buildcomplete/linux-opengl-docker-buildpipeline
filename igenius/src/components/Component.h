@@ -112,8 +112,9 @@ protected:
     Vector2 origoCM = {0};
 
 public:
-    void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
+    virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
     virtual void Draw(const NavigationContext &navC, const RenderContext &rc) = 0; // Draws the components
+    virtual void HandleClick(int idx) = 0; // Called when a meny is clicked, to be implemented in actual menu, 
     void Show(Vector2 origo);                                                           // Start expanding a menu item.
     void Hide();                                                           // Start closing a menu item.
     bool IsVisible();
@@ -132,15 +133,19 @@ public:
     UI_RadialMenuDrawingComponent(std::vector<RadialMenuSegmentColors> segments, float rOutCm, float rInCm);
 
     // Returns the calculated segment index, -1 if nothing is selected
-    static int GetSelectedSegment(const Vector2 &origoCM, const NavigationContext &navC, float rInCm, float rOutCm, int nSegments);
+    int GetHoverSegment(const NavigationContext &navC);
     virtual void Draw(const NavigationContext &navC, const RenderContext &rc) override;
     
     virtual void DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) = 0;
+    virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) override;
+    
 
 protected:
     std::vector<RadialMenuSegmentColors> segments;
     float rOutCm;
     float rInCm;
+    int hoveredSegment=-1;
+    int selectedSegment=-1;
 private:
     void DrawRadialMenu(const NavigationContext &navC, const RenderContext &rc, int segments);
 
@@ -150,6 +155,8 @@ class UI_RadialIMGIMGOperationMenu : public UI_RadialMenuDrawingComponent
 {
 public:
     UI_RadialIMGIMGOperationMenu();
+    virtual void HandleClick(int idx) override;
+    const std::string SegmentOperations = "+-/x";
 
 protected:
     virtual void DrawSegmentIcon(const NavigationContext &navC, const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) override;
