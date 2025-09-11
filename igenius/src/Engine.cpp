@@ -2,17 +2,16 @@
 #include "IG_types.h"
 #include <cstdio>
 
-
 Engine::Engine()
 {
 }
 
 void Engine::Init()
 {
-	// Load a texture from the resources directory
+    // Load a texture from the resources directory
     cameraTexture = LoadTexture("game_camera_transparent2.png");
 
-     // Define input components
+    // Define input components
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::UNDEFINED), 1, 1);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::VIRTUAL_CAMERA), 1, 8);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::SP_CONVOLUTION), 4, 7);
@@ -25,8 +24,8 @@ void Engine::Init()
 void Engine::HandleEvents()
 {
     stateContext = stateManager.HandleEvents();
-	navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
-    
+    navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
+
     auto c = stateManager.GetFocusComponent();
     if (c != nullptr)
     {
@@ -36,7 +35,7 @@ void Engine::HandleEvents()
             stateManager.SetFocusComponent(nullptr);
         }
     }
-    
+
     InjectStateChanges();
 }
 
@@ -44,9 +43,8 @@ void Engine::Render()
 {
     // Get context objects;
     RenderContext rc = {
-        coordinateHelper.pixPr_cm, 
-        cameraTexture
-    };
+        coordinateHelper.pixPr_cm,
+        cameraTexture};
     // drawing
     BeginDrawing();
 
@@ -54,13 +52,13 @@ void Engine::Render()
     {
         // Setup the back buffer for drawing (clear color and depth buffers)
         ClearBackground(OLIVE_GREEN);
-        
+
         navigator.DrawCursorWorldGuide(stateContext, canvas);
 
         RandomTestDrawings();
 
         canvas.Draw(navigationContext, rc, stateContext);
-        networkDrawingManager.Draw(navigationContext,rc,stateContext);
+        networkDrawingManager.Draw(navigationContext, rc, stateContext);
 
         auto focusedComponent = stateManager.GetFocusComponent();
         if (focusedComponent != nullptr)
@@ -73,20 +71,35 @@ void Engine::Render()
     navigator.DrawCursorScreenGuide(stateContext);
 
     // draw some text using the default font
-    char buffer[100];
+    static char buffer[100];
+    int debugLine = 1;
 
-    //sprintf(buffer, "Cell: 0x%02X%02X", cell.x, cell.y );
-    const CellPosition& cell = navigationContext.mousePosWorldGrid;
+    const CellPosition &cell = navigationContext.mousePosWorldGrid;
     GridContentInfo info = canvas.GetCellInfo(cell.x, cell.y);
-    sprintf(buffer, "Cell: %d,%d:C=%d, N=%d", cell.x, cell.y, info.componentId, info.networkId );
-    DrawText(buffer, 20,20,20,WHITE);
+    sprintf(buffer, "Cell: %d,%d:C=%d, N=%d", cell.x, cell.y, info.componentId, info.networkId);
+    DrawText(buffer, 20, 20 * debugLine++, 20, WHITE);
+
     auto component = canvas.GetComponent(info.componentId);
     if (component != nullptr)
     {
-        int inputDT =  component->bluePrint.inputDataTypes.size() == 0 ? 0 : component->bluePrint.inputDataTypes[0].type;
-        sprintf(buffer, "Component id: %02x = %d -> %d", component->id, inputDT, (int)(component->bluePrint.outputDataType.type) );
-        DrawText(buffer, 20,40,20,WHITE);
-    }    
+        int inputDT = component->bluePrint.inputDataTypes.size() == 0 ? 0 : component->bluePrint.inputDataTypes[0].type;
+        sprintf(buffer, "Component id: %02x = %d -> %d", component->id, inputDT, (int)(component->bluePrint.outputDataType.type));
+        DrawText(buffer, 20, 20 * debugLine++, 20, WHITE);
+    }
+
+    // Calculate and camera bounds in cell coords
+    {
+        auto topLeftWC = GetScreenToWorld2D({0, 0}, navigator.camera);
+        auto bottomRightWC = GetScreenToWorld2D({(float)GetScreenWidth(), (float)GetScreenHeight()}, navigator.camera);
+        int 
+            topCellX = (int)round(topLeftWC.x / rc.pixPr_cm),
+            topCellY = (int)round(topLeftWC.y / rc.pixPr_cm),
+            bottomCellX = (int)round(bottomRightWC.x / rc.pixPr_cm),
+            bottomCellY = (int)round(bottomRightWC.y / rc.pixPr_cm);
+
+        sprintf(buffer, "Visible bounds: (%d,%d)-(%d,%d)", topCellX, topCellY, bottomCellX, bottomCellY);
+        DrawText(buffer, 20, 20 * debugLine++, 20, WHITE);
+    }
     // end the frame and get ready for the next one  (display frame, poll input, etc...)
     EndDrawing();
 }
@@ -105,11 +118,11 @@ void Engine::RandomTestDrawings()
 void Engine::Shutdown()
 {
     // cleanup
-	// unload our texture so it can be cleaned up
-	UnloadTexture(cameraTexture);
+    // unload our texture so it can be cleaned up
+    UnloadTexture(cameraTexture);
 
     // destroy the window and cleanup the OpenGL context
-	CloseWindow();
+    CloseWindow();
 }
 
 bool Engine::ShouldClose()
@@ -119,7 +132,6 @@ bool Engine::ShouldClose()
 
 Engine::~Engine()
 {
-	
 }
 
 void Engine::InjectStateChanges()

@@ -81,16 +81,11 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
         else
             rMenu.Show(navC.mousePosWorldCm);
     }
-     
 
     // HACK TEST OF DRAWING RADIAL MENU
-    
     {
         rMenu.HandleEventsAndTime(sc, navC);
         rMenu.Draw(rc);
-
-        // End input parameters
-        
     }
 }
 
