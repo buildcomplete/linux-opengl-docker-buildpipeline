@@ -18,6 +18,8 @@ class Navigator {
 
         Navigator();
         NavigationContext HandleEvents(StateContext &sc, float pixPr_cm_);
+        void LimitCameraToBounds(float pixPr_cm_);
+        void FixCameraBounds(Vector2 &topLeftWC, float pixPr_cm_, Vector2 &bottomRightWC);
         void DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas);
         void DrawCursorScreenGuide(const StateContext &sc);
         Camera2D camera = { 0 };
@@ -26,6 +28,7 @@ class Navigator {
         NavigationContext context;
         Vector2 dragAcceleration = {0,0};
         Vector2 gameMousePos = {0,0}; // Store mouse pos, to enable drag and consistent behavior, we use internal logic instead of Raylib cursor to draw and position cursor
+        Rectangle cameraBoundsWC = {-1,-1, 256, 256};
     
 };
 

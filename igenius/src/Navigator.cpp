@@ -46,6 +46,8 @@ NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)
         gameMousePos.y += md.y;
     }
 
+    LimitCameraToBounds(pixPr_cm_);
+
     Vector2 mwp = GetScreenToWorld2D(gameMousePos, camera);
     context = {
         gameMousePos,                                         // mousePosScreenPixel
@@ -56,6 +58,34 @@ NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)
         pixPr_cm_                                             // float pixPr_cm
     };
     return context;
+}
+
+void Navigator::LimitCameraToBounds(float pixPr_cm_)
+{
+    // Limit camera bound to be within world bounds in cell coords
+    Vector2 topLeftWC = NavigationContext::ScreenToWPCMStatic(
+        {0, 0}, camera, pixPr_cm_);
+    Vector2 bottomRightWC = NavigationContext::ScreenToWPCMStatic(
+        {(float)GetScreenWidth(), (float)GetScreenHeight()}, camera, pixPr_cm_);
+
+    if (topLeftWC.x < cameraBoundsWC.x)
+    {
+        camera.offset.x = -cameraBoundsWC.x * pixPr_cm_;
+    }
+    if (topLeftWC.y < cameraBoundsWC.y)
+    {
+        camera.offset.y = -cameraBoundsWC.y * pixPr_cm_;
+    }
+    if (bottomRightWC.x > cameraBoundsWC.width)
+    {
+        int overShoot = cameraBoundsWC.width - bottomRightWC.x;
+        camera.offset.x -= overShoot * pixPr_cm_;
+    }
+    if (bottomRightWC.y > cameraBoundsWC.height)
+    {
+        int overShoot = cameraBoundsWC.height - bottomRightWC.y;
+        camera.offset.y -= overShoot * pixPr_cm_;
+    }
 }
 
 // Should be called while drawing in camera mode

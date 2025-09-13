@@ -74,7 +74,7 @@ void Engine::Render()
 
     const CellPosition &cell = navigationContext.mousePosWorldGrid;
     GridContentInfo info = canvas.GetCellInfo(cell.x, cell.y);
-    sprintf(buffer, "Cell: %d,%d:C=%d, N=%d", cell.x, cell.y, info.componentId, info.networkId);
+    sprintf(buffer, "Cell: %02X,%02X:C=%02X, N=%02X", cell.x, cell.y, info.componentId, info.networkId);
     DrawText(buffer, 20, 20 * debugLine++, 20, WHITE);
 
     auto component = canvas.GetComponent(info.componentId);
