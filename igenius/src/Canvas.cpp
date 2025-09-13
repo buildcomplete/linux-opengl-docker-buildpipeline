@@ -62,6 +62,19 @@ void canvasTestClickHandler(int it)
 
 void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
 {
+    // Draw outside bounds if needed
+    Vector2 topLeftWCCM = navC.ScreenToWPCM({0, 0});
+    if (topLeftWCCM.y < 0 )
+    {
+        auto br = GetWorldToScreen2D({(float)GetScreenWidth(), 0}, navC.camera);
+        DrawRectangle(navC.CmToPixel(topLeftWCCM.x)-1, navC.CmToPixel(topLeftWCCM.y)-1, br.x+1, br.y+1, BLACK);
+    }
+    if (topLeftWCCM.x < 0 )
+    {
+        auto br = GetWorldToScreen2D({0, (float)GetScreenHeight()}, navC.camera);
+        DrawRectangle(navC.CmToPixel(topLeftWCCM.x)-1, navC.CmToPixel(topLeftWCCM.y)-1, br.x+1, br.y+1, BLACK);
+    }
+
     for (const auto &i : inUseComponentKeys)
     {
         components[i]->Draw(rc, navC);

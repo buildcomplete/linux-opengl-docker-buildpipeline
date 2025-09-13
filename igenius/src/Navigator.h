@@ -28,7 +28,7 @@ class Navigator {
         NavigationContext context;
         Vector2 dragAcceleration = {0,0};
         Vector2 gameMousePos = {0,0}; // Store mouse pos, to enable drag and consistent behavior, we use internal logic instead of Raylib cursor to draw and position cursor
-        Rectangle cameraBoundsWC = {-1,-1, 256, 256};
+        Rectangle cameraBoundsWC = {-2,-2, 256, 256}; // World bounds in cm, notice grid relates to upper right corner of cell
     
 };
 

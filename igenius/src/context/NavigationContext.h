@@ -18,6 +18,10 @@ struct NavigationContext
        return ScreenToCellIndexStatic(screenPos, camera, pixPr_cm);
     }
 
+    Vector2 ScreenToWPCM(const Vector2& screenPos) const {
+        return ScreenToWPCMStatic(screenPos, camera, pixPr_cm);
+    }
+
     static CellPosition ScreenToCellIndexStatic(const Vector2& screenPos, const Camera2D& camera, float pixPr_cm) {
         Vector2 worldPosCM = ScreenToWPCMStatic(screenPos, camera, pixPr_cm);
         return { (int)(worldPosCM.x), (int)(worldPosCM.y) };
