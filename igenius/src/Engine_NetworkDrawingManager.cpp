@@ -8,7 +8,7 @@
 
 void Engine_NetworkDrawingManager::Draw(const NavigationContext& navCtx, const RenderContext& rndrCtx, const StateContext& stateCtx)
 {
-    auto pixPr_cm = rndrCtx.pixPr_cm;
+    auto pixPr_cm = navCtx.pixPr_cm;
     // Network will be arranged on grid borders
     // If there are 0 or 1 neighbours, draw a circle
     // Then draw a line from center of this to each neighbour

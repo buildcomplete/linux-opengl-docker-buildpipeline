@@ -9,5 +9,5 @@ public:
     const std::string SegmentOperations = "+-/x";
 
 protected:
-    virtual void DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const override;
+    virtual void DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const override;
 };

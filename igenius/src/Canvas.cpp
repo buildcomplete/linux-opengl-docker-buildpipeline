@@ -64,12 +64,12 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
 {
     for (const auto &i : inUseComponentKeys)
     {
-        components[i]->Draw(rc);
+        components[i]->Draw(rc, navC);
     }
 
     for (int i = 0; i < networks.size(); ++i)
     {
-        Canvas::DrawNetworkSegment(networks[i], sc, rc.pixPr_cm);
+        Canvas::DrawNetworkSegment(networks[i], sc, navC.pixPr_cm);
     }
 
     static bool enableRadialHack = true;
@@ -85,7 +85,7 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     // HACK TEST OF DRAWING RADIAL MENU
     {
         rMenu.HandleEventsAndTime(sc, navC);
-        rMenu.Draw(rc);
+        rMenu.Draw(rc, navC);
     }
 }
 

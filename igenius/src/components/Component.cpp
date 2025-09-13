@@ -87,15 +87,15 @@ UI_Component::UI_Component(std::uint8_t id_, CellPosition anchor_, const Compone
 {
 }
 
-void UI_Component::Draw(const RenderContext &rc) const
+void UI_Component::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
-    DrawStandardComponentFrame(rc, padding_cm);
+    DrawStandardComponentFrame(rc, navCtx, padding_cm);
 
-    DrawStandardSockets(rc, padding_cm);
+    DrawStandardSockets(rc, navCtx, padding_cm);
 }
 
-void UI_Component::FocusedDraw(const RenderContext &) const { }
+void UI_Component::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx ) const { }
 
 Vector2 UI_Component::GetCursorOffset(const NavigationContext &navCtx)
 {
@@ -121,19 +121,19 @@ bool UI_Component::HandleEventsWhileFocused(const StateContext &stCtx, const Nav
     return false;
 }
 
-void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const
+void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const NavigationContext &navCtx, const float padding_cm) const
 {
-    int xp = rc.CmToPixel(anchor.x + padding_cm);
-    int yp = rc.CmToPixel(anchor.y + padding_cm);
-    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
-    int hp = rc.CmToPixel(bluePrint.Height - 2.0f * padding_cm);
+    int xp = navCtx.CmToPixel(anchor.x + padding_cm);
+    int yp = navCtx.CmToPixel(anchor.y + padding_cm);
+    int wp = navCtx.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
+    int hp = navCtx.CmToPixel(bluePrint.Height - 2.0f * padding_cm);
     DrawRectangle(xp + 1, yp + 1, wp - 2, hp - 2, PINK);
 }
 
-void UI_Component::DrawStandardSockets(const RenderContext &rc, float padding_cm) const
+void UI_Component::DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const
 {
-    int xp = rc.CmToPixel(anchor.x + padding_cm);
-    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
+    int xp = navCtx.CmToPixel(anchor.x + padding_cm);
+    int wp = navCtx.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
     // Draw sockets on the edge as circles
     // In theory the sockets could be on any locations, but for simplicity we add them here
     // The socket shape depends on the type
@@ -142,40 +142,40 @@ void UI_Component::DrawStandardSockets(const RenderContext &rc, float padding_cm
     // Input sockets on the left,
     if (bluePrint.inputDataTypes.size() != 0)
     {
-        int ys0 = rc.CmToPixel(anchor.y);
+        int ys0 = navCtx.CmToPixel(anchor.y);
         float inPosX = xp;
         for (int i = 0; i < bluePrint.inputDataTypes.size(); ++i)
         {
 
-            float inPosY = ys0 + rc.pixPr_cm / 2.0f + ((float)i * 2) * rc.pixPr_cm;
-            DrawCircleLinesV({inPosX, inPosY}, rc.pixPr_cm / 8.0f, WHITE);
+            float inPosY = ys0 + navCtx.pixPr_cm / 2.0f + ((float)i * 2) * navCtx.pixPr_cm;
+            DrawCircleLinesV({inPosX, inPosY}, navCtx.pixPr_cm / 8.0f, WHITE);
         }
     }
 
     // output on the right
     if (bluePrint.outputDataType.type != DT_NONE)
     {
-        float y_out = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
+        float y_out = navCtx.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
         float outPosX = xp + wp;
-        DrawCircleLinesV({outPosX, y_out}, rc.pixPr_cm / 8.0f, WHITE);
+        DrawCircleLinesV({outPosX, y_out}, navCtx.pixPr_cm / 8.0f, WHITE);
     }
 }
 
 UI_Components::VirtualCameraUI::VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
     : UI_Component(id_, anchor_, bluePrint_) {}
 
-void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
+void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     // Depending in state, we should draw either a start or stop button
-    float x0 = rc.CmToPixel(anchor.x);
-    float y0 = rc.CmToPixel(anchor.y);
-    float wp = rc.CmToPixel(bluePrint.Width);
-    float hp = rc.CmToPixel(bluePrint.Height);
+    float x0 = navCtx.CmToPixel(anchor.x);
+    float y0 = navCtx.CmToPixel(anchor.y);
+    float wp = navCtx.CmToPixel(bluePrint.Width);
+    float hp = navCtx.CmToPixel(bluePrint.Height);
 
     if (isCapturing)
     {
-        float pad = rc.CmToPixel(0.3);
-        float padX = rc.CmToPixel(0.1);
+        float pad = navCtx.CmToPixel(0.3);
+        float padX = navCtx.CmToPixel(0.1);
         const Color electricBlueTransparant = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 50};
         DrawRectangle(x0 + pad + padX, y0 + pad, wp - 2 * pad, hp - 2 * pad, electricBlueTransparant);
     }
@@ -187,7 +187,7 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc) const
                    0,
                    WHITE);
 
-    DrawStandardSockets(rc, 0);
+    DrawStandardSockets(rc, navCtx, 0);
 }
 
 bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
@@ -203,17 +203,17 @@ UI_Components::IMG_IMG_IMG_OPERATIONUI::IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_
     : UI_Component(id_, anchor_, bluePrint_) {}
 
 
-void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc) const
+void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
-    DrawStandardComponentFrame(rc, padding_cm);
+    DrawStandardComponentFrame(rc, navCtx, padding_cm);
 
     // Draw sockets on the edge as circles
     // In theory the sockets could be on any locations, but for simplicity we add them here
     // The socket shape depends on the type
     // The socket color changes with socket number
 
-    DrawStandardSockets(rc, padding_cm);
+    DrawStandardSockets(rc, navCtx, padding_cm);
     // Input sockets on the left,
     // float ys0 = yp + hp/2.0f;
     // float inPosX = xp;
@@ -231,40 +231,40 @@ void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc) const
     // and shows the shape of the current signal in the center
     // We should be able to reach on click on the selector for selecting signal,
     // And to listen for click on direction selectors
-    float cx = rc.CmToPixel((float)anchor.x + (float)bluePrint.Width / 2.0f);
-    float cy = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
+    float cx = navCtx.CmToPixel((float)anchor.x + (float)bluePrint.Width / 2.0f);
+    float cy = navCtx.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
 
     float t = Wrap(GetTime(), 0.0f, 4.0f) * 90;
     // rotate every 4 second;
 
-    DrawCircleSelectorLines({cx, cy}, rc.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
+    DrawCircleSelectorLines({cx, cy}, navCtx.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
 }
 
 UI_Components::DrawingSurfaceComponent::DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
     : UI_Component(id_, anchor_, bluePrint_) {}
 
-void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc) const
+void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.0f;
-    int xp = rc.CmToPixel(anchor.x + padding_cm);
-    int yp = rc.CmToPixel(anchor.y);
-    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
-    int hp = rc.CmToPixel(bluePrint.Height);
+    int xp = navCtx.CmToPixel(anchor.x + padding_cm);
+    int yp = navCtx.CmToPixel(anchor.y);
+    int wp = navCtx.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
+    int hp = navCtx.CmToPixel(bluePrint.Height);
     DrawRectangleLines(xp + 1, yp + 1, wp - 2, hp - 2, ELECTRIC_BLUE);
 
     if (strokes.size() > 1)
     {
-        DrawLineStripCMPro(&strokes[0], strokes.size(), WHITE, rc.pixPr_cm, {(float)anchor.x, (float)anchor.y});
+        DrawLineStripCMPro(&strokes[0], strokes.size(), WHITE, navCtx.pixPr_cm, {(float)anchor.x, (float)anchor.y});
     }
 
     if (strokes.size() > 0 && isDrawing)
     {
-        DrawLineStripCMPro(&currentMouseMove[0], 2, YELLOW, rc.pixPr_cm, {(float)anchor.x, (float)anchor.y});
+        DrawLineStripCMPro(&currentMouseMove[0], 2, YELLOW, navCtx.pixPr_cm, {(float)anchor.x, (float)anchor.y});
     }
 
     for (auto p : strokes)
     {
-        DrawCircleLines(rc.CmToPixel(anchor.x + p.x), rc.CmToPixel(anchor.y + p.y), rc.pixPr_cm / 8.0f, YELLOW);
+        DrawCircleLines(navCtx.CmToPixel(anchor.x + p.x), navCtx.CmToPixel(anchor.y + p.y), navCtx.pixPr_cm / 8.0f, YELLOW);
     }
 }
 
@@ -369,15 +369,15 @@ int UI_RadialMenuDrawingComponent::GetHoverSegment(const NavigationContext &navC
 }
 
 // Static main function, to be changed to get drawing functions instead of "int segments"
-void UI_RadialMenuDrawingComponent::DrawRadialMenu(const RenderContext &rc, int nSegments) const 
+void UI_RadialMenuDrawingComponent::DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int nSegments) const 
 {
-    float gapPx = rc.CmToPixel(0.2f * expansionProgress);
+    float gapPx = navCtx.CmToPixel(0.2f * expansionProgress);
     // Calculate selected segment from mouse/cursor position
    
 
-    Vector2 origoPx = {rc.CmToPixel(origoCM.x), rc.CmToPixel(origoCM.y)};
-    float r1Px = rc.CmToPixel(rOutCm) * expansionProgress;
-    float r2Px = rc.CmToPixel(rInCm) * expansionProgress;
+    Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
+    float r1Px = navCtx.CmToPixel(rOutCm) * expansionProgress;
+    float r2Px = navCtx.CmToPixel(rInCm) * expansionProgress;
 
     float deltaV = 360.0f / (float)nSegments;
 
@@ -455,7 +455,7 @@ void UI_RadialMenuDrawingComponent::DrawRadialMenu(const RenderContext &rc, int 
             DrawLine(pp3x + origoPx.x, pp3y + origoPx.y, pp4x + origoPx.x, pp4y + origoPx.y, segmentColor.edgeColor);
         }
 
-        DrawSegmentIcon(rc, i, startAngleReal, endAngleReal, r1Px, r2Px);
+        DrawSegmentIcon(rc, navCtx, i, startAngleReal, endAngleReal, r1Px, r2Px);
     }
 }
 
@@ -487,10 +487,10 @@ void UI_Selector::HandleEventsAndTime(const StateContext &stCtx, const Navigatio
     }
 }
 
-void UI_RadialMenuDrawingComponent::Draw(const RenderContext &rc) const 
+void UI_RadialMenuDrawingComponent::Draw(const RenderContext &rc, const NavigationContext &navCtx) const 
 {
     if (UI_ANIM_STATE::UITEM_CLOSED == animState)
         return;
 
-    DrawRadialMenu(rc, segments.size());
+    DrawRadialMenu(rc, navCtx, segments.size());
 }

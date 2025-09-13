@@ -42,9 +42,7 @@ void Engine::HandleEvents()
 void Engine::Render()
 {
     // Get context objects;
-    RenderContext rc = {
-        coordinateHelper.pixPr_cm,
-        cameraTexture};
+    RenderContext rc = {cameraTexture};
     // drawing
     BeginDrawing();
 
@@ -63,7 +61,7 @@ void Engine::Render()
         auto focusedComponent = stateManager.GetFocusComponent();
         if (focusedComponent != nullptr)
         {
-            stateManager.GetFocusComponent()->FocusedDraw(rc);
+            stateManager.GetFocusComponent()->FocusedDraw(rc, navigationContext);
         }
     }
     EndMode2D();
@@ -89,17 +87,12 @@ void Engine::Render()
 
     // Calculate and camera bounds in cell coords
     {
-        auto topLeftWC = GetScreenToWorld2D({0, 0}, navigator.camera);
-        auto bottomRightWC = GetScreenToWorld2D({(float)GetScreenWidth(), (float)GetScreenHeight()}, navigator.camera);
-        int 
-            topCellX = (int)round(topLeftWC.x / rc.pixPr_cm),
-            topCellY = (int)round(topLeftWC.y / rc.pixPr_cm),
-            bottomCellX = (int)round(bottomRightWC.x / rc.pixPr_cm),
-            bottomCellY = (int)round(bottomRightWC.y / rc.pixPr_cm);
-
-        sprintf(buffer, "Visible bounds: (%d,%d)-(%d,%d)", topCellX, topCellY, bottomCellX, bottomCellY);
+        auto topLeftCI = navigationContext.ScreenToCellIndex({0,0});
+        auto bottomRightWC = navigationContext.ScreenToCellIndex({(float)GetScreenWidth(), (float)GetScreenHeight()});
+        sprintf(buffer, "Visible bounds: (%d,%d)-(%d,%d)", topLeftCI.x, topLeftCI.y, bottomRightWC.x, bottomRightWC.y);
         DrawText(buffer, 20, 20 * debugLine++, 20, WHITE);
     }
+    
     // end the frame and get ready for the next one  (display frame, poll input, etc...)
     EndDrawing();
 }

@@ -24,7 +24,6 @@ class Navigator {
 
     private:
         NavigationContext context;
-        float pixPr_cm;
         Vector2 dragAcceleration = {0,0};
         Vector2 gameMousePos = {0,0}; // Store mouse pos, to enable drag and consistent behavior, we use internal logic instead of Raylib cursor to draw and position cursor
     

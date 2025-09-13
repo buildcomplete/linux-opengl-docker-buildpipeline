@@ -7,13 +7,13 @@ UI_Components::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition
       menu([this](int idx) { OnMenuSelectOperationClick(idx); }) 
     {}
 
-void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
+void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
-    int xp = rc.CmToPixel(anchor.x + padding_cm);
-    int yp = rc.CmToPixel(anchor.y + 0.5f);
-    int wp = rc.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
-    int hp = rc.CmToPixel(2);
+    int xp = navCtx.CmToPixel(anchor.x + padding_cm);
+    int yp = navCtx.CmToPixel(anchor.y + 0.5f);
+    int wp = navCtx.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
+    int hp = navCtx.CmToPixel(2);
     DrawRectangleLines(xp + 1, yp + 1, wp - 2, hp - 2, ELECTRIC_BLUE);
 
     // Draw sockets on the edge as circles
@@ -24,27 +24,27 @@ void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc) const
     // Input sockets on the left,
     float ys0 = yp + hp / 2.0f;
     float inPosX = xp;
-    DrawCircleLinesV({inPosX, ys0}, rc.pixPr_cm / 8.0f, WHITE);
+    DrawCircleLinesV({inPosX, ys0}, navCtx.pixPr_cm / 8.0f, WHITE);
 
     // output on the right
     if (bluePrint.outputDataType.type != DT_NONE)
     {
-        float y_out = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
+        float y_out = navCtx.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
         float outPosX = xp + wp;
-        DrawCircleLinesV({outPosX, y_out}, rc.pixPr_cm / 8.0f, WHITE);
+        DrawCircleLinesV({outPosX, y_out}, navCtx.pixPr_cm / 8.0f, WHITE);
     }
 
     // At the center of the components, draw convolution widget that both show the current signal,
     // and shows the shape of the current signal in the center
     // We should be able to reach on click on the selector for selecting signal,
     // And to listen for click on direction selectors
-    float cx = rc.CmToPixel((float)anchor.x + (float)bluePrint.Width / 2.0f);
-    float cy = rc.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
+    float cx = navCtx.CmToPixel((float)anchor.x + (float)bluePrint.Width / 2.0f);
+    float cy = navCtx.CmToPixel((float)anchor.y + (float)bluePrint.Height / 2.0f);
 
     float t = Wrap(GetTime(), 0.0f, 4.0f) * 90;
     // rotate every 4 second;
 
-    DrawCircleSelectorLines({cx, cy}, rc.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
+    DrawCircleSelectorLines({cx, cy}, navCtx.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
     //menu.Draw(rc);
 }
 bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
@@ -63,9 +63,9 @@ bool UI_Components::SP_CONVOLUTIONUI::HandleEventsWhileFocused(const StateContex
     return menu.IsVisible();
 }
 
-void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc) const
+void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
-    menu.Draw(rc);
+    menu.Draw(rc, navCtx);
 }
 
 void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex)

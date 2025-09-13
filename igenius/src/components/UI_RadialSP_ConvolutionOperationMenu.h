@@ -11,5 +11,5 @@ public:
     const std::vector<std::string> SegmentOperations = {"Edge", "Box 3", "Box 5", "Gauss 3", "Gauss 5", "Laplacian 1D" };
 
 protected:
-    virtual void DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const override;
+    virtual void DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const override;
 };

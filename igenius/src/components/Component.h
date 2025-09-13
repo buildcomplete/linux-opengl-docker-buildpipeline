@@ -37,8 +37,8 @@ public:
 
     UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
 
-    virtual void Draw(const RenderContext &) const;
-    virtual void FocusedDraw(const RenderContext &) const;
+    virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const;
+    virtual void FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx) const;
 
     Vector2 GetCursorOffset(const NavigationContext &navCtx);
 
@@ -48,10 +48,10 @@ public:
     virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx);
     virtual bool HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx);
 
-    void DrawStandardComponentFrame(const RenderContext &rc, const float padding_cm) const;
+    void DrawStandardComponentFrame(const RenderContext &rc, const NavigationContext &navCtx, const float padding_cm) const;
 
 protected:
-    void DrawStandardSockets(const RenderContext &rc, float padding_cm) const;
+    void DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const;
 };
 
 namespace UI_Components
@@ -60,7 +60,7 @@ namespace UI_Components
     {
     public:
         VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
-        virtual void Draw(const RenderContext &) const override;
+        virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const override;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx) override;
 
     private:
@@ -73,14 +73,14 @@ namespace UI_Components
     {
     public:
         IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
-        virtual void Draw(const RenderContext &) const override;
+        virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const override;
     };
 
     class DrawingSurfaceComponent : public UI_Component
     {
     public:
         DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
-        virtual void Draw(const RenderContext &) const override;
+        virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const override;
         virtual bool TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx) override;
         virtual bool HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx) override;
 
@@ -108,7 +108,7 @@ public:
 
     
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
-    virtual void Draw(const RenderContext &rc) const = 0; // Draws the components
+    virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const = 0; // Draws the components
     void Show(Vector2 origo);  // Start expanding a menu item.
     void Hide(); // Start closing a menu item.
     bool IsVisible();
@@ -139,9 +139,9 @@ public:
 
     // Returns the calculated segment index, -1 if nothing is selected
     int GetHoverSegment(const NavigationContext &navC) const;
-    virtual void Draw(const RenderContext &rc) const override;
+    virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const override;
     
-    virtual void DrawSegmentIcon(const RenderContext &rc, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const = 0;
+    virtual void DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const = 0;
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) override;
     
 
@@ -152,7 +152,7 @@ protected:
     int hoveredSegment=-1;
     int selectedSegment=-1;
 private:
-    void DrawRadialMenu(const RenderContext &rc, int segments) const ;
+    void DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int segments) const ;
 
 };
 
