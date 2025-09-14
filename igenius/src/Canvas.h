@@ -56,9 +56,9 @@ class Canvas
 public:
     Canvas();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
-    void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc);
+    void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc) const;
 
-    void DrawBounds(const NavigationContext &navC, float limRCM, float limBCM);
+    void DrawOverlay(const NavigationContext &navC, const RenderContext &rc) const;
 
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
     std::unique_ptr<UI_Component> components[256];
@@ -69,19 +69,16 @@ public:
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
-    static void DrawNetworkSegment(std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm);
+    static void DrawNetworkSegment(const std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm) ;
 
     ~Canvas();
 
 private:
+    void DrawBounds(const NavigationContext &navC, float limRCM, float limBCM) const;
     static const std::uint8_t GridWidth = 255;
     static const std::uint8_t GridHeight = 255;
-    
-
     void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
-
     int GetGridIdxAtCell(int cellX, int cellY) const;
-
 
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid

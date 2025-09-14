@@ -60,7 +60,7 @@ void canvasTestClickHandler(int it)
     std::cout << "> void canvasTestClickHandler(int " << it << ")" << std::endl;
 }
 
-void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
+void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc) const
 {
     DrawBounds(navC, 32, 32);
 
@@ -91,7 +91,23 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     }
 }
 
-void Canvas::DrawBounds(const NavigationContext &navC, float limRCM, float limBCM)
+void Canvas::DrawOverlay(const NavigationContext &navC, const RenderContext &rc) const
+{
+    // Draw grid gutters
+    Vector2 X0 =  navC.ScreenToWPCM({0,0}) * navC.pixPr_cm;
+    float dx = fmodf(X0.x, navC.pixPr_cm);
+    for (float x = navC.pixPr_cm; x <= (float)GetScreenWidth(); x += navC.pixPr_cm)
+    {
+        DrawLine(x-dx, 0, x-dx, navC.pixPr_cm * 0.25f, RED);
+    }
+    float dy = fmodf(X0.y, navC.pixPr_cm);
+    for (float y= navC.pixPr_cm; y <= (float)GetScreenHeight(); y += navC.pixPr_cm)
+    {
+        DrawLine(0, y-dy, navC.pixPr_cm * 0.25f, y-dy, RED);
+    }
+}
+
+void Canvas::DrawBounds(const NavigationContext &navC, float limRCM, float limBCM) const
 {
     float limRWCP = navC.CmToPixel(limRCM);
     float limBWCP = navC.CmToPixel(limBCM);
@@ -316,7 +332,7 @@ int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
     return cellX + cellY * GridWidth;
 }
 
-void Canvas::DrawNetworkSegment(std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm)
+void Canvas::DrawNetworkSegment(const std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm) 
 {
     DrawLineStripCellPos(&(network[0]), network.size(), NETGREEN, pixPr_cm);
     if (sc.IsInState(MOUSE_MODE_FLAGS::IG_MOUSE_MODE_NETWORK))

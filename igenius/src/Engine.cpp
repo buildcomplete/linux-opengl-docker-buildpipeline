@@ -66,6 +66,7 @@ void Engine::Render()
     }
     EndMode2D();
 
+    canvas.DrawOverlay(navigationContext, rc);
     navigator.DrawCursorScreenGuide(stateContext);
 
     // draw some text using the default font
