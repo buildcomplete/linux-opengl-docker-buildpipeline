@@ -57,23 +57,12 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
 
 void canvasTestClickHandler(int it)
 {
-    std::cout << "> void canvasTestClickHandler(int " << it<< ")" << std::endl;
+    std::cout << "> void canvasTestClickHandler(int " << it << ")" << std::endl;
 }
 
 void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc)
 {
-    // Draw outside bounds if needed
-    Vector2 topLeftWCCM = navC.ScreenToWPCM({0, 0});
-    if (topLeftWCCM.y < 0 )
-    {
-        auto br = GetWorldToScreen2D({(float)GetScreenWidth(), 0}, navC.camera);
-        DrawRectangle(navC.CmToPixel(topLeftWCCM.x)-1, navC.CmToPixel(topLeftWCCM.y)-1, br.x+1, br.y+1, BLACK);
-    }
-    if (topLeftWCCM.x < 0 )
-    {
-        auto br = GetWorldToScreen2D({0, (float)GetScreenHeight()}, navC.camera);
-        DrawRectangle(navC.CmToPixel(topLeftWCCM.x)-1, navC.CmToPixel(topLeftWCCM.y)-1, br.x+1, br.y+1, BLACK);
-    }
+    DrawBounds(navC, 32, 32);
 
     for (const auto &i : inUseComponentKeys)
     {
@@ -99,6 +88,40 @@ void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const 
     {
         rMenu.HandleEventsAndTime(sc, navC);
         rMenu.Draw(rc, navC);
+    }
+}
+
+void Canvas::DrawBounds(const NavigationContext &navC, float limRCM, float limBCM)
+{
+    float limRWCP = navC.CmToPixel(limRCM);
+    float limBWCP = navC.CmToPixel(limBCM);
+
+    // calculate screen pos of grid bounds
+    Vector2 XX0 = GetWorldToScreen2D({0, 0}, navC.camera);                                                                                                // World to screen of world 0,0
+    Vector2 XX1 = GetWorldToScreen2D({(float)navC.CmToPixel(limRCM), (float)navC.CmToPixel(limBCM)}, navC.camera);                                        // World to screen of world limit
+    Vector2 XXX0 = Vector2Scale(navC.ScreenToWPCMStatic({0, 0}, navC.camera, navC.pixPr_cm), navC.pixPr_cm);                                              // Screen to world of screen 0,0
+    Vector2 XXX1 = Vector2Scale(navC.ScreenToWPCMStatic({(float)GetScreenWidth(), (float)GetScreenHeight()}, navC.camera, navC.pixPr_cm), navC.pixPr_cm); // Screen to world of screen limit
+
+    // Anything top of and to the left of XX0 is out of bounds
+    // Anything bottom of and to the right of XX1 is out of bounds
+    // If XX0 is on the screen or XX1 is on the screen, the we need to draw bounds
+    // Notice that we are on camera drawing mode in canvas, and therefore need to calculate screen 0,0 and width,height in world space
+    if (XX0.y > 0)
+    {
+        DrawRectangle(XXX0.x, XXX0.y - 1, XXX1.x - XXX0.x, -XXX0.y + 1, OLIVE_GREEN_DARK);
+    }
+    if (XX0.x > 0)
+    {
+        DrawRectangle(XXX0.x - 1, XXX0.y, -XXX0.x + 1, XXX1.y - XXX0.y, OLIVE_GREEN_DARK);
+    }
+
+    if (XX1.y < (float)GetScreenHeight())
+    {
+        DrawRectangle(XXX0.x, limBWCP, XXX1.x - XXX0.x, XXX1.y - limBWCP, OLIVE_GREEN_DARK);
+    }
+    if (XX1.x < (float)GetScreenWidth())
+    {
+        DrawRectangle(limRWCP, XXX0.y, XXX1.x - limRWCP, XXX1.y - XXX0.y, OLIVE_GREEN_DARK);
     }
 }
 

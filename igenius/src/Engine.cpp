@@ -53,7 +53,7 @@ void Engine::Render()
 
         navigator.DrawCursorWorldGuide(stateContext, canvas);
 
-        RandomTestDrawings();
+        //RandomTestDrawings();
 
         canvas.Draw(navigationContext, rc, stateContext);
         networkDrawingManager.Draw(navigationContext, rc, stateContext);
