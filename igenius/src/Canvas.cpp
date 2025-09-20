@@ -100,17 +100,18 @@ void Canvas::DrawOverlay(const NavigationContext &navC, const RenderContext &rc)
     // Draw grid gutters
     CellPosition UL_CP = navC.ScreenToCellIndex({0, 0});
     CellPosition BR_CP = navC.ScreenToCellIndex({(float)GetScreenWidth(), (float)GetScreenHeight()});
-    Vector2 offset = Vector2Subtract(navC.ScreenToWPCM({0,0}), {(float)UL_CP.x, (float)UL_CP.y}); // offset in cm within the cell
     for (int xi=UL_CP.x-1; xi<=BR_CP.x; ++xi)
     {
+        // Get the screen space position for a 2d camera world space position
+        Vector2 SP = GetWorldToScreen2D({(float)xi* navC.pixPr_cm, 0}, navC.camera); 
         Color gutterColor = IsCellEven(xi, 0) ? GREEN : DARKGREEN;
-        Vector2 SP = GetWorldToScreen2D({(float)xi* navC.pixPr_cm, 0}, navC.camera); // Get the screen space position for a 2d camera world space position
         DrawRectangle(SP.x-1, 0, navC.pixPr_cm+1, navC.pixPr_cm * 0.25f, gutterColor);
     }
     for (int yi=UL_CP.y-1; yi<=BR_CP.y; ++yi)
     {
+        // Get the screen space position for a 2d camera world space position
+        Vector2 SP = GetWorldToScreen2D({0, (float)yi* navC.pixPr_cm}, navC.camera); 
         Color gutterColor = IsCellEven(0, yi) ? GREEN : DARKGREEN;
-        Vector2 SP = GetWorldToScreen2D({0, (float)yi* navC.pixPr_cm}, navC.camera); // Get the screen space position for a 2d camera world space position
         DrawRectangle(0, SP.y-1, navC.pixPr_cm * 0.25f, navC.pixPr_cm+1, gutterColor);
     }
 }
