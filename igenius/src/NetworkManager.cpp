@@ -116,3 +116,60 @@ bool NetworkManager::TryAddAnchorPoint(CellPosition anchor)
     return true;
 }
 
+bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
+{
+    // If we can just add a straigt line, no reason to start path finding
+    if (TryAddAnchorPoint(target))
+    {    
+        return true;
+    }
+    
+    // We could not just add, start path finding.
+    CellPosition from = networkDrawPos[networkDrawPosIdx];
+    auto nodes = std::vector<CellPosition>();
+    nodes.push_back(from);
+
+    std::vector<CellPosition> visited = std::vector<CellPosition>();
+
+    auto solution = TryCreatePathBetweenAnchorPoints(
+        std::vector<CellPosition>(),
+        nodes, 
+        visited,
+        target);
+
+    return solution.size() != static_cast<size_t>(0);
+}
+
+
+
+std::vector<CellPosition> NetworkManager::TryCreatePathBetweenAnchorPoints(
+    std::vector<CellPosition> path, 
+    std::vector<CellPosition> nodes,
+    std::vector<CellPosition>& visited, 
+    CellPosition target) const
+{
+    // move one by one from from to to, bfs style
+    const int CP_NDIRS = 8;
+    const CellPosition CP_Directions[CP_NDIRS] 
+    {
+        {-1,  0}, //N
+        {-1,  1}, //NE
+        { 0,  1}, //E
+        { 1,  1}, //SE
+        {-1,  0}, //S
+        {-1, -1}, //SW
+        { 0, -1}, //W
+        {-1, -1}, //NW
+    };
+
+    // if (path.back() == target)
+    // {
+    //     return path;
+    // }
+
+
+
+    return std::vector<CellPosition>(0);
+}
+
+

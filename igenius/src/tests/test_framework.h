@@ -86,6 +86,20 @@ inline void test_equals(const T& actual, const T& expected, const std::string& t
     }
 }
 
+// Enhanced test helper function that shows actual vs expected values
+template<typename T>
+inline void test_not_equals(const T& actual, const T& expected, const std::string& test_name) {
+    if (actual != expected) {
+        std::cout << COLOR_GREEN << "PASS" << COLOR_RESET << ": " << test_name << std::endl;
+        TestCounters::instance().increment_passed();
+    } else {
+        std::cout << COLOR_RED << "FAIL" << COLOR_RESET << ": " << test_name << std::endl;
+        std::cout << "  Expected: " << expected << std::endl;
+        std::cout << "  Actual:   " << actual << std::endl;
+        TestCounters::instance().increment_failed();
+    }
+}
+
 // Specialized version for unsigned char to display as numeric values instead of characters
 inline void test_equals(const unsigned char& actual, const unsigned char& expected, const std::string& test_name) {
     if (actual == expected) {

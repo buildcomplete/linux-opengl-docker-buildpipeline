@@ -1,9 +1,9 @@
 #include "test_framework.h"
 #include "NetworkManager.h"
 
-void test_network_manager_createNetwork()
+void test_network_manager_createNetworkSimple()
 {
-    test_section("Network Manager CreateNetwork tests");
+    test_section("Network Manager CreateNetworkSimple tests");
 
     // create network path along horizontal lines
     {
@@ -15,7 +15,6 @@ void test_network_manager_createNetwork()
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along horizontal lines");
     }
     
-    
     // create network path along vertical lines
     {
         NetworkManager m;
@@ -25,7 +24,6 @@ void test_network_manager_createNetwork()
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along vertical lines");
     }
-    
         
     // create network path along diagonal lines
     {
@@ -37,7 +35,6 @@ void test_network_manager_createNetwork()
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along diagonal lines");
     }
 
-    
     // create network path not on straight line, fails
     {
         NetworkManager m;
@@ -48,14 +45,48 @@ void test_network_manager_createNetwork()
         test_equals(result.size(), static_cast<size_t>(0), "Test Create 2 point network path along not following straight line");
     }
 
-    
-    
-    
+    // create network path as a square
+    // { 0, 0} -> {0, 10}
+    //             \/
+    // {10, 0} <-{10, 10}
+    {
+        NetworkManager m;
+        m.StartDrawing();
+        m.TryAddAnchorPoint({ 0, 0});
+        m.TryAddAnchorPoint({ 0,10});
+        m.TryAddAnchorPoint({10,10});
+        m.TryAddAnchorPoint({10, 0});
+        auto result = m.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(4), "Test Create 4 point network path along diagonal and horizontal lines");
+    }
+}
+
+void test_network_manager_createNetworkPathFinding()
+{
+    test_section("Network Manager CreateNetwork using path finding");
+    {
+        NetworkManager n;
+        n.StartDrawing();
+        n.TryAddAnchorPoint({0,0});
+        n.TryCreatePathToAnchorPoint({10,10});
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path following straight line");
+    }
+
+    {
+        NetworkManager n;
+        n.StartDrawing();
+        n.TryAddAnchorPoint({0,0});
+        n.TryCreatePathToAnchorPoint({10,15});
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(3), "Test Create 3 point network path following straight line");
+    }
 
 }
 
 // Function to run all engine tests
 void run_networkm_manager_tests() 
 {
-    test_network_manager_createNetwork();
+    test_network_manager_createNetworkSimple();
+    test_network_manager_createNetworkPathFinding();
 }

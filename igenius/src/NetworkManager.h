@@ -5,6 +5,7 @@
 #include <vector>
 #include "Canvas.h"
 
+
 /**
  * Responsible for drawing network connections and handling mouse events 
  * for network creation, interacting with the Canvas to understand item presence.
@@ -20,8 +21,8 @@ public:
     void StartDrawing();
     std::vector<CellPosition> CompleteDrawing();
     void AddAnchorPoint(const NavigationContext &frameCoord);
-
     bool TryAddAnchorPoint(CellPosition anchor);
+    bool TryCreatePathToAnchorPoint(CellPosition target);
 
 private:
     int networkDrawPosIdx = 1;
@@ -29,6 +30,13 @@ private:
     CellPosition networkValidToHelper = {0,0};
     std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(5);
     bool anyNewvalidPointInNetwork = false;
+
+    std::vector<CellPosition> TryCreatePathBetweenAnchorPoints(
+        std::vector<CellPosition> path, 
+        std::vector<CellPosition> nodes,
+        std::vector<CellPosition>& visited, 
+        CellPosition target) const;
+
 };
 
 #endif

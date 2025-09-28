@@ -6,6 +6,7 @@ void run_canvas_tests();
 void run_engine_tests();
 void run_byte_value_tests();
 void run_networkm_manager_tests();
+void run_igenius_coretypes_tests();
 
 int main() {
     // Reset counters at the start
@@ -19,7 +20,9 @@ int main() {
     // // test framework examples
     // run_basic_tests();
     // run_byte_value_tests();
-    
+
+
+    run_igenius_coretypes_tests();
     run_canvas_tests();
     //run_engine_tests();
 
@@ -29,6 +32,7 @@ int main() {
     // run_ui_tests();
     // run_network_tests();
     run_networkm_manager_tests();
+
     
     // Print test summary
     TestCounters::instance().print_summary();

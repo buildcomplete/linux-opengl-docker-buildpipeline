@@ -2,6 +2,7 @@
 #define IG_TYPES_H
 #include <cstdint>
 
+
 #define OLIVE_GREEN_DARK  	CLITERAL(Color){ 17, 23, 00, 255 }      //  Background
 #define OLIVE_GREEN   	    CLITERAL(Color){ 27, 33, 00, 255 }      //  Background
 #define NETGREEN        	CLITERAL(Color){ 65, 228, 22, 255 }      // Network
@@ -39,6 +40,15 @@ struct CellPosition
 {
     int x;
     int y;
+
+    bool operator==(const CellPosition& rhs) const
+    {
+        return x==rhs.x&&y==rhs.y;
+    }
+    bool operator!=(const CellPosition& rhs) const
+    {
+        return x!=rhs.x||y!=rhs.y;
+    }
 };
 
 #endif
