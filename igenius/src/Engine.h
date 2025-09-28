@@ -5,7 +5,7 @@
 #include "Navigator.h"
 #include "CoordinateHelper.h"
 #include "Canvas.h"
-#include "Engine_NetworkDrawingManager.h"
+#include "NetworkManager.h"
 #include "context/NavigationContext.h"
 #include "context/RenderContext.h"
 #include "context/StateContext.h"
@@ -32,7 +32,7 @@ private:
     Engine_StateManager stateManager;
     Navigator navigator;
 	CoordinateHelper coordinateHelper;
-	Engine_NetworkDrawingManager networkDrawingManager;
+	NetworkManager networkDrawingManager;
 	Canvas canvas;
     Texture cameraTexture;
 	void InjectStateChanges();

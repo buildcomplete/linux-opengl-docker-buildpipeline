@@ -137,7 +137,8 @@ void Engine::InjectStateChanges()
 
     if (stateContext.DidExitState(IG_MOUSE_MODE_NETWORK))
     {
-        networkDrawingManager.CompleteDrawing(canvas);
+        auto n = networkDrawingManager.CompleteDrawing();
+        canvas.AddNetworkSegment(n, 0);
     }
 
     // Send network command, begin new, select and existing, expand network
@@ -166,7 +167,7 @@ void Engine::InjectStateChanges()
         }
         if (stateContext.IsInState(IG_MOUSE_MODE_NETWORK))
         {
-            networkDrawingManager.AddAnchorPoint(navigationContext, coordinateHelper.pixPr_cm);
+            networkDrawingManager.AddAnchorPoint(navigationContext);
         }
     }
 }

@@ -9,15 +9,19 @@
  * Responsible for drawing network connections and handling mouse events 
  * for network creation, interacting with the Canvas to understand item presence.
  */
-class Engine_NetworkDrawingManager
+class NetworkManager
 {
 public:
 
     void HandleEvents(const StateContext& sc);
     void Draw(const RenderContext& rc, const NavigationContext& navC, const StateContext& sc);
+    bool CanAddToNetwork(CellPosition toC);
+    bool CanAddToNetwork(CellPosition fromC, CellPosition toC);
     void StartDrawing();
-    void CompleteDrawing(Canvas &canvas);
-    void AddAnchorPoint(const NavigationContext &frameCoord, float pixPr_cm);
+    std::vector<CellPosition> CompleteDrawing();
+    void AddAnchorPoint(const NavigationContext &frameCoord);
+
+    bool TryAddAnchorPoint(CellPosition anchor);
 
 private:
     int networkDrawPosIdx = 1;

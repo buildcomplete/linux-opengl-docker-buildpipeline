@@ -279,6 +279,11 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
 
 bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
 {
+    if (anchorPoints.size() == 0)
+    {
+        return false;
+    }
+
     if (id == 0 && avaliableNetworkKeys.empty())
     {
         return false;
