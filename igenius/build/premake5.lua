@@ -163,6 +163,7 @@ if (downloadRaylib) then
         }
         
         files {"../src/**.c", "../src/**.cpp", "../src/**.h", "../src/**.hpp", "../include/**.h", "../include/**.hpp"}
+        removefiles {"../src/tests/**"}  -- Exclude test files from main project
         
         filter {"system:windows", "action:vs*"}
             files {"../src/*.rc", "../src/*.ico"}
@@ -232,5 +233,67 @@ if (downloadRaylib) then
 
         filter { "system:macosx", "files:" .. raylib_dir .. "/src/rglfw.c" }
             compileas "Objective-C"
+
+        filter{}
+
+    -- Test project configuration
+    project (workspaceName .. "_tests")
+        kind "ConsoleApp"
+        location "build_files/"
+        targetdir "../bin/%{cfg.buildcfg}"
+        targetname (workspaceName .. "_tests")
+
+        filter "action:vs*"
+            debugdir "$(SolutionDir)"
+
+        filter{}
+
+        vpaths 
+        {
+            ["Header Files/*"] = { "../include/**.h",  "../include/**.hpp", "../src/**.h", "../src/**.hpp"},
+            ["Source Files/*"] = {"../src/tests/**.cpp"},
+        }
+        
+        -- Include test files (these contain the main function for tests)
+        files {"../src/tests/**.cpp"}
+        
+        -- Include source files that need to be tested (exclude main.cpp and tests directory)
+        files {"../src/**.c", "../src/**.cpp", "../src/**.h", "../src/**.hpp", "../include/**.h", "../include/**.hpp"}
+        removefiles {"../src/main.cpp", "../src/tests/**"}  -- Remove main.cpp and re-exclude tests to avoid duplication
+        files {"../src/tests/**.cpp"}  -- Re-add test files after exclusion
+        
+        includedirs { "../src" }
+        includedirs { "../include" }
+        
+        -- No external testing framework needed for plain C++ tests
+
+        links {"raylib"}
+
+        cdialect "C17"
+        cppdialect "C++17"
+
+        includedirs {raylib_dir .. "/src" }
+        includedirs {raylib_dir .."/src/external" }
+        includedirs { raylib_dir .."/src/external/glfw/include" }
+        flags { "ShadowedVariables"}
+        platform_defines()
+
+        filter "action:vs*"
+            defines{"_WINSOCK_DEPRECATED_NO_WARNINGS", "_CRT_SECURE_NO_WARNINGS"}
+            dependson {"raylib"}
+            links {"raylib.lib"}
+            characterset ("Unicode")
+            buildoptions { "/Zc:__cplusplus" }
+
+        filter "system:windows"
+            defines{"_WIN32"}
+            links {"winmm", "gdi32", "opengl32"}
+            libdirs {"../bin/%{cfg.buildcfg}"}
+
+        filter "system:linux"
+            links {"pthread", "m", "dl", "rt", "X11"}
+
+        filter "system:macosx"
+            links {"OpenGL.framework", "Cocoa.framework", "IOKit.framework", "CoreFoundation.framework", "CoreAudio.framework", "CoreVideo.framework", "AudioToolbox.framework"}
 
         filter{}
