@@ -6,7 +6,7 @@ void test_canvas_creation() {
     Canvas c;
     
     test_section("Canvas Creation Tests");
-    test_equals(c.GetCellInfo({0,0}).componentId, (std::uint8_t)1, "Test cell has zero component id");
+    test_equals(c.GetCellInfo({0,0}).componentId, (std::uint8_t)0, "Test cell has zero component id");
     
     // Example tests - uncomment and modify when you have actual Canvas class to test
     

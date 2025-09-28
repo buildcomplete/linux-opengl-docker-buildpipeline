@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cstdint>
+#include <iomanip>
 
 // ANSI color codes
 #define COLOR_GREEN "\033[32m"
@@ -27,6 +29,28 @@ inline void test_equals(const T& actual, const T& expected, const std::string& t
         std::cout << COLOR_RED << "FAIL" << COLOR_RESET << ": " << test_name << std::endl;
         std::cout << "  Expected: " << expected << std::endl;
         std::cout << "  Actual:   " << actual << std::endl;
+    }
+}
+
+// Specialized version for unsigned char to display as numeric values instead of characters
+inline void test_equals(const unsigned char& actual, const unsigned char& expected, const std::string& test_name) {
+    if (actual == expected) {
+        std::cout << COLOR_GREEN << "PASS" << COLOR_RESET << ": " << test_name << std::endl;
+    } else {
+        std::cout << COLOR_RED << "FAIL" << COLOR_RESET << ": " << test_name << std::endl;
+        std::cout << "  Expected: " << static_cast<unsigned int>(expected) << " (0x" << std::hex << static_cast<unsigned int>(expected) << std::dec << ")" << std::endl;
+        std::cout << "  Actual:   " << static_cast<unsigned int>(actual) << " (0x" << std::hex << static_cast<unsigned int>(actual) << std::dec << ")" << std::endl;
+    }
+}
+
+// Specialized version for signed char to display as numeric values instead of characters
+inline void test_equals(const signed char& actual, const signed char& expected, const std::string& test_name) {
+    if (actual == expected) {
+        std::cout << COLOR_GREEN << "PASS" << COLOR_RESET << ": " << test_name << std::endl;
+    } else {
+        std::cout << COLOR_RED << "FAIL" << COLOR_RESET << ": " << test_name << std::endl;
+        std::cout << "  Expected: " << static_cast<int>(expected) << " (0x" << std::hex << static_cast<unsigned int>(static_cast<unsigned char>(expected)) << std::dec << ")" << std::endl;
+        std::cout << "  Actual:   " << static_cast<int>(actual) << " (0x" << std::hex << static_cast<unsigned int>(static_cast<unsigned char>(actual)) << std::dec << ")" << std::endl;
     }
 }
 

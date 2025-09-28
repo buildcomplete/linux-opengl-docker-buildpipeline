@@ -4,6 +4,7 @@
 void run_basic_tests();
 void run_canvas_tests();
 void run_engine_tests();
+void run_byte_value_tests();
 
 int main() {
     std::cout << "Running igenius unit tests..." << std::endl;
@@ -13,6 +14,7 @@ int main() {
     run_basic_tests();
     run_canvas_tests();
     run_engine_tests();
+    run_byte_value_tests();
     
     // Add more test modules here as you create them:
     // run_component_tests();
