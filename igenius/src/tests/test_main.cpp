@@ -7,6 +7,9 @@ void run_engine_tests();
 void run_byte_value_tests();
 
 int main() {
+    // Reset counters at the start
+    TestCounters::instance().reset();
+    
     std::cout << "Running igenius unit tests..." << std::endl;
     std::cout << "===============================" << std::endl;
     
@@ -21,8 +24,9 @@ int main() {
     // run_ui_tests();
     // run_network_tests();
     
-    std::cout << "\n===============================" << std::endl;
-    std::cout << "All tests completed!" << std::endl;
+    // Print test summary
+    TestCounters::instance().print_summary();
     
-    return 0;
+    // Return non-zero exit code if any tests failed
+    return (TestCounters::instance().get_failed() > 0) ? 1 : 0;
 }
