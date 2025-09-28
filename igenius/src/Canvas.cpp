@@ -60,7 +60,7 @@ void canvasTestClickHandler(int it)
     std::cout << "> void canvasTestClickHandler(int " << it << ")" << std::endl;
 }
 
-void Canvas::Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc) const
+void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc) const
 {
     DrawBounds(navC, 32, 32);
 
@@ -95,7 +95,7 @@ inline bool IsCellEven(int x, int y) {
     return ((x + y) % 2) == 0;
 }
 
-void Canvas::DrawOverlay(const NavigationContext &navC, const RenderContext &rc) const
+void Canvas::DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const
 {
     // Draw grid gutters
     CellPosition UL_CP = navC.ScreenToCellIndex({0, 0});
@@ -357,6 +357,6 @@ Canvas::~Canvas()
 {
     std::cout << "Destrying canvas, hope you are exiting" << std::endl;
     // It is unloaded when window is closed, or engine is closed, not sure,
-    // but unloadung manually throws an exception
+    // but unloading manually throws an exception
     // UnloadTexture(cameraTexture);
 }

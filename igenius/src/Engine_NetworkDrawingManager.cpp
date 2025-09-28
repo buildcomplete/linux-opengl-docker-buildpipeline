@@ -4,12 +4,16 @@
 #include "IG_types.h"
 #include <iostream>
 
-// END NETWORK DRAWING HELPER METHODS
 
-void Engine_NetworkDrawingManager::Draw(const NavigationContext& navCtx, const RenderContext& rndrCtx, const StateContext& stateCtx)
+void Engine_NetworkDrawingManager::HandleEvents(const StateContext& sc)
+{
+    
+}
+
+void Engine_NetworkDrawingManager::Draw(const RenderContext& rndrCtx, const NavigationContext& navCtx, const StateContext& stateCtx)
 {
     auto pixPr_cm = navCtx.pixPr_cm;
-    // Network will be arranged on grid borders
+    // Network will be arranged on grid centers
     // If there are 0 or 1 neighbours, draw a circle
     // Then draw a line from center of this to each neighbour
     // But this is only the drawing function, so here we only draw connection to other network, and it is not possible to create illigal connections
@@ -29,7 +33,7 @@ void Engine_NetworkDrawingManager::Draw(const NavigationContext& navCtx, const R
             Vector2 distance = Vector2Subtract(from, to);
             bool horzOrVert = abs(distance.x) < 0.1 || abs(distance.y) < 0.1;
             bool diagonal = abs(abs(distance.x) - abs(distance.y)) < 0.1 || abs(abs(distance.y) - abs(distance.x)) < 0.1;
-            bool distOk = Vector2DistanceSqr(from, to) > 0.1;
+            bool distOk = Vector2DistanceSqr(from, to) > 0.1; // line non zero length
 
             if (distOk && (horzOrVert || diagonal))
             {

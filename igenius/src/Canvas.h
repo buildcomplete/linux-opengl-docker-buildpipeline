@@ -56,9 +56,9 @@ class Canvas
 public:
     Canvas();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
-    void Draw(const NavigationContext &navC, const RenderContext &rc, const StateContext &sc) const;
+    void Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc) const;
 
-    void DrawOverlay(const NavigationContext &navC, const RenderContext &rc) const;
+    void DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const;
 
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
     std::unique_ptr<UI_Component> components[256];

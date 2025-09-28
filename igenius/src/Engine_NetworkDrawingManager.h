@@ -12,7 +12,9 @@
 class Engine_NetworkDrawingManager
 {
 public:
-    void Draw(const NavigationContext& navC, const RenderContext& rc, const StateContext& sc);
+
+    void HandleEvents(const StateContext& sc);
+    void Draw(const RenderContext& rc, const NavigationContext& navC, const StateContext& sc);
     void StartDrawing();
     void CompleteDrawing(Canvas &canvas);
     void AddAnchorPoint(const NavigationContext &frameCoord, float pixPr_cm);

@@ -55,8 +55,8 @@ void Engine::Render()
 
         //RandomTestDrawings();
 
-        canvas.Draw(navigationContext, rc, stateContext);
-        networkDrawingManager.Draw(navigationContext, rc, stateContext);
+        canvas.Draw(rc, navigationContext, stateContext);
+        networkDrawingManager.Draw(rc, navigationContext, stateContext);
 
         auto focusedComponent = stateManager.GetFocusComponent();
         if (focusedComponent != nullptr)
@@ -66,7 +66,7 @@ void Engine::Render()
     }
     EndMode2D();
 
-    canvas.DrawOverlay(navigationContext, rc);
+    canvas.DrawOverlay(rc, navigationContext);
     navigator.DrawCursorScreenGuide(stateContext);
 
     // draw some text using the default font
