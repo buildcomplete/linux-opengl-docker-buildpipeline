@@ -109,19 +109,20 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
                 if (TryContinuePathToAnchorPoints(toC, solution))
                 {
                     std::vector<CellPosition> dummy;
+                    dummy.push_back(fromC);
                     while (!solution.empty())
                     {
                         dummy.push_back(solution.top());
                         solution.pop();
                     }
-                    Canvas::DrawNetworkSegment(dummy, stateCtx, pixPr_cm);
+                    Canvas::DrawNetworkSegment(dummy, stateCtx, pixPr_cm, ELECTRIC_BLUE);
                 }
             }
         }
     }
     if (drawnNetwork.size() > 0)
     {
-        Canvas::DrawNetworkSegment(drawnNetwork, stateCtx, pixPr_cm);
+        Canvas::DrawNetworkSegment(drawnNetwork, stateCtx, pixPr_cm, ELECTRIC_BLUE);
     }
 }
 
@@ -180,7 +181,6 @@ bool NetworkManager::TryAddAnchorPoint(CellPosition anchor)
         return false;
 
     drawnNetwork.push_back(anchor);
-    std::cout << "Add point:" << anchor << std::endl;
     return true;
 }
 
@@ -198,8 +198,6 @@ bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
             target,
             solution))
     {
-        // std::cout << std::endl;
-
         while (!solution.empty())
         {
             auto x = solution.top();
@@ -217,13 +215,11 @@ bool NetworkManager::TryContinuePathToAnchorPoints(
 {
      // We could not just add, start path finding.
     CellPosition from = drawnNetwork.back();
-    //std::cout << "Path:" << from << "-" << target << std::endl;
 
     // if there are more than two entries, then start with same direction as last insertion
     std::int8_t startDir = drawnNetwork.size() < 2 ? 
         -1 : 
         calcOptimalDirIdx(drawnNetwork[drawnNetwork.size()-2], drawnNetwork[drawnNetwork.size()-1]);
-    std::cout << "COP(" << drawnNetwork.size() << ")" << (int)startDir << std::endl;
 
     std::unordered_set<SearchPos> visited;
     std::queue<SearchPath> planned;
@@ -282,7 +278,6 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
     if (sp.entryDir == -1)
     {
         int optDir = calcOptimalDirIdx(sp.position, target);
-        std::cout << "Start dir " << optDir << std::endl;
         addIfValid(CP_Directions[optDir] + sp.position, optDir);
         // Calculate optimal direction to begin with for first point
         for (std::int8_t i = 0; i < CP_NDIRS; ++i)

@@ -69,7 +69,7 @@ public:
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
-    static void DrawNetworkSegment(const std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm) ;
+    static void DrawNetworkSegment(const std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm, Color c);
 
     ~Canvas();
 

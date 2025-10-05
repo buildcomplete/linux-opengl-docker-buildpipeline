@@ -10,8 +10,8 @@ Navigator::Navigator()
     camera.offset = (Vector2){0, 0};
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
-    //gameMousePos = {(float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2};
-    //DisableCursor();
+    gameMousePos = {(float)GetScreenWidth() / 2, (float)GetScreenHeight() / 2};
+    DisableCursor();
 }
 
 NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)

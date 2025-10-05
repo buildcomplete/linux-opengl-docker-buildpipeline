@@ -112,17 +112,17 @@ void test_network_manager_createNetworkPathFinding()
         test_equals(result.back(), end, "Test Create 3 point network path ends as expected (NWW)");
     }
 
-    { // Sout East East (NNW)
+    { // Sout East East (NNE)
         NetworkManager n;
         n.StartDrawing();
-        CellPosition start = {15,10};
-        CellPosition end = {0,0};
+        CellPosition start = {0,10};
+        CellPosition end = {15,0};
         n.TryAddAnchorPoint(start);
-        n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (15,10)->(10,10)->(0,0)
+        n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (0,10)->(10,10)->(15,0)
         auto result = n.CompleteDrawing();
-        test_equals(result.size(), static_cast<size_t>(3), "Test Create 3 point network path following straight line (NNW)");
-        test_equals(result.front(), start, "Test Create 3 point network path starts as expected (NNW)");
-        test_equals(result.back(), end, "Test Create 3 point network path ends as expected (NNW)");
+        test_equals(result.size(), static_cast<size_t>(3), "Test Create 3 point network path following straight line (NNE)");
+        test_equals(result.front(), start, "Test Create 3 point network path starts as expected (NNE)");
+        test_equals(result.back(), end, "Test Create 3 point network path ends as expected (NNE)");
     }
 
 }

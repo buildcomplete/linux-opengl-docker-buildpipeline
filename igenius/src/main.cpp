@@ -13,14 +13,14 @@ void InitRaylibWindow()
 	//SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	SetWindowMonitor(1);
-	int screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
-	//int screenWidth = 640, screenHeight = 480;
+	//int screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
+	int screenWidth = 800, screenHeight = 600;
 
 	// Create the window and OpenGL context
 	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
 	
 	screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
-	//SetWindowPosition(100, 100);
+	SetWindowPosition(100, 100);
 	SetWindowMonitor(1);
 	//ToggleFullscreen();
 
