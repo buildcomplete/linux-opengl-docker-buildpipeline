@@ -27,12 +27,10 @@ public:
     bool TryAddAnchorPoint(CellPosition anchor);
     bool TryCreatePathToAnchorPoint(CellPosition target);
 
+    bool TryContinuePathToAnchorPoints(CellPosition target, std::stack<CellPosition> &path) const;
+
 private:
-    int networkDrawPosIdx = 1;
-    //CellPosition networkDrawPos[2] = {{0,0},{0,0}};
-    //CellPosition networkValidToHelper = {0,0};
     std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(0);
-    //bool anyNewvalidPointInNetwork = false;
 
    bool TryCreatePathBetweenAnchorPoints(
         SearchPath sp, 

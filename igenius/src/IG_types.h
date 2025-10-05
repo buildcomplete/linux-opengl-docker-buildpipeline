@@ -55,6 +55,11 @@ struct CellPosition
     {
         return {x+rhs.x, y+rhs.y};
     }
+    
+    CellPosition operator-(const CellPosition& rhs) const
+    {
+        return {x-rhs.x, y-rhs.y};
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, const CellPosition& pos);

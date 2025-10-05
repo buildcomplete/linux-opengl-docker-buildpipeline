@@ -51,6 +51,36 @@ struct SearchPath
     { }
 };
 
+const std::int8_t CP_NDIRS = 8;
+const CellPosition CP_Directions[CP_NDIRS]{
+    { 0, -1},  // N (0)
+    { 1, -1},  // NW (1)
+    { 1,  0},   // W (2)
+    { 1,  1},   // SW (3)
+    { 0,  1},   // S (4)
+    {-1,  1},  // SE (5)
+    {-1,  0},  // E (6)
+    {-1, -1}, // NE (7)
+};
+// Calc optimal direction assuming directions of CP_Directions
+std::int8_t calcOptimalDirIdx(const CellPosition& a, const CellPosition& b)
+{
+    auto delta = b-a;
+    int dy = delta.y == 0 ? 0 :
+        delta.y > 0 ? 1 : -1;
+    int dx = delta.x == 0 ? 0 :
+        delta.x > 0 ? 1 : -1;
+    
+    for (std::int8_t i=0;i<CP_NDIRS;++i)
+    {
+        if (CP_Directions[i].x == dx && CP_Directions[i].y == dy )
+            return i;
+    }
+ 
+    // No prefered direction (should never happen)
+    return -1;
+};
+
 void NetworkManager::HandleEvents(const StateContext &sc)
 {
 }
@@ -73,21 +103,19 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
             CellPosition toC = navCtx.mousePosWorldGrid;
             CellPosition fromC = drawnNetwork.back();
 
-            // if (CanAddToNetwork(fromC, toC))
-            // {
-            //     // this should be moved to update state
-            //     networkValidToHelper = navCtx.mousePosWorldGrid;
-            //     anyNewvalidPointInNetwork = true;
-            //     DrawLine(fromC.x * pixPr_cm + pixPr_cm / 2.0f, fromC.y * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.x * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.y * pixPr_cm + pixPr_cm / 2.0f, NETGREEN);
-
-            // }
-            // else 
             if (fromC != toC)
             {
-                NetworkManager dummy;
-                assert(dummy.TryAddAnchorPoint(fromC));
-                if (dummy.TryCreatePathToAnchorPoint(toC))    
-                    Canvas::DrawNetworkSegment(dummy.drawnNetwork, stateCtx, pixPr_cm);
+                std::stack<CellPosition> solution;
+                if (TryContinuePathToAnchorPoints(toC, solution))
+                {
+                    std::vector<CellPosition> dummy;
+                    while (!solution.empty())
+                    {
+                        dummy.push_back(solution.top());
+                        solution.pop();
+                    }
+                    Canvas::DrawNetworkSegment(dummy, stateCtx, pixPr_cm);
+                }
             }
         }
     }
@@ -148,37 +176,25 @@ void NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
 // if point could be added, returns true
 bool NetworkManager::TryAddAnchorPoint(CellPosition anchor)
 {
-
-    // Todo, update so a path is found following the horizontal/vertical line rules
     if (!CanAddToNetwork(anchor))
         return false;
 
     drawnNetwork.push_back(anchor);
+    std::cout << "Add point:" << anchor << std::endl;
     return true;
 }
 
 bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
 {
     // If we can just add a straigt line, no reason to start path finding
-    if (TryAddAnchorPoint(target))
+    if (drawnNetwork.size() == 0 )
     {
+        TryAddAnchorPoint(target);
         return true;
     }
 
-    // We could not just add, start path finding.
-    CellPosition from = drawnNetwork.back();
-    //std::cout << "Path:" << from << "-" << target << std::endl;
-
-    std::unordered_set<SearchPos> visited;
     std::stack<CellPosition> solution;
-    std::queue<SearchPath> planned;
-    visited.insert({from, static_cast<std::int8_t>(-1)});
-    SearchPath sp(from, nullptr, static_cast<std::int8_t>(-1));
-
-    if (TryCreatePathBetweenAnchorPoints(
-            sp,
-            planned,
-            visited,
+    if (TryContinuePathToAnchorPoints(
             target,
             solution))
     {
@@ -188,7 +204,6 @@ bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
         {
             auto x = solution.top();
             solution.pop();
-             //std::cout << x << std::endl;
             TryAddAnchorPoint(x);
         }
         return true;
@@ -196,25 +211,32 @@ bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
 
     return false;
 }
-
-float pathEnergy(CellPosition v1, CellPosition v2, int nd, int pd)
+bool NetworkManager::TryContinuePathToAnchorPoints(
+    CellPosition target,
+    std::stack<CellPosition>& path) const
 {
-    int dx = v1.x - v2.x;
-    int dy = v1.y - v2.y;
-    return dx * dx + dy + dy;
+     // We could not just add, start path finding.
+    CellPosition from = drawnNetwork.back();
+    //std::cout << "Path:" << from << "-" << target << std::endl;
+
+    // if there are more than two entries, then start with same direction as last insertion
+    std::int8_t startDir = drawnNetwork.size() < 2 ? 
+        -1 : 
+        calcOptimalDirIdx(drawnNetwork[drawnNetwork.size()-2], drawnNetwork[drawnNetwork.size()-1]);
+    std::cout << "COP(" << drawnNetwork.size() << ")" << (int)startDir << std::endl;
+
+    std::unordered_set<SearchPos> visited;
+    std::queue<SearchPath> planned;
+    visited.insert({from, static_cast<std::int8_t>(startDir)});
+    SearchPath sp(from, nullptr, static_cast<std::int8_t>(startDir));
+    return TryCreatePathBetweenAnchorPoints(
+            sp,
+            planned,
+            visited,
+            target,
+            path);
 }
 
-const std::int8_t CP_NDIRS = 8;
-const CellPosition CP_Directions[CP_NDIRS]{
-    {-1, 0},  // N
-    {-1, 1},  // NE
-    {0, 1},   // E
-    {1, 1},   // SE
-    {1, 0},   // S
-    {1, -1},  // SW
-    {0, -1},  // W
-    {-1, -1}, // NW
-};
 
 bool NetworkManager::TryCreatePathBetweenAnchorPoints(
     SearchPath sp,                          // Actual path traversed, this will be each node and should be compressed into anchor point at direction changes
@@ -230,7 +252,6 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
         int leDir = -1;
         while (backTrack != nullptr)
         {
-            //std::cout << "\033[32m" << backTrack->position << "\033[0m";
             // only add points when changing directions
             if (backTrack->entryDir != leDir)
             {
@@ -260,6 +281,10 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
     // if we are not at target, add all neighbours neighbours that we did not already visit.
     if (sp.entryDir == -1)
     {
+        int optDir = calcOptimalDirIdx(sp.position, target);
+        std::cout << "Start dir " << optDir << std::endl;
+        addIfValid(CP_Directions[optDir] + sp.position, optDir);
+        // Calculate optimal direction to begin with for first point
         for (std::int8_t i = 0; i < CP_NDIRS; ++i)
         {
             addIfValid(CP_Directions[i] + sp.position, i);
@@ -267,12 +292,19 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
     }
     else
     {
+        std::int8_t nDir1=(sp.entryDir - 1 + CP_NDIRS) % CP_NDIRS;
+        std::int8_t nDir2=(sp.entryDir + 1 + CP_NDIRS) % CP_NDIRS;
+
+        std::int8_t optDir = calcOptimalDirIdx(sp.position, target);
+        if (optDir == sp.entryDir || optDir == nDir1 || optDir == nDir2 )
+        {
+            addIfValid(CP_Directions[optDir] + sp.position, optDir);
+        }
+
         // prefer same direction, add +-45 degrees
         addIfValid(CP_Directions[sp.entryDir] + sp.position, sp.entryDir);
-        std::int8_t a = ((sp.entryDir - 1 + CP_NDIRS) % CP_NDIRS);
-        addIfValid(CP_Directions[a] + sp.position, a);
-        std::int8_t b = ((sp.entryDir + 1 + CP_NDIRS) % CP_NDIRS);
-        addIfValid(CP_Directions[a] + sp.position, a);
+        addIfValid(CP_Directions[nDir1] + sp.position, nDir1);
+        addIfValid(CP_Directions[nDir2] + sp.position, nDir2);
     }
 
     while (!nodes.empty())
