@@ -4,8 +4,11 @@
 #include "raylib.h"
 #include <vector>
 #include "Canvas.h"
+#include <unordered_set>
+#include <stack>
 
-
+struct SearchPath;
+struct SearchPos;
 /**
  * Responsible for drawing network connections and handling mouse events 
  * for network creation, interacting with the Canvas to understand item presence.
@@ -28,14 +31,15 @@ private:
     int networkDrawPosIdx = 1;
     CellPosition networkDrawPos[2] = {{0,0},{0,0}};
     CellPosition networkValidToHelper = {0,0};
-    std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(5);
+    std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(0);
     bool anyNewvalidPointInNetwork = false;
 
-    std::vector<CellPosition> TryCreatePathBetweenAnchorPoints(
-        std::vector<CellPosition> path, 
-        std::vector<CellPosition> nodes,
-        std::vector<CellPosition>& visited, 
-        CellPosition target) const;
+   bool TryCreatePathBetweenAnchorPoints(
+        SearchPath sp, 
+        std::queue<SearchPath>& nodes,
+        std::unordered_set<SearchPos>& visited, 
+        CellPosition target,
+        std::stack<CellPosition>& path) const;
 
 };
 

@@ -1,6 +1,7 @@
 #ifndef IG_TYPES_H
 #define IG_TYPES_H
 #include <cstdint>
+#include <iostream>
 
 
 #define OLIVE_GREEN_DARK  	CLITERAL(Color){ 17, 23, 00, 255 }      //  Background
@@ -49,6 +50,13 @@ struct CellPosition
     {
         return x!=rhs.x||y!=rhs.y;
     }
+
+    CellPosition operator+(const CellPosition& rhs) const
+    {
+        return {x+rhs.x, y+rhs.y};
+    }
 };
+
+std::ostream& operator<<(std::ostream& os, const CellPosition& pos);
 
 #endif

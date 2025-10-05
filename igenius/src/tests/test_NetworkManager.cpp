@@ -76,10 +76,14 @@ void test_network_manager_createNetworkPathFinding()
     {
         NetworkManager n;
         n.StartDrawing();
-        n.TryAddAnchorPoint({0,0});
-        n.TryCreatePathToAnchorPoint({10,15});
+        CellPosition start = {0,0};
+        CellPosition end = {2,3};
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (0,0)->(10,10)->(10,15)
         auto result = n.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(3), "Test Create 3 point network path following straight line");
+        test_equals(result.front(), start, "Test Create 3 point network path starts as expected");
+        test_equals(result.back(), end, "Test Create 3 point network path ends as expected");
     }
 
 }

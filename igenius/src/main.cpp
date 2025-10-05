@@ -20,9 +20,9 @@ void InitRaylibWindow()
 	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
 	
 	screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
-	SetWindowPosition(100, 100);
+	//SetWindowPosition(100, 100);
 	SetWindowMonitor(1);
-	ToggleFullscreen();
+	//ToggleFullscreen();
 
 	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
 
