@@ -28,7 +28,7 @@ public:
     bool TryCreatePathToAnchorPoint(CellPosition target);
 
     bool TryContinuePathToAnchorPoints(CellPosition target, std::stack<CellPosition> &path) const;
-
+    static bool InsideBounds(const CellPosition& n);
 private:
     std::vector<CellPosition> drawnNetwork= std::vector<CellPosition>(0);
 

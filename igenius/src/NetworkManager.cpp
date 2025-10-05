@@ -213,6 +213,9 @@ bool NetworkManager::TryContinuePathToAnchorPoints(
     CellPosition target,
     std::stack<CellPosition>& path) const
 {
+    if (!InsideBounds(target) || drawnNetwork.size()==0)
+        return false;
+
      // We could not just add, start path finding.
     CellPosition from = drawnNetwork.back();
 
@@ -231,6 +234,14 @@ bool NetworkManager::TryContinuePathToAnchorPoints(
             visited,
             target,
             path);
+}
+
+// Checks if a cell is inside bounds of grid [0 0;255 255]
+// There are lots logic tied to bounds being inside a byte
+// if changed there will be several areas to check
+bool NetworkManager::InsideBounds(const CellPosition& n)
+{
+    return n.x >= 0 && n.y >= 0 && n.x < 256 && n.y < 256;
 }
 
 
@@ -260,9 +271,9 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
         return true;
     }
 
-    auto addIfValid = [&planned, &nodes, &sp](const CellPosition &n, int dir)
+    auto addIfValid = [&planned, &nodes, &sp](const CellPosition &n, std::int8_t dir)
     {
-        if (n.x >= 0 && n.y >= 0 && n.x < 256 && n.y < 256)
+        if (InsideBounds(n))
         {
             // Check that new neighbour is inside bounds and not already visisited
             if (planned.find({n, dir}) == planned.end())

@@ -114,7 +114,6 @@ void test_network_manager_createNetworkPathFinding()
 
     { // Sout East East (NNE)
         NetworkManager n;
-        n.StartDrawing();
         CellPosition start = {0,10};
         CellPosition end = {15,0};
         n.TryAddAnchorPoint(start);
@@ -124,6 +123,25 @@ void test_network_manager_createNetworkPathFinding()
         test_equals(result.front(), start, "Test Create 3 point network path starts as expected (NNE)");
         test_equals(result.back(), end, "Test Create 3 point network path ends as expected (NNE)");
     }
+}
+
+void test_network_manager_outOfBoundStable()
+{
+    test_section("Network Manager CreateNetwork path finder out of bounds stability");
+     { 
+        NetworkManager n;
+        CellPosition start = {10,10};
+        CellPosition end = {-1,0};
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(0), "Test Create network out of bounds does nothing");
+    }
+}
+
+void test_network_manager_createPathAvoidBlocked()
+{
+    test_section("Network Manager CreateNetwork path finder avoid blocked");
 
 }
 
@@ -132,4 +150,6 @@ void run_networkm_manager_tests()
 {
     test_network_manager_createNetworkSimple();
     test_network_manager_createNetworkPathFinding();
+    test_network_manager_outOfBoundStable();
+    test_network_manager_createPathAvoidBlocked();
 }
