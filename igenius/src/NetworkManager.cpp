@@ -128,7 +128,8 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
 
 bool NetworkManager::CanAddToNetwork(CellPosition toC)
 {
-    return drawnNetwork.size() == 0 || CanAddToNetwork(drawnNetwork.back(), toC);
+    return InsideBounds(toC) 
+        && (drawnNetwork.size() == 0 || CanAddToNetwork(drawnNetwork.back(), toC));
 }
 bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC)
 {

@@ -9,28 +9,28 @@ void test_network_manager_createNetworkSimple()
     {
         NetworkManager m;
         m.StartDrawing();
-        m.TryAddAnchorPoint({0,0});
-        m.TryAddAnchorPoint({0,10});
+        m.TryAddAnchorPoint({0, 0});
+        m.TryAddAnchorPoint({0, 10});
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along horizontal lines");
     }
-    
+
     // create network path along vertical lines
     {
         NetworkManager m;
         m.StartDrawing();
-        m.TryAddAnchorPoint({0,0});
-        m.TryAddAnchorPoint({10,0});
+        m.TryAddAnchorPoint({0, 0});
+        m.TryAddAnchorPoint({10, 0});
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along vertical lines");
     }
-        
+
     // create network path along diagonal lines
     {
         NetworkManager m;
         m.StartDrawing();
-        m.TryAddAnchorPoint({0,0});
-        m.TryAddAnchorPoint({10,10});
+        m.TryAddAnchorPoint({0, 0});
+        m.TryAddAnchorPoint({10, 10});
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path along diagonal lines");
     }
@@ -39,8 +39,8 @@ void test_network_manager_createNetworkSimple()
     {
         NetworkManager m;
         m.StartDrawing();
-        m.TryAddAnchorPoint({0,0});
-        test_assert(m.TryAddAnchorPoint({10,15}) == false, "TryAdd... Create network path not on straight line", "TryAddAnchorPoint should return false");
+        m.TryAddAnchorPoint({0, 0});
+        test_assert(m.TryAddAnchorPoint({10, 15}) == false, "TryAdd... Create network path not on straight line", "TryAddAnchorPoint should return false");
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(0), "Test Create 2 point network path along not following straight line");
     }
@@ -52,9 +52,9 @@ void test_network_manager_createNetworkSimple()
     {
         NetworkManager m;
         m.StartDrawing();
-        m.TryAddAnchorPoint({ 0, 0});
-        m.TryAddAnchorPoint({ 0,10});
-        m.TryAddAnchorPoint({10,10});
+        m.TryAddAnchorPoint({0, 0});
+        m.TryAddAnchorPoint({0, 10});
+        m.TryAddAnchorPoint({10, 10});
         m.TryAddAnchorPoint({10, 0});
         auto result = m.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(4), "Test Create 4 point network path along diagonal and horizontal lines");
@@ -67,8 +67,8 @@ void test_network_manager_createNetworkPathFinding()
     {
         NetworkManager n;
         n.StartDrawing();
-        n.TryAddAnchorPoint({0,0});
-        n.TryCreatePathToAnchorPoint({10,10});
+        n.TryAddAnchorPoint({0, 0});
+        n.TryCreatePathToAnchorPoint({10, 10});
         auto result = n.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(2), "Test Create 2 point network path following straight line");
     }
@@ -76,8 +76,8 @@ void test_network_manager_createNetworkPathFinding()
     { // Sout South East (SSE)
         NetworkManager n;
         n.StartDrawing();
-        CellPosition start = {0,0};
-        CellPosition end = {15,10};
+        CellPosition start = {0, 0};
+        CellPosition end = {15, 10};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (0,0)->(15,10)->(15,10)
         auto result = n.CompleteDrawing();
@@ -89,8 +89,8 @@ void test_network_manager_createNetworkPathFinding()
     { // Sout East East (SEE)
         NetworkManager n;
         n.StartDrawing();
-        CellPosition start = {0,0};
-        CellPosition end = {10,15};
+        CellPosition start = {0, 0};
+        CellPosition end = {10, 15};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (0,0)->(10,15)->(10,15)
         auto result = n.CompleteDrawing();
@@ -102,8 +102,8 @@ void test_network_manager_createNetworkPathFinding()
     { // Sout East East (NWW)
         NetworkManager n;
         n.StartDrawing();
-        CellPosition start = {10,15};
-        CellPosition end = {0,0};
+        CellPosition start = {10, 15};
+        CellPosition end = {0, 0};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (10,15)->(10,10)->(0,0)
         auto result = n.CompleteDrawing();
@@ -114,8 +114,8 @@ void test_network_manager_createNetworkPathFinding()
 
     { // Sout East East (NNE)
         NetworkManager n;
-        CellPosition start = {0,10};
-        CellPosition end = {15,0};
+        CellPosition start = {0, 10};
+        CellPosition end = {15, 0};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should create 3 point path, example (0,10)->(10,10)->(15,0)
         auto result = n.CompleteDrawing();
@@ -128,25 +128,34 @@ void test_network_manager_createNetworkPathFinding()
 void test_network_manager_outOfBoundStable()
 {
     test_section("Network Manager CreateNetwork path finder out of bounds stability");
-     { 
+    {
         NetworkManager n;
-        CellPosition start = {10,10};
-        CellPosition end = {-1,0};
+        CellPosition start = {10, 10};
+        CellPosition end = {-1, 0};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
         auto result = n.CompleteDrawing();
-        test_equals(result.size(), static_cast<size_t>(0), "Test Create network out of bounds does nothing");
+        test_equals(result.size(), static_cast<size_t>(0), "Test Create network, end is out of bounds and does nothing");
+    }
+
+    {
+        NetworkManager n;
+        CellPosition start = {-1, 0};
+        CellPosition end = {10, 10};
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(0), "Test Create network, start is out of bounds and does nothing");
     }
 }
 
 void test_network_manager_createPathAvoidBlocked()
 {
     test_section("Network Manager CreateNetwork path finder avoid blocked");
-
 }
 
 // Function to run all engine tests
-void run_networkm_manager_tests() 
+void run_networkm_manager_tests()
 {
     test_network_manager_createNetworkSimple();
     test_network_manager_createNetworkPathFinding();
