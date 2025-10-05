@@ -71,28 +71,23 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
         if (drawnNetwork.size() != 0)
         {
             CellPosition toC = navCtx.mousePosWorldGrid;
-            CellPosition fromC = networkDrawPos[networkDrawPosIdx];
+            CellPosition fromC = drawnNetwork.back();
 
-            if (CanAddToNetwork(fromC, toC))
-            {
-                // this should be moved to update state
-                networkValidToHelper = navCtx.mousePosWorldGrid;
-                anyNewvalidPointInNetwork = true;
-            }
-            else if (fromC != toC)
+            // if (CanAddToNetwork(fromC, toC))
+            // {
+            //     // this should be moved to update state
+            //     networkValidToHelper = navCtx.mousePosWorldGrid;
+            //     anyNewvalidPointInNetwork = true;
+            //     DrawLine(fromC.x * pixPr_cm + pixPr_cm / 2.0f, fromC.y * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.x * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.y * pixPr_cm + pixPr_cm / 2.0f, NETGREEN);
+
+            // }
+            // else 
+            if (fromC != toC)
             {
                 NetworkManager dummy;
                 assert(dummy.TryAddAnchorPoint(fromC));
-                if (dummy.TryCreatePathToAnchorPoint(toC))
-                    ;
-                Canvas::DrawNetworkSegment(dummy.drawnNetwork, stateCtx, pixPr_cm);
-            }
-
-            if (anyNewvalidPointInNetwork)
-            {
-                DrawLine(fromC.x * pixPr_cm + pixPr_cm / 2.0f, fromC.y * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.x * pixPr_cm + pixPr_cm / 2.0f, networkValidToHelper.y * pixPr_cm + pixPr_cm / 2.0f, NETGREEN);
-
-                // anyNewvalidPointInNetwork = false;
+                if (dummy.TryCreatePathToAnchorPoint(toC))    
+                    Canvas::DrawNetworkSegment(dummy.drawnNetwork, stateCtx, pixPr_cm);
             }
         }
     }
@@ -140,15 +135,11 @@ void NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
     // if not starting a new it should be valid from mouse moving
     if (drawnNetwork.size() == 0)
     {
-        networkValidToHelper = frameCoord.mousePosWorldGrid;
-        anyNewvalidPointInNetwork = true;
+        drawnNetwork.push_back(frameCoord.mousePosWorldGrid);
     }
-    if (anyNewvalidPointInNetwork)
+    else
     {
-        drawnNetwork.push_back(networkValidToHelper);
-        networkDrawPosIdx = (networkDrawPosIdx + 1) % 2;
-        networkDrawPos[networkDrawPosIdx] = networkValidToHelper;
-        anyNewvalidPointInNetwork = false;
+        TryCreatePathToAnchorPoint(frameCoord.mousePosWorldGrid);
     }
 }
 
