@@ -71,7 +71,7 @@ void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const 
 
     for (int i = 0; i < networks.size(); ++i)
     {
-        Canvas::DrawNetworkSegment(networks[i], sc, navC.pixPr_cm, NETGREEN);
+        Canvas::DrawNetworkSegment(networks[i], sc.IsInState(IG_MOUSE_MODE_NETWORK), navC.pixPr_cm, NETGREEN);
     }
 
     static bool enableRadialHack = true;
@@ -346,10 +346,10 @@ int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
     return cellX + cellY * GridWidth;
 }
 
-void Canvas::DrawNetworkSegment(const std::vector<CellPosition> &network, const StateContext &sc, float pixPr_cm, Color c)
+void Canvas::DrawNetworkSegment(const std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm, Color c)
 {
     DrawLineStripCellPos(&(network[0]), network.size(), c, pixPr_cm);
-    if (sc.IsInState(MOUSE_MODE_FLAGS::IG_MOUSE_MODE_NETWORK))
+    if (drawNodes)
     {
         for (int i = 0; i < network.size(); ++i)
         {

@@ -81,48 +81,57 @@ std::int8_t calcOptimalDirIdx(const CellPosition& a, const CellPosition& b)
     return -1;
 };
 
-void NetworkManager::HandleEvents(const StateContext &sc)
-{
-}
 
-void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx, const StateContext &stateCtx)
+void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContext &navCtx)
 {
+    if (!isInDrawMode)
+        return;
+
+    if (lastPathTo == navCtx.mousePosWorldGrid )
+        return;
+
+
     auto pixPr_cm = navCtx.pixPr_cm;
     // Network will be arranged on grid centers
     // If there are 0 or 1 neighbours, draw a circle
     // Then draw a line from center of this to each neighbour
     // But this is only the drawing function, so here we only draw connection to other network, and it is not possible to create illigal connections
-    if (stateCtx.IsInState(MOUSE_MODE_FLAGS::IG_MOUSE_MODE_NETWORK))
+    if (drawnNetwork.size() != 0)
     {
-        Color circleColor = ELECTRIC_BLUE;
-        circleColor.a = 155;
-        DrawCircle(navCtx.mousePosWorldGrid.x * pixPr_cm + pixPr_cm / 2.0f, navCtx.mousePosWorldGrid.y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 6.0f, circleColor);
+        CellPosition toC = navCtx.mousePosWorldGrid;
+        CellPosition fromC = drawnNetwork.back();
+        lastPathTo = toC;
 
-        if (drawnNetwork.size() != 0)
+        if (fromC != toC)
         {
-            CellPosition toC = navCtx.mousePosWorldGrid;
-            CellPosition fromC = drawnNetwork.back();
-
-            if (fromC != toC)
+            std::stack<CellPosition> solution;
+            if (TryContinuePathToAnchorPoints(toC, solution))
             {
-                std::stack<CellPosition> solution;
-                if (TryContinuePathToAnchorPoints(toC, solution))
+                pathInProgress.clear();
+                pathInProgress.push_back(fromC);
+                while (!solution.empty())
                 {
-                    std::vector<CellPosition> dummy;
-                    dummy.push_back(fromC);
-                    while (!solution.empty())
-                    {
-                        dummy.push_back(solution.top());
-                        solution.pop();
-                    }
-                    Canvas::DrawNetworkSegment(dummy, stateCtx, pixPr_cm, ELECTRIC_BLUE);
+                    pathInProgress.push_back(solution.top());
+                    solution.pop();
                 }
             }
         }
     }
+}
+void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx) const
+{
+    auto pixPr_cm = navCtx.pixPr_cm;
+    Color circleColor = ELECTRIC_BLUE;
+    circleColor.a = 155;
+    DrawCircle(navCtx.mousePosWorldGrid.x * pixPr_cm + pixPr_cm / 2.0f, navCtx.mousePosWorldGrid.y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 6.0f, circleColor);
+
     if (drawnNetwork.size() > 0)
     {
-        Canvas::DrawNetworkSegment(drawnNetwork, stateCtx, pixPr_cm, ELECTRIC_BLUE);
+        Canvas::DrawNetworkSegment(drawnNetwork, true, pixPr_cm, ELECTRIC_BLUE);
+    }
+    if (pathInProgress.size()>0)
+    {
+        Canvas::DrawNetworkSegment(pathInProgress, true, pixPr_cm, ELECTRIC_BLUE);
     }
 }
 
@@ -146,6 +155,7 @@ bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC)
 void NetworkManager::StartDrawing()
 {
     // when starting network mode, reset current drawing state (or connect to existing network later on...)
+    isInDrawMode = true;
     drawnNetwork.clear();
 }
 
@@ -153,9 +163,13 @@ std::vector<CellPosition> NetworkManager::CompleteDrawing()
 {
     auto drawnNetworkCp = std::vector<CellPosition>(drawnNetwork);
     drawnNetwork.clear();
+    pathInProgress.clear();
 
     if (drawnNetworkCp.size() < 2)
         drawnNetworkCp.clear();
+    
+    isInDrawMode = false;
+    
     return drawnNetworkCp;
 }
 

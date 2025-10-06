@@ -25,6 +25,7 @@ void Engine::HandleEvents()
 {
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
+    networkDrawingManager.HandleEvents(stateContext, navigationContext);
 
     auto c = stateManager.GetFocusComponent();
     if (c != nullptr)
@@ -56,7 +57,7 @@ void Engine::Render()
         //RandomTestDrawings();
 
         canvas.Draw(rc, navigationContext, stateContext);
-        networkDrawingManager.Draw(rc, navigationContext, stateContext);
+        networkDrawingManager.Draw(rc, navigationContext);
 
         auto focusedComponent = stateManager.GetFocusComponent();
         if (focusedComponent != nullptr)

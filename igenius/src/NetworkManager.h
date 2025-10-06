@@ -17,8 +17,8 @@ void IsBlockedForNW(CellPosition anchor, int eDir);
 class NetworkManager
 {
 public:
-    void HandleEvents(const StateContext &sc);
-    void Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc);
+    void HandleEvents(const StateContext &sc, const NavigationContext &navCtx);
+    void Draw(const RenderContext &rc, const NavigationContext &navC) const;
     bool CanAddToNetwork(CellPosition toC);
     bool CanAddToNetwork(CellPosition fromC, CellPosition toC);
     void StartDrawing();
@@ -31,6 +31,9 @@ public:
 
 private:
     std::vector<CellPosition> drawnNetwork = std::vector<CellPosition>(0);
+    std::vector<CellPosition> pathInProgress = std::vector<CellPosition>(0);
+    bool isInDrawMode = false;
+    CellPosition lastPathTo;
 
     bool TryCreatePathBetweenAnchorPoints(
         SearchNode start,
