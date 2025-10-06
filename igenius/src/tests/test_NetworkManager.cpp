@@ -125,6 +125,19 @@ void test_network_manager_createNetworkPathFinding()
     }
 }
 
+void test_network_manager_atBoundStable()
+{
+    test_section("Network Manager CreateNetwork path finder at bounds stability");
+    {
+        NetworkManager n;
+        CellPosition start = {0, 0};
+        CellPosition end = {255, 255};
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(2), "Test Create network, end is at bounds");
+    }
+}
 void test_network_manager_outOfBoundStable()
 {
     test_section("Network Manager CreateNetwork path finder out of bounds stability");
@@ -159,6 +172,7 @@ void run_networkm_manager_tests()
 {
     test_network_manager_createNetworkSimple();
     test_network_manager_createNetworkPathFinding();
+    test_network_manager_atBoundStable();
     test_network_manager_outOfBoundStable();
     test_network_manager_createPathAvoidBlocked();
 }

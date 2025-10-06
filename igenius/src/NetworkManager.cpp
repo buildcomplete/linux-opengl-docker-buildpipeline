@@ -41,12 +41,12 @@ namespace std
     };
 }
 
-struct SearchPath
+struct SearchNode
 {
     CellPosition position;
-    SearchPath *previous;
+    SearchNode *previous;
     std::int8_t entryDir;
-    SearchPath(CellPosition pos_, SearchPath *pre_, std::int8_t entryDir_)
+    SearchNode(CellPosition pos_, SearchNode *pre_, std::int8_t entryDir_)
         : position(pos_), previous(pre_), entryDir(entryDir_)
     { }
 };
@@ -140,7 +140,7 @@ bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC)
     bool horzOrVert = abs(distance.x) < 0.1 || abs(distance.y) < 0.1;
     bool diagonal = abs(abs(distance.x) - abs(distance.y)) < 0.1 || abs(abs(distance.y) - abs(distance.x)) < 0.1;
     bool distOk = Vector2DistanceSqr(from, to) > 0.1; // line non zero length
-    return distOk && (horzOrVert || diagonal);
+    return InsideBounds(fromC) && InsideBounds(toC) && distOk && (horzOrVert || diagonal);
 }
 
 void NetworkManager::StartDrawing()
@@ -225,13 +225,10 @@ bool NetworkManager::TryContinuePathToAnchorPoints(
         -1 : 
         calcOptimalDirIdx(drawnNetwork[drawnNetwork.size()-2], drawnNetwork[drawnNetwork.size()-1]);
 
+    
     std::unordered_set<SearchPos> visited;
-    std::queue<SearchPath> planned;
-    visited.insert({from, static_cast<std::int8_t>(startDir)});
-    SearchPath sp(from, nullptr, static_cast<std::int8_t>(startDir));
     return TryCreatePathBetweenAnchorPoints(
-            sp,
-            planned,
+            SearchNode(from, nullptr, static_cast<std::int8_t>(startDir)),
             visited,
             target,
             path);
@@ -247,81 +244,94 @@ bool NetworkManager::InsideBounds(const CellPosition& n)
 
 
 bool NetworkManager::TryCreatePathBetweenAnchorPoints(
-    SearchPath sp,                          // Actual path traversed, this will be each node and should be compressed into anchor point at direction changes
-    std::queue<SearchPath> &nodes,          // Nodes to visit in order
+    SearchNode start,          // Nodes to visit including links back to previous items
     std::unordered_set<SearchPos> &planned, // Nodes planned to be visisted (in nodes list, or was in nodes list earlier)
     CellPosition target,
     std::stack<CellPosition>& path) const
 {
-    // If we now are a target, return path.
-    if (sp.position == target)
-    {
-        SearchPath *backTrack = &sp;
-        int leDir = -1;
-        while (backTrack != nullptr)
-        {
-            // only add points when changing directions
-            if (backTrack->entryDir != leDir)
-            {
-                path.push(backTrack->position);
-                leDir = backTrack->entryDir;
-            }
-            
-            backTrack = backTrack->previous;
-        }
-        return true;
-    }
+    
+    std::queue<SearchNode*> nodes;
+    nodes.push(&start);
 
-    auto addIfValid = [&planned, &nodes, &sp](const CellPosition &n, std::int8_t dir)
+    auto isNewAndValid = [&planned, &nodes](const CellPosition &n, std::int8_t dir)
     {
         if (InsideBounds(n))
         {
             // Check that new neighbour is inside bounds and not already visisited
             if (planned.find({n, dir}) == planned.end())
             {
-                nodes.push(SearchPath(n, &sp, dir));
-                planned.insert({n, dir});
+                return true;
             }
+        }
+
+        return false;
+    };
+
+    std::vector<std::unique_ptr<SearchNode>> db;
+    auto addIfNewAndValid = [&planned, &nodes, &db, &isNewAndValid](const CellPosition &n, std::int8_t dir, SearchNode* parrent)
+    {
+        if (isNewAndValid(n,dir))
+        {
+            db.emplace_back(std::make_unique<SearchNode>(n, parrent, dir));
+            SearchNode* nn = db.back().get();
+            nodes.push(nn);
+            planned.insert({n,dir});
         }
     };
 
-    // Only allow same direction +-1 (except for first point)
-    // if we are not at target, add all neighbours neighbours that we did not already visit.
-    if (sp.entryDir == -1)
-    {
-        int optDir = calcOptimalDirIdx(sp.position, target);
-        addIfValid(CP_Directions[optDir] + sp.position, optDir);
-        // Calculate optimal direction to begin with for first point
-        for (std::int8_t i = 0; i < CP_NDIRS; ++i)
-        {
-            addIfValid(CP_Directions[i] + sp.position, i);
-        }
-    }
-    else
-    {
-        std::int8_t nDir1=(sp.entryDir - 1 + CP_NDIRS) % CP_NDIRS;
-        std::int8_t nDir2=(sp.entryDir + 1 + CP_NDIRS) % CP_NDIRS;
-
-        std::int8_t optDir = calcOptimalDirIdx(sp.position, target);
-        if (optDir == sp.entryDir || optDir == nDir1 || optDir == nDir2 )
-        {
-            addIfValid(CP_Directions[optDir] + sp.position, optDir);
-        }
-
-        // prefer same direction, add +-45 degrees
-        addIfValid(CP_Directions[sp.entryDir] + sp.position, sp.entryDir);
-        addIfValid(CP_Directions[nDir1] + sp.position, nDir1);
-        addIfValid(CP_Directions[nDir2] + sp.position, nDir2);
-    }
-
     while (!nodes.empty())
     {
-        auto next = nodes.front();
+        SearchNode* sp = nodes.front();
         nodes.pop();
 
-        if (TryCreatePathBetweenAnchorPoints(next, nodes, planned, target, path))
+        // If we now are a target, return path.
+        if (sp->position == target)
         {
+            SearchNode* backTrack = sp;
+            int leDir = -1;
+            while (backTrack != nullptr)
+            {
+                // only add points when changing directions
+                if (backTrack->entryDir != leDir)
+                {
+                    path.push(backTrack->position);
+                    leDir = backTrack->entryDir;
+                }
+
+                backTrack = backTrack->previous;
+            }
+
             return true;
+        }
+
+
+        // Only allow same direction +-1 (except for first point)
+        // if we are not at target, add all neighbours neighbours that we did not already visit.
+        if (sp->entryDir == -1)
+        {
+            int optDir = calcOptimalDirIdx(sp->position, target);
+            addIfNewAndValid(CP_Directions[optDir] + sp->position, optDir, sp);
+            // Calculate optimal direction to begin with for first point
+            for (std::int8_t i = 0; i < CP_NDIRS; ++i)
+            {
+                addIfNewAndValid(CP_Directions[i] + sp->position, i, sp);
+            }
+        }
+        else
+        {
+            std::int8_t nDir1=(sp->entryDir - 1 + CP_NDIRS) % CP_NDIRS;
+            std::int8_t nDir2=(sp->entryDir + 1 + CP_NDIRS) % CP_NDIRS;
+
+            std::int8_t optDir = calcOptimalDirIdx(sp->position, target);
+            if (optDir == sp->entryDir || optDir == nDir1 || optDir == nDir2 )
+            {
+                addIfNewAndValid(CP_Directions[optDir] + sp->position, optDir, sp);
+            }
+
+            // prefer same direction, add +-45 degrees
+            addIfNewAndValid(CP_Directions[sp->entryDir] + sp->position, sp->entryDir, sp);
+            addIfNewAndValid(CP_Directions[nDir1] + sp->position, nDir1, sp);
+            addIfNewAndValid(CP_Directions[nDir2] + sp->position, nDir2, sp);
         }
     }
 

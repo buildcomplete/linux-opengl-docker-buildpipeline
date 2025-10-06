@@ -12,17 +12,25 @@ void InitRaylibWindow()
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI );
 	//SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
-	SetWindowMonitor(1);
-	//int screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
-	int screenWidth = 800, screenHeight = 600;
-
-	// Create the window and OpenGL context
-	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
 	
-	screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
-	SetWindowPosition(100, 100);
+	// Create the window and OpenGL context
+	int screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
+	InitWindow(screenWidth, screenHeight, "I**G***** - Core");
+
 	SetWindowMonitor(1);
-	//ToggleFullscreen();
+	std::cout << "Monitors:" << GetMonitorCount() << std::endl;
+	for (int i=0;i<GetMonitorCount(); ++i)
+	{
+		if (GetCurrentMonitor()==i)
+			std::cout << "[*]";
+		else 
+			std:: cout <<"[ ]";
+		std::cout << i << ":" << GetMonitorName(i) << ". W x H = " << GetMonitorWidth(i) <<  " x " << GetMonitorHeight(i) << std::endl;
+	}
+
+
+	//screenWidth = GetMonitorWidth(1), screenHeight = GetMonitorHeight(1);
+	ToggleFullscreen();
 
 	SetTargetFPS(60); // Set our game to run at 60 frames-per-second
 
