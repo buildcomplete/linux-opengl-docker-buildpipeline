@@ -118,6 +118,12 @@ void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContex
         }
     }
 }
+
+void NetworkManager::SetConstraintFunction(ConstraintFunction f)
+{
+    constraintFunction = f;
+}
+
 void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx) const
 {
     auto pixPr_cm = navCtx.pixPr_cm;
@@ -266,10 +272,13 @@ bool NetworkManager::TryCreatePathBetweenAnchorPoints(
     
     std::queue<SearchNode*> nodes;
     nodes.push(&start);
+    auto cf = constraintFunction;
 
-    auto isNewAndValid = [&planned, &nodes](const CellPosition &n, std::int8_t dir)
+    auto isNewAndValid = [&planned, &nodes, &cf](const CellPosition &n, std::int8_t dir)
     {
-        if (InsideBounds(n))
+        if (InsideBounds(n) 
+             && (cf == nullptr 
+                 || (cf(n) & (1<<dir)) == FLAG_NCONSTRAINT_NO_CONSTRAINTS ) )
         {
             // Check that new neighbour is inside bounds and not already visisited
             if (planned.find({n, dir}) == planned.end())

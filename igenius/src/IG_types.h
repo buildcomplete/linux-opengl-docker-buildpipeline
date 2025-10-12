@@ -2,6 +2,7 @@
 #define IG_TYPES_H
 #include <cstdint>
 #include <iostream>
+#include <functional>
 
 
 #define OLIVE_GREEN_DARK  	CLITERAL(Color){ 17, 23, 00, 255 }      //  Background
@@ -61,6 +62,23 @@ struct CellPosition
         return {x-rhs.x, y-rhs.y};
     }
 };
+
+// Network connection constraints
+typedef enum
+{
+    FLAG_NCONSTRAINT_NO_CONSTRAINTS = 0, // (0000 0000)
+    FLAG_NCONSTRAINT_N = 1 << 0,         // 1 (0000 0001)
+    FLAG_NCONSTRAINT_NE = 1 << 1,        // 2 (0000 0010)
+    FLAG_NCONSTRAINT_E = 1 << 2,         // 4 (0000 0100)
+    FLAG_NCONSTRAINT_SE = 1 << 3,        // 8 (0000 1000)
+    FLAG_NCONSTRAINT_S = 1 << 4,         // 16 (0001 0000)
+    FLAG_NCONSTRAINT_SW = 1 << 5,        // 32 (0010 0000)
+    FLAG_NCONSTRAINT_W = 1 << 6,         // 64 (0100 0000)
+    FLAG_NCONSTRAINT_NW = 1 << 7,        // 128 (1000 0000)
+    FLAG_NCONSTRAINT_ALLDIR = 0xFF       // 0xFF (1111 1111)
+} NetworkConstraintFlags;
+using ConstraintFunction = std::function<NetworkConstraintFlags(const CellPosition&)>;
+
 
 std::ostream& operator<<(std::ostream& os, const CellPosition& pos);
 

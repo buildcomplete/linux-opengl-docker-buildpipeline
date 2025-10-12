@@ -152,9 +152,8 @@ void test_network_manager_outOfBoundStable()
     }
 
     {
+        CellPosition start = {-1, 0}, end = {10, 10};
         NetworkManager n;
-        CellPosition start = {-1, 0};
-        CellPosition end = {10, 10};
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
         auto result = n.CompleteDrawing();
@@ -165,6 +164,33 @@ void test_network_manager_outOfBoundStable()
 void test_network_manager_createPathAvoidBlocked()
 {
     test_section("Network Manager CreateNetwork path finder avoid blocked");
+    {
+        CellPosition start = {1, 1},end = {1, 3};
+        NetworkManager n;
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // Creating a straigt pipe, with no blocking / contraints, should give two anchors
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(2), "Creating a straigt pipe, with no blocking / contraints, should give two anchors");
+    }
+
+    {
+        CellPosition start = {1, 1},end = {1, 4};
+        NetworkManager n;
+        n.SetConstraintFunction([](const CellPosition& anchor) 
+        {
+            return (NetworkConstraintFlags)((anchor.x == 1 && anchor.y == 2) 
+                ? FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_NE | FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_S | FLAG_NCONSTRAINT_SW | FLAG_NCONSTRAINT_W | FLAG_NCONSTRAINT_NW
+                : FLAG_NCONSTRAINT_NO_CONSTRAINTS);
+        });
+
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // Creating a straigt pipe, with no blocking / contraints, should give two anchors
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(4), "Creating a straigt pipe, with a blocking / contraints, should give four anchors");
+        // Set test function that blocks 1,2, forcing more steps
+        
+
+    }
 }
 
 // Function to run all engine tests

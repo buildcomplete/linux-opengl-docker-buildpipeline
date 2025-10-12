@@ -66,6 +66,8 @@ public:
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
     UI_Component* GetComponent(int id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
+    //NetworkConstraintFlags GetNetworkConstraints(const CellPosition &anchor) const;
+    //void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
@@ -82,13 +84,15 @@ private:
 
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
+    //NetworkConstraintFlags networkConstraints[GridWidth * GridHeight] = {FLAG_NCONSTRAINT_NO_CONSTRAINTS}; // Register of network constraints
     std::set<std::uint8_t> avaliableComponentKeys;
     std::set<std::uint8_t> avaliableNetworkKeys;
     std::set<std::uint8_t> inUseComponentKeys;
     std::set<std::uint8_t> inUseNetworkKeys;
+
    
     // Realized networks
-    std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(5); 
+    std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(); 
 
 };
 
