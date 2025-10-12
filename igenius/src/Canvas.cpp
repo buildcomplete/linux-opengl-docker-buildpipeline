@@ -47,8 +47,8 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
     // Update lookup table
     SetGridCellValues(bluePrint, cellAnchorX, cellAnchorY, insertId);
 
-    //// Update constraint map
-    //SetConstraints(bluePrint, cellAnchorX, cellAnchorY, NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR);
+    // Update constraint map
+    SetConstraints(bluePrint, cellAnchorX, cellAnchorY, NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR);
 
 
     // components[insertId] = new UI_Component({insertId, {cellAnchorX, cellAnchorY}, bluePrint});
@@ -192,27 +192,27 @@ void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t
     }
 }
 
-// NetworkConstraintFlags Canvas::GetNetworkConstraints(const CellPosition& anchor) const
-// {
-//     return networkConstraints[GetGridIdxAtCell(anchor.x, anchor.y)];
-// }
+NetworkConstraintFlags Canvas::GetNetworkConstraints(const CellPosition& anchor) const
+{
+    return networkConstraints[GetGridIdxAtCell(anchor.x, anchor.y)];
+}
 
 
-// void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags)
-// {
-//     int x0 = std::max(0, (int)cellX); // inclusive
-//     int y0 = std::max(0, (int)cellY); // // inclusive
-//     int x1 = x0 + blueprint.Width;    // Exclusive
-//     int y1 = y0 + blueprint.Height;   // Exclusive
+void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags)
+{
+    int x0 = std::max(0, (int)cellX); // inclusive
+    int y0 = std::max(0, (int)cellY); // // inclusive
+    int x1 = x0 + blueprint.Width;    // Exclusive
+    int y1 = y0 + blueprint.Height;   // Exclusive
 
-//     for (int x = x0; x < x1; ++x)
-//     {
-//         for (int y = y0; y < y1; ++y)
-//         {
-//             networkConstraints[GetGridIdxAtCell(x, y)] = constraintFlags;
-//         }
-//     }
-// }
+    for (int x = x0; x < x1; ++x)
+    {
+        for (int y = y0; y < y1; ++y)
+        {
+            networkConstraints[GetGridIdxAtCell(x, y)] = constraintFlags;
+        }
+    }
+}
 
 // Transform a sequence of network anchor point into all the sections in the grid
 std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints)

@@ -20,11 +20,11 @@ void Engine::Init()
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 9);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::DRAWING_COMPONENT), 2, 1);
 
-    // auto c = &canvas;
-    // networkDrawingManager.SetConstraintFunction((ConstraintFunction)[&c](const CellPosition p)
-    // { 
-    //     return c.GetNetworkConstraints(p);
-    // });
+    
+    networkDrawingManager.SetConstraintFunction((ConstraintFunction)[this](const CellPosition p)
+    { 
+        return canvas.GetNetworkConstraints(p);
+    });
 }
 
 void Engine::HandleEvents()
