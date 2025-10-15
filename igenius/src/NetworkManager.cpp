@@ -90,6 +90,9 @@ void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContex
     if (lastPathTo == navCtx.mousePosWorldGrid )
         return;
 
+    if (constraintFunction != nullptr && constraintFunction(navCtx.mousePosWorldGrid) == NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR )
+        return;
+
 
     auto pixPr_cm = navCtx.pixPr_cm;
     // Network will be arranged on grid centers
