@@ -130,6 +130,11 @@ void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const Nav
     DrawRectangle(xp + 1, yp + 1, wp - 2, hp - 2, PINK);
 }
 
+// const std::vector<IOPin>& UI_Component::GetInputPins() const
+// {
+//     return inputs;
+// }
+
 void UI_Component::DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const
 {
     int xp = navCtx.CmToPixel(anchor.x + padding_cm);

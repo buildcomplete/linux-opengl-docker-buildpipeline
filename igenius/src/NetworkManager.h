@@ -40,7 +40,7 @@ private:
 
     bool TryCreatePathBetweenAnchorPoints(
         SearchNode start,
-        std::unordered_set<SearchPos> &visited,
+//        std::unordered_set<SearchPos> &visited,
         CellPosition target,
         std::stack<CellPosition> &path) const;
 };

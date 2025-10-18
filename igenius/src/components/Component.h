@@ -50,8 +50,13 @@ public:
 
     void DrawStandardComponentFrame(const RenderContext &rc, const NavigationContext &navCtx, const float padding_cm) const;
 
+    // const std::vector<IOPin>& GetInputPins() const;
+
 protected:
     void DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const;
+    // std::vector<IOPin> inputs;
+    // std::vector<IOPin> outputs;
+
 };
 
 namespace UI_Components

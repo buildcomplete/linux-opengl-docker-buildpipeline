@@ -17,8 +17,15 @@ typedef enum : std::int32_t
 struct IOSpec
 {
     IGDataTypes type;
-    bool required;
+    std::uint8_t row;
 };
+
+// struct IOPlacement
+// {
+//     IOSpec spec;
+//     CellPosition anchor; // Actual placement on component, allowing to move pins
+// };
+
 
 struct ComponentBluePrint
 {
@@ -30,8 +37,8 @@ struct ComponentBluePrint
 
     ComponentBluePrint()
         : Name(CMPNAMES::UNDEFINED), Width(1), Height(1),
-          inputDataTypes({{IGDataTypes::DT_NONE,false}}), 
-          outputDataType({IGDataTypes::DT_NONE,false}) {}
+          inputDataTypes({{IGDataTypes::DT_NONE,0}}), 
+          outputDataType({IGDataTypes::DT_NONE,0}) {}
 
     // Constructor to initialize all member variables
     ComponentBluePrint(CMPNAMES name, std::uint8_t width, std::uint8_t height,

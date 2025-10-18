@@ -3,10 +3,10 @@
 #include <vector>
 // Initialize the static member outside the class definition
 const std::vector<ComponentBluePrint> ComponentFactory::componentBluePrints = {
-    ComponentBluePrint(VIRTUAL_CAMERA, 1, 1, {}, {DT_IMAGE, false}),
-    ComponentBluePrint(SP_CONVOLUTION, 3, 3, {{DT_IMAGE, true}}, {DT_IMAGE, true}),
-    ComponentBluePrint(IMG_IMG_IMG_OPERATION, 2, 3, {{DT_IMAGE, true}, {DT_IMAGE, true}}, {DT_IMAGE, true}),
-    ComponentBluePrint(DRAWING_COMPONENT, 5, 5, {}, {DT_NONE, true}),
+    ComponentBluePrint(VIRTUAL_CAMERA, 1, 1, {}, {DT_IMAGE, 0}),
+    ComponentBluePrint(SP_CONVOLUTION, 3, 3, {{DT_IMAGE,1}}, {DT_IMAGE, 1}),
+    ComponentBluePrint(IMG_IMG_IMG_OPERATION, 2, 3, {{DT_IMAGE, 0}, {DT_IMAGE, 2}}, {DT_IMAGE,  1}),
+    ComponentBluePrint(DRAWING_COMPONENT, 5, 5, {}, {DT_NONE, 0}),
 };
 
 ComponentBluePrint ComponentFactory::GetBluePrint(CMPNAMES name)
@@ -16,7 +16,7 @@ ComponentBluePrint ComponentFactory::GetBluePrint(CMPNAMES name)
         if (blueprint.Name == name)
             return blueprint;
     }
-    return ComponentBluePrint(UNDEFINED, 1, 1, {}, {DT_NONE, false});
+    return ComponentBluePrint(UNDEFINED, 1, 1, {}, {DT_NONE, 0});
 }
 
 std::unique_ptr<UI_Component> ComponentFactory::CreateUI_Component(ComponentBluePrint blueprint, std::uint8_t id, CellPosition anchor)

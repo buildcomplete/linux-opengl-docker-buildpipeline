@@ -187,10 +187,43 @@ void test_network_manager_createPathAvoidBlocked()
         n.TryCreatePathToAnchorPoint(end); // Creating a straigt pipe, with no blocking / contraints, should give two anchors
         auto result = n.CompleteDrawing();
         test_equals(result.size(), static_cast<size_t>(4), "Creating a straigt pipe, with a blocking / contraints, should give four anchors");
-        // Set test function that blocks 1,2, forcing more steps
-        
-
     }
+
+    { // Test where entry only allows horizonatal, should create an additional bend
+        CellPosition start = {1, 1},end = {3, 3};
+        NetworkManager n;
+        n.SetConstraintFunction([](const CellPosition& anchor) 
+        {
+            return (NetworkConstraintFlags)((anchor.x == 3 && anchor.y == 3) 
+                ? FLAG_NCONSTRAINT_ALLDIR & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W)
+                : FLAG_NCONSTRAINT_NO_CONSTRAINTS);
+        });
+
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); // Test where entry only allows horizonatal, should create an additional bend
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(4), "Test diagonal where target only allows horizonatal, should create an additional bend");
+    }
+
+       { // Test where entry only allows horizonatal, should create an additional bend
+        CellPosition start = {3, 3},end = {1, 1};
+        NetworkManager n;
+        n.SetConstraintFunction([](const CellPosition& anchor) 
+        {
+            return (NetworkConstraintFlags)((anchor.x == 3 && anchor.y == 3) 
+                ? FLAG_NCONSTRAINT_ALLDIR & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W)
+                : FLAG_NCONSTRAINT_NO_CONSTRAINTS);
+        });
+
+        n.TryAddAnchorPoint(start);
+        n.TryCreatePathToAnchorPoint(end); //Test where start only allows horizonatal, should create an additional bend
+        auto result = n.CompleteDrawing();
+        test_equals(result.size(), static_cast<size_t>(4), "Test diagonal where start only allows horizonatal, should create an additional bend");
+    }
+
+
+
+
 }
 
 // Function to run all engine tests

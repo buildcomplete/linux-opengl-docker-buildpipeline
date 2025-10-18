@@ -212,6 +212,24 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
             networkConstraints[GetGridIdxAtCell(x, y)] = constraintFlags;
         }
     }
+
+    for (auto specIn : blueprint.inputDataTypes)
+    {
+        std::cout << "In Row " << (int)specIn.row << std::endl;
+        networkConstraints[GetGridIdxAtCell(x0, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+        if (x0>1)
+            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+    }
+
+    if (blueprint.outputDataType.type != DT_NONE)
+    {
+        auto specOut = blueprint.outputDataType;
+        std::cout << "Out Row " << (int)specOut.row << std::endl;
+
+        networkConstraints[GetGridIdxAtCell(x1-1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+        if (x1>1)
+            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+    }
 }
 
 // Transform a sequence of network anchor point into all the sections in the grid
