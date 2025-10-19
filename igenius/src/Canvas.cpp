@@ -218,7 +218,7 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
         std::cout << "In Row " << (int)specIn.row << std::endl;
         networkConstraints[GetGridIdxAtCell(x0, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
         if (x0>1)
-            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
     }
 
     if (blueprint.outputDataType.type != DT_NONE)
@@ -227,9 +227,16 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
         std::cout << "Out Row " << (int)specOut.row << std::endl;
 
         networkConstraints[GetGridIdxAtCell(x1-1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
-        if (x1>1)
-            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
+        if (x1<255)
+            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
     }
+
+    // Add corner contraints to ensure we cannot create a diagonal blocking the object
+    if (y0>1)
+        networkConstraints[GetGridIdxAtCell(x0, y0-1)] = (NetworkConstraintFlags)((FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+    if (y1<255)
+        networkConstraints[GetGridIdxAtCell(x0, y1)] = (NetworkConstraintFlags)((FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+
 }
 
 // Transform a sequence of network anchor point into all the sections in the grid
