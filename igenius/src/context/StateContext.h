@@ -1,14 +1,15 @@
 #ifndef STATECONTEXT_H
 #define STATECONTEXT_H
 #include "../IG_types.h"
-
+#include "raylib.h"
 struct StateContext
 {
-    MOUSE_MODE_FLAGS flags;
-    MOUSE_MODE_FLAGS flippedFlags;
+    INPUT_STATE_FLAGS flags;
+    INPUT_STATE_FLAGS flippedFlags;
+    Vector2 inputCursorDelta;
 
-    bool IsInState(MOUSE_MODE_FLAGS testState) const;
-    bool DidEnterState(MOUSE_MODE_FLAGS testState) const;
-    bool DidExitState(MOUSE_MODE_FLAGS testState) const;
+    bool IsInState(INPUT_STATE_FLAGS testState) const;
+    bool DidEnterState(INPUT_STATE_FLAGS testState) const;
+    bool DidExitState(INPUT_STATE_FLAGS testState) const;
 };
 #endif

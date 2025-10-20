@@ -137,12 +137,12 @@ Engine::~Engine()
 
 void Engine::InjectStateChanges()
 {
-    if (stateContext.DidEnterState(IG_MOUSE_MODE_NETWORK))
+    if (stateContext.DidEnterState(IG_INPUT_MODE_DRAW_NETWORK))
     {
         networkDrawingManager.StartDrawing();
     }
 
-    if (stateContext.DidExitState(IG_MOUSE_MODE_NETWORK))
+    if (stateContext.DidExitState(IG_INPUT_MODE_DRAW_NETWORK))
     {
         auto n = networkDrawingManager.CompleteDrawing();
         canvas.AddNetworkSegment(n, 0);
@@ -150,9 +150,9 @@ void Engine::InjectStateChanges()
 
     // Send network command, begin new, select and existing, expand network
 
-    if (stateContext.DidEnterState(IG_MOUSE_TRY_COMMAND))
+    if (stateContext.DidEnterState(IG_INPUT_TRY_COMMAND))
     {
-        if (stateContext.IsInState(IG_MOUSE_SELECTING))
+        if (stateContext.IsInState(IG_INPUT_MODE_SELECTING))
         {
             // // Try to select component
             // if (IG_MOUSE_SELECTING & stateManager.GetFlags())
@@ -172,7 +172,7 @@ void Engine::InjectStateChanges()
                 }
             }
         }
-        if (stateContext.IsInState(IG_MOUSE_MODE_NETWORK))
+        if (stateContext.IsInState(IG_INPUT_MODE_DRAW_NETWORK))
         {
             networkDrawingManager.AddAnchorPoint(navigationContext);
         }

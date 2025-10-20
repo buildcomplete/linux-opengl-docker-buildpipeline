@@ -75,7 +75,7 @@ void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const 
 
     for (int i = 0; i < networks.size(); ++i)
     {
-        Canvas::DrawNetworkSegment(networks[i], sc.IsInState(IG_MOUSE_MODE_NETWORK), navC.pixPr_cm, NETGREEN);
+        Canvas::DrawNetworkSegment(networks[i], sc.IsInState(IG_INPUT_MODE_DRAW_NETWORK), navC.pixPr_cm, NETGREEN);
     }
 
     static bool enableRadialHack = true;

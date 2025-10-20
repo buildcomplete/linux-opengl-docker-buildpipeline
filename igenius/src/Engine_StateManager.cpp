@@ -3,15 +3,16 @@
 
 StateContext Engine_StateManager::HandleEvents()
 {
-    MOUSE_MODE_FLAGS targetState = IG_MOUSE_ZERO;
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_LEFT_CONTROL)) ? IG_MOUSE_SCREEN_DRAGGING : IG_MOUSE_ZERO));
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsKeyDown(KEY_LEFT_SHIFT)) ? IG_MOUSE_MODE_NETWORK : IG_MOUSE_ZERO));
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_LEFT)) ? IG_MOUSE_TRY_COMMAND : IG_MOUSE_ZERO));
+    INPUT_STATE_FLAGS targetState = IG_INPUT_ZERO;
+    targetState = (INPUT_STATE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_RIGHT) || IsKeyDown(KEY_LEFT_CONTROL)) ? IG_INPUT_SCREEN_DRAGGING : IG_INPUT_ZERO));
+    targetState = (INPUT_STATE_FLAGS)(targetState | ((IsKeyDown(KEY_LEFT_SHIFT)) ? IG_INPUT_MODE_DRAW_NETWORK : IG_INPUT_ZERO));
+    targetState = (INPUT_STATE_FLAGS)(targetState | ((IsMouseButtonDown(MOUSE_BUTTON_LEFT)) ? IG_INPUT_TRY_COMMAND : IG_INPUT_ZERO));
     
     // Set MOUSE SELECTING if we are not positioning components or in network mode
-    targetState = (MOUSE_MODE_FLAGS)(targetState | ((targetState & (IG_MOUSE_MODE_NETWORK | IG_MOUSE_POSITION_COMPONENT | IG_MOUSE_POSITION_COMPONENT ) ) ? IG_MOUSE_ZERO : IG_MOUSE_SELECTING));
-    state.flippedFlags = (MOUSE_MODE_FLAGS)(targetState ^ state.flags);
+    targetState = (INPUT_STATE_FLAGS)(targetState | ((targetState & (IG_INPUT_MODE_DRAW_NETWORK | IG_INPUT_MODE_PLACE_COMPONENT | IG_INPUT_MODE_MOVE_COMPONENT ) ) ? IG_INPUT_ZERO : IG_INPUT_MODE_SELECTING));
+    state.flippedFlags = (INPUT_STATE_FLAGS)(targetState ^ state.flags);
     state.flags = targetState;
+    state.inputCursorDelta = GetMouseDelta();
     return state;
 }
 

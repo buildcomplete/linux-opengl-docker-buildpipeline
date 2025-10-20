@@ -347,7 +347,7 @@ void UI_RadialMenuDrawingComponent::HandleEventsAndTime(const StateContext &stCt
         hoveredSegment = UI_RadialMenuDrawingComponent::GetHoverSegment(navCtx);
 
         // handle click
-        if (stCtx.DidEnterState(MOUSE_MODE_FLAGS::IG_MOUSE_TRY_COMMAND) && hoveredSegment != -1)
+        if (stCtx.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_TRY_COMMAND) && hoveredSegment != -1)
         {
             selectedSegment = hoveredSegment;
             HandleClickInternal(selectedSegment);

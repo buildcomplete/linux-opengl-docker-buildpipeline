@@ -16,13 +16,13 @@ Navigator::Navigator()
 
 NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)
 {
-    if (sc.DidEnterState(IG_MOUSE_SCREEN_DRAGGING))
+    if (sc.DidEnterState(IG_INPUT_SCREEN_DRAGGING))
     {
         dragAcceleration.x = dragAcceleration.y = 0;
     }
 
-    Vector2 md = GetMouseDelta();
-    if (sc.IsInState(IG_MOUSE_SCREEN_DRAGGING))
+    const Vector2& md = sc.inputCursorDelta;
+    if (sc.IsInState(IG_INPUT_SCREEN_DRAGGING))
     {
         dragAcceleration.x -= md.x * 0.1f;
         dragAcceleration.y -= md.y * 0.1f;
@@ -97,7 +97,7 @@ void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canva
     CellPosition cPos = context.mousePosWorldGrid;
     Vector2 quantifiedCenter = {cPos.x * context.pixPr_cm, cPos.y * context.pixPr_cm};
 
-    if (sc.IsInState(IG_MOUSE_SELECTING))
+    if (sc.IsInState(IG_INPUT_MODE_SELECTING))
     {
         for (int r = -3; r < 4; ++r)
         {
@@ -135,7 +135,7 @@ void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canva
 void Navigator::DrawCursorScreenGuide(const StateContext &sc)
 {
     // Draw cross where we are
-    if (sc.IsInState(IG_MOUSE_SELECTING))
+    if (sc.IsInState(IG_INPUT_MODE_SELECTING))
     {
         DrawLine(
             gameMousePos.x - 10, gameMousePos.y,
@@ -147,7 +147,7 @@ void Navigator::DrawCursorScreenGuide(const StateContext &sc)
             NETGREEN);
     }
 
-    if (sc.IsInState(IG_MOUSE_SCREEN_DRAGGING))
+    if (sc.IsInState(IG_INPUT_SCREEN_DRAGGING))
     {
         DrawLine(
             gameMousePos.x - dragAcceleration.x * 1.5, gameMousePos.y - dragAcceleration.y * 1.5,
@@ -155,7 +155,7 @@ void Navigator::DrawCursorScreenGuide(const StateContext &sc)
             NETGREEN);
     }
 
-    if (sc.IsInState(IG_MOUSE_MODE_NETWORK))
+    if (sc.IsInState(IG_INPUT_MODE_DRAW_NETWORK))
     {
         DrawLine(
             gameMousePos.x - 10, gameMousePos.y,

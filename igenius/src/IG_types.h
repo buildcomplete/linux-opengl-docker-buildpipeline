@@ -26,17 +26,22 @@ typedef enum : std::uint32_t
 
 typedef enum : std::uint32_t
 {
-    IG_MOUSE_ZERO = 0,
-    IG_MOUSE_SELECTING = 1 << 0,       // 1
-    IG_MOUSE_SCREEN_DRAGGING = 1 << 1, // 2
-    IG_MOUSE_MODE_NETWORK = 1 << 2,    // 4
-    // Try to execute command from mouse cursor depending on state...
-    IG_MOUSE_TRY_COMMAND = 1 << 3,        // 8
-    IG_MOUSE_POSITION_COMPONENT = 1 << 4, // 16
-    IG_MOUSE_DELETE = 1 << 5,             // 32
-    IG_MOUSE_APPLYING_COMMAND = 1 << 6    // 64
+    IG_INPUT_ZERO = 0,
+    IG_INPUT_TRY_COMMAND = 1 << 0,        // 1 - Try to execute command from mouse cursor depending on state...
+    IG_INPUT_SCREEN_DRAGGING = 1 << 1, // 2
 
-} MOUSE_MODE_FLAGS;
+    // Sticky cursor modes (mutually exclusive within this group)
+    IG_INPUT_MODE_SELECTING = 1 << 2,       // 4 - selection/interaction, this can open context menu / switch component ui settings etc.
+    IG_INPUT_MODE_DRAW_NETWORK = 1 << 3,    // 8 -  Draw network connections
+    IG_INPUT_MODE_PLACE_COMPONENT = 1 << 4, // 16 - Place new component, when entering state, start component selection, probably starting to open the radial menu for components, alernative it should be a selection panel to the side while component can be selected, not clear yet
+    IG_INPUT_MODE_MOVE_COMPONENT = 1 << 5,  // 32 - Move existing component, when a component is picked, set the pick id and moved, meaning we need a state that we are 'executing' or 'moving'
+    IG_INPUT_MODE_DELETE = 1 << 6,         // 64 - Delete component/network, on click removes a component / network
+
+    // UI state flags
+    // UI_RADIAL_MENU_OPEN = 1 << 12,      // 4096 - Radial menu is visible
+    // UI_COMPONENT_PALETTE_OPEN = 1 << 13 // 8192 - Component palette is visible
+
+} INPUT_STATE_FLAGS;
 
 struct CellPosition
 {
