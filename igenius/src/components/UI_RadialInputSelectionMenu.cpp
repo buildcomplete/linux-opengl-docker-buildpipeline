@@ -1,25 +1,24 @@
-#include "components/UI_RadialSP_ConvolutionOperationMenu.h"
+#include "components/UI_RadialInputSelectionMenu.h"
 #include <iostream>
 
 const Color hoverGreen = {NETGREEN.r, NETGREEN.g, NETGREEN.b, 100};
 const Color bgGrey = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 100};
-UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu(ClickHandler clickHandler)
+UI_RadialInputSelectionMenu::UI_RadialInputSelectionMenu(ClickHandler clickHandler)
     : UI_RadialMenuDrawingComponent(
           clickHandler,
           {
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"SELECT"' // Defined in SegmentOperations
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Box 3"'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Box 5"'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Gauss 3",'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Gauss 5"'
-              {ELECTRIC_BLUE, bgGrey, hoverGreen}  // '"Laplacian 1D"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"Edge"' // Defined in SegmentOperations
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"NET"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"PLACE"'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"MOVE",'
+              {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"DELETE"'
           },
           7,
           3)
 {
 }
 
-void UI_RadialSPConvolutionperationMenu::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
+void UI_RadialInputSelectionMenu::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
 {
     float deltaV = endAngle - startAngle;
     Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};

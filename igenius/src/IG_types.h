@@ -37,6 +37,7 @@ typedef enum : std::uint32_t
     IG_INPUT_MODE_MOVE_COMPONENT = 1 << 5,  // 32 - Move existing component, when a component is picked, set the pick id and moved, meaning we need a state that we are 'executing' or 'moving'
     IG_INPUT_MODE_DELETE = 1 << 6,         // 64 - Delete component/network, on click removes a component / network
 
+    IG_INPUT_SELECT_MODE = 1 << 30 // Bit to start selecting mode mouse
     // UI state flags
     // UI_RADIAL_MENU_OPEN = 1 << 12,      // 4096 - Radial menu is visible
     // UI_COMPONENT_PALETTE_OPEN = 1 << 13 // 8192 - Component palette is visible

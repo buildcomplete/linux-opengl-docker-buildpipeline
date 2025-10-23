@@ -32,17 +32,8 @@ void Engine::HandleEvents()
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
     networkDrawingManager.HandleEvents(stateContext, navigationContext);
-
-    auto c = stateManager.GetFocusComponent();
-    if (c != nullptr)
-    {
-        bool keepFocus = c->HandleEventsWhileFocused(stateContext, navigationContext);
-        if (!keepFocus)
-        {
-            stateManager.SetFocusComponent(nullptr);
-        }
-    }
-
+    stateManager.UpdateMenus(navigationContext);
+    
     InjectStateChanges();
 }
 
@@ -60,16 +51,10 @@ void Engine::Render()
 
         navigator.DrawCursorWorldGuide(stateContext, canvas);
 
-        //RandomTestDrawings();
-
         canvas.Draw(rc, navigationContext, stateContext);
         networkDrawingManager.Draw(rc, navigationContext);
 
-        auto focusedComponent = stateManager.GetFocusComponent();
-        if (focusedComponent != nullptr)
-        {
-            stateManager.GetFocusComponent()->FocusedDraw(rc, navigationContext);
-        }
+        stateManager.Draw(rc, navigationContext);
     }
     EndMode2D();
 
