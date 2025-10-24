@@ -131,8 +131,10 @@ void Engine::InjectStateChanges()
 
     if (stateContext.DidExitState(IG_INPUT_MODE_DRAW_NETWORK))
     {
-        auto n = networkDrawingManager.CompleteDrawing();
-        canvas.AddNetworkSegment(n, 0);
+        // Modified logic, network now only drawn when clicking again on last added node.
+        //auto n = 
+        networkDrawingManager.CompleteDrawing();
+        //canvas.AddNetworkSegment(n, 0);
     }
 
     // Send network command, begin new, select and existing, expand network
@@ -159,7 +161,12 @@ void Engine::InjectStateChanges()
         }
         if (stateContext.IsInState(IG_INPUT_MODE_DRAW_NETWORK))
         {
-            networkDrawingManager.AddAnchorPoint(navigationContext);
+            if ( AddAnchorResultState::COMPLETE_SEGMENT == networkDrawingManager.AddAnchorPoint(navigationContext) )
+            {
+                auto n = networkDrawingManager.CompleteDrawing();
+                canvas.AddNetworkSegment(n, 0);
+                networkDrawingManager.StartDrawing();
+            }
         }
     }
 }

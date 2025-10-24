@@ -11,6 +11,13 @@
 struct SearchNode;
 struct SearchPos;
 
+typedef enum : std::uint8_t
+{
+    ADD_FAILED,
+    ADD_OK,
+    COMPLETE_SEGMENT,
+} AddAnchorResultState;
+
 /**
  * Responsible for drawing network connections and handling mouse events
  * for network creation, interacting with the Canvas to understand item presence.
@@ -24,7 +31,7 @@ public:
     bool CanAddToNetwork(CellPosition fromC, CellPosition toC);
     void StartDrawing();
     std::vector<CellPosition> CompleteDrawing();
-    void AddAnchorPoint(const NavigationContext &frameCoord);
+    AddAnchorResultState AddAnchorPoint(const NavigationContext &frameCoord);
     bool TryAddAnchorPoint(CellPosition anchor);
     bool TryCreatePathToAnchorPoint(CellPosition target);
     bool TryContinuePathToAnchorPoints(CellPosition target, std::stack<CellPosition> &path) const;

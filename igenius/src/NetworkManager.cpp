@@ -133,11 +133,18 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
     circleColor.a = 155;
     DrawCircle(navCtx.mousePosWorldGrid.x * pixPr_cm + pixPr_cm / 2.0f, navCtx.mousePosWorldGrid.y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 6.0f, circleColor);
 
+    bool completing = drawnNetwork.size() > 0 && navCtx.mousePosWorldGrid == drawnNetwork.back();
+
     if (drawnNetwork.size() > 0)
     {
-        Canvas::DrawNetworkSegment(drawnNetwork, true, pixPr_cm, ELECTRIC_BLUE);
+        Canvas::DrawNetworkSegment(drawnNetwork, true, pixPr_cm, completing?NETGREEN:PURPLE);
+        if (!completing)
+        {
+            auto XX = drawnNetwork.back();
+            DrawCircle(XX.x * pixPr_cm + pixPr_cm / 2.0f, XX.y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 6.0f, NETGREEN);
+        }
     }
-    if (pathInProgress.size() > 0)
+    if (pathInProgress.size() > 0 && !completing)
     {
         Canvas::DrawNetworkSegment(pathInProgress, true, pixPr_cm, ELECTRIC_BLUE);
     }
@@ -185,19 +192,31 @@ std::vector<CellPosition> NetworkManager::CompleteDrawing()
     return drawnNetworkCp;
 }
 
-void NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
+AddAnchorResultState NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
 {
     std::cout << " NetworkManager::AddAnchorPoint(...)" << std::endl;
     // if starting a new network, update networkValidToHelper
     // if not starting a new it should be valid from mouse moving
     if (drawnNetwork.size() == 0)
     {
-        TryAddAnchorPoint(frameCoord.mousePosWorldGrid);
+        if (TryAddAnchorPoint(frameCoord.mousePosWorldGrid))
+        {
+            return AddAnchorResultState::ADD_OK;
+        }
+    }
+    // We click again the last element, complete this drawing.
+    else if (drawnNetwork.back() == frameCoord.mousePosWorldGrid)
+    {
+        return AddAnchorResultState::COMPLETE_SEGMENT;
     }
     else
     {
-        TryCreatePathToAnchorPoint(frameCoord.mousePosWorldGrid);
+        if (TryCreatePathToAnchorPoint(frameCoord.mousePosWorldGrid))
+        {
+            return AddAnchorResultState::ADD_OK;
+        }
     }
+    return AddAnchorResultState::ADD_FAILED;
 }
 
 // Tryies to add an anchor point,
@@ -217,8 +236,7 @@ bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
     // If we can just add a straigt line, no reason to start path finding
     if (drawnNetwork.size() == 0)
     {
-        TryAddAnchorPoint(target);
-        return true;
+        return TryAddAnchorPoint(target);
     }
 
     std::stack<CellPosition> solution;
