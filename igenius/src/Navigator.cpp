@@ -134,36 +134,41 @@ void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canva
 // Should be called while drawing in fixed screen coordinates (Outhside camera mode)
 void Navigator::DrawCursorScreenGuide(const StateContext &sc)
 {
-    // Draw cross where we are
-    if (sc.IsInState(IG_INPUT_MODE_SELECTING))
+    // Draw cross where we are, color based on input mode
+    auto drawCrossAtCursor = [this](Color C)
     {
         DrawLine(
             gameMousePos.x - 10, gameMousePos.y,
             gameMousePos.x + 10, gameMousePos.y,
-            NETGREEN);
+            C);
         DrawLine(
             gameMousePos.x, gameMousePos.y - 10,
             gameMousePos.x, gameMousePos.y + 10,
-            NETGREEN);
-    }
+            C);
+    };
 
+    auto getCursorColor = [sc]()
+    {
+        return  
+            sc.IsInState(IG_INPUT_MODE_SELECTING) ? NETGREEN :
+            sc.IsInState(IG_INPUT_MODE_DRAW_NETWORK) ? ELECTRIC_BLUE :
+            sc.IsInState(IG_INPUT_MODE_DELETE) ? RED :
+            sc.IsInState(IG_INPUT_MODE_PLACE_COMPONENT) ? BLUE :
+            sc.IsInState(IG_INPUT_MODE_MOVE_COMPONENT) ? PURPLE :
+            PINK;
+    };
+
+    // get cursor color, this construct ensures the conditions are only evaluated when any flags was changed.
+    static auto cursorColor = getCursorColor();
+    if (sc.flippedFlags)
+        cursorColor = getCursorColor();
+
+    drawCrossAtCursor(cursorColor);
     if (sc.IsInState(IG_INPUT_SCREEN_DRAGGING))
     {
         DrawLine(
             gameMousePos.x - dragAcceleration.x * 1.5, gameMousePos.y - dragAcceleration.y * 1.5,
             gameMousePos.x - dragAcceleration.x * 5, gameMousePos.y - dragAcceleration.y * 5,
-            NETGREEN);
-    }
-
-    if (sc.IsInState(IG_INPUT_MODE_DRAW_NETWORK))
-    {
-        DrawLine(
-            gameMousePos.x - 10, gameMousePos.y,
-            gameMousePos.x + 10, gameMousePos.y,
-            ELECTRIC_BLUE);
-        DrawLine(
-            gameMousePos.x, gameMousePos.y - 10,
-            gameMousePos.x, gameMousePos.y + 10,
-            ELECTRIC_BLUE);
+            cursorColor);
     }
 }
