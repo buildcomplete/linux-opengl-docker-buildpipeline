@@ -31,9 +31,11 @@ void Engine::HandleEvents()
 {
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
-    networkDrawingManager.HandleEvents(stateContext, navigationContext);
     stateManager.UpdateMenus(navigationContext);
-    
+    if (false == stateContext.IsInState(INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING))
+    {
+        networkDrawingManager.HandleEvents(stateContext, navigationContext);
+    }
     InjectStateChanges();
 }
 
@@ -148,13 +150,11 @@ void Engine::InjectStateChanges()
             auto info = canvas.GetCellInfo(navigationContext.mousePosWorldGrid);
             if (info.componentId != 0)
             {
+                auto c = canvas.GetComponent(info.componentId);
+                if (c->TryStartCommand(stateContext, navigationContext))
                 {
-                    auto c = canvas.GetComponent(info.componentId);
-                    if (c->TryStartCommand(stateContext, navigationContext))
-                    {
-                        stateManager.SetFocusComponent(c);
-                    }
-                }
+                    stateManager.SetFocusComponent(c);
+                }                
             }
         }
         if (stateContext.IsInState(IG_INPUT_MODE_DRAW_NETWORK))

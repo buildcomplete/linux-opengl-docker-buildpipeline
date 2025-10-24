@@ -84,7 +84,7 @@ std::int8_t calcOptimalDirIdx(const CellPosition &a, const CellPosition &b)
 
 void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContext &navCtx)
 {
-    if (!isInDrawMode)
+    if (!isInDrawMode || sc.IsInState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
         return;
 
     if (lastPathTo == navCtx.mousePosWorldGrid)
@@ -145,7 +145,11 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
 
 bool NetworkManager::CanAddToNetwork(CellPosition toC)
 {
-    return InsideBounds(toC) && (drawnNetwork.size() == 0 || CanAddToNetwork(drawnNetwork.back(), toC));
+    return InsideBounds(toC) && 
+        (
+            (drawnNetwork.size() == 0 && (constraintFunction==nullptr || constraintFunction(toC) !=  NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR ))
+            || (drawnNetwork.size() > 0 && CanAddToNetwork(drawnNetwork.back(), toC))
+        );
 }
 bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC)
 {
@@ -168,6 +172,7 @@ void NetworkManager::StartDrawing()
 
 std::vector<CellPosition> NetworkManager::CompleteDrawing()
 {
+    std::cout << "NetworkManager::CompleteDrawing()" << std::endl;
     auto drawnNetworkCp = std::vector<CellPosition>(drawnNetwork);
     drawnNetwork.clear();
     pathInProgress.clear();
@@ -182,11 +187,12 @@ std::vector<CellPosition> NetworkManager::CompleteDrawing()
 
 void NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
 {
+    std::cout << " NetworkManager::AddAnchorPoint(...)" << std::endl;
     // if starting a new network, update networkValidToHelper
     // if not starting a new it should be valid from mouse moving
     if (drawnNetwork.size() == 0)
     {
-        drawnNetwork.push_back(frameCoord.mousePosWorldGrid);
+        TryAddAnchorPoint(frameCoord.mousePosWorldGrid);
     }
     else
     {

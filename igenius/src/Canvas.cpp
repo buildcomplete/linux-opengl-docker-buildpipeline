@@ -215,7 +215,6 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
 
     for (auto specIn : blueprint.inputDataTypes)
     {
-        std::cout << "In Row " << (int)specIn.row << std::endl;
         networkConstraints[GetGridIdxAtCell(x0, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
         if (x0>1)
             networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
@@ -224,8 +223,6 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
     if (blueprint.outputDataType.type != DT_NONE)
     {
         auto specOut = blueprint.outputDataType;
-        std::cout << "Out Row " << (int)specOut.row << std::endl;
-
         networkConstraints[GetGridIdxAtCell(x1-1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
         if (x1<255)
             networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
