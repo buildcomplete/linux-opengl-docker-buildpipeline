@@ -1,5 +1,5 @@
 #pragma once
-#include "components/UI_MenuBase.h"
+#include "menus/UI_MenuBase.h"
 
 struct RadialMenuSegmentColors
 {

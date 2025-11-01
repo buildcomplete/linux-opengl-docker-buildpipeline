@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 #include <cassert>
+#include "canvas/Canvas.h" // Used for drawing network segments on canvas
 
 // Search related helpers.
 

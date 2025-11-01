@@ -2,7 +2,6 @@
 #include "IG_types.h"
 #include <iostream>
 #include <vector>
-#include "Canvas.h"
 
 Navigator::Navigator()
 {

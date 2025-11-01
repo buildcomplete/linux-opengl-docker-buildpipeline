@@ -1,13 +1,12 @@
-#include "components/SP_CONVOLUTIONUI.h"
 #include "SP_CONVOLUTIONUI.h"
 #include <iostream>
 
-UI_Components::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_), 
+CanvasComponents::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+    : CanvasComponentBase(id_, anchor_, bluePrint_), 
       menu([this](int idx) { OnMenuSelectOperationClick(idx); }) 
     {}
 
-void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponents::SP_CONVOLUTIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
     int xp = navCtx.CmToPixel(anchor.x + padding_cm);
@@ -47,7 +46,7 @@ void UI_Components::SP_CONVOLUTIONUI::Draw(const RenderContext &rc, const Naviga
     DrawCircleSelectorLines({cx, cy}, navCtx.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
     //menu.Draw(rc);
 }
-bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponents::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     if (!menu.IsVisible())
     {
@@ -56,19 +55,19 @@ bool UI_Components::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stCtx,
     return true;
 }
 
-bool UI_Components::SP_CONVOLUTIONUI::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponents::SP_CONVOLUTIONUI::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     menu.HandleEventsAndTime(stCtx, navCtx);
 
     return menu.IsVisible();
 }
 
-void UI_Components::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponents::SP_CONVOLUTIONUI::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     menu.Draw(rc, navCtx);
 }
 
-void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex)
+void CanvasComponents::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex)
 {
     std::cout << "** void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex= " << segmentIndex << ")" << std::endl;
 

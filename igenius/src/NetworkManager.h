@@ -4,9 +4,12 @@
 #include "raylib.h"
 #include "IG_types.h"
 #include <vector>
-#include "Canvas.h"
 #include <unordered_set>
 #include <stack>
+#include "context/StateContext.h"
+#include "context/NavigationContext.h"
+#include "context/RenderContext.h"
+
 
 struct SearchNode;
 struct SearchPos;

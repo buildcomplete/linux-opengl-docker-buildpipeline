@@ -2,10 +2,10 @@
 #define IG_CANVAS_H
 #include <vector>
 #include <queue>
-#include "components/Component.h"
+#include "canvas/components/CanvasComponents.h"
+#include "canvas/ComponentFactory.h"
 #include "CoordinateHelper.h"
 #include <cstdint>
-#include "ComponentFactory.h"
 #include <memory>
 #include "Engine_StateManager.h"
 #include "context/NavigationContext.h"
@@ -61,10 +61,10 @@ public:
     void DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const;
 
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
-    std::unique_ptr<UI_Component> components[256];
+    std::unique_ptr<CanvasComponentBase> components[256];
     GridContentInfo GetCellInfo(CellPosition cp) const;
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
-    UI_Component* GetComponent(int id);
+    CanvasComponentBase* GetComponent(int id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     NetworkConstraintFlags GetNetworkConstraints(const CellPosition &anchor) const;
     void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);

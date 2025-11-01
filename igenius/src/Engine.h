@@ -4,7 +4,7 @@
 #include "Engine_StateManager.h"
 #include "Navigator.h"
 #include "CoordinateHelper.h"
-#include "Canvas.h"
+#include "canvas/Canvas.h"
 #include "NetworkManager.h"
 #include "context/NavigationContext.h"
 #include "context/RenderContext.h"

@@ -1,10 +1,10 @@
 #pragma once
-#include "components/Component.h"
-#include "components/UI_RadialSP_ConvolutionOperationMenu.h"
+#include "canvas/components/CanvasComponents.h"
+#include "menus/UI_RadialSP_ConvolutionOperationMenu.h"
 
-namespace UI_Components
+namespace CanvasComponents
 {
-    class SP_CONVOLUTIONUI : public UI_Component
+    class SP_CONVOLUTIONUI : public CanvasComponentBase
     {
     public:
         SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);

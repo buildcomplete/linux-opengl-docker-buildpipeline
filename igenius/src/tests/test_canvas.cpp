@@ -1,5 +1,5 @@
 #include "test_framework.h"
-#include "Canvas.h"  // Uncomment when you want to test actual Canvas class
+#include "canvas/Canvas.h"  // Uncomment when you want to test actual Canvas class
 
 
 void test_canvas_operations() {

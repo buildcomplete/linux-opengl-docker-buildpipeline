@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "canvas/components/CanvasComponents.h"
 #include <iostream>
 #include <algorithm>
 #include "rshapes.c"
@@ -82,12 +82,12 @@ void DrawCircleSelectorLines(Vector2 center, float radius, float startAngle, flo
     rlEnd();
 }
 
-UI_Component::UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+CanvasComponentBase::CanvasComponentBase(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
     : id(id_), anchor(anchor_), bluePrint(bluePrint_)
 {
 }
 
-void UI_Component::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponentBase::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
     DrawStandardComponentFrame(rc, navCtx, padding_cm);
@@ -95,14 +95,14 @@ void UI_Component::Draw(const RenderContext &rc, const NavigationContext &navCtx
     DrawStandardSockets(rc, navCtx, padding_cm);
 }
 
-void UI_Component::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx ) const { }
+void CanvasComponentBase::FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx ) const { }
 
-Vector2 UI_Component::GetCursorOffset(const NavigationContext &navCtx)
+Vector2 CanvasComponentBase::GetCursorOffset(const NavigationContext &navCtx)
 {
     return Vector2Subtract(navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
 }
 
-bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponentBase::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     Vector2 offset = GetCursorOffset(navCtx);
     std::cout << "Clicked component: " << id << " mousePosWorldCm: " << navCtx.mousePosWorldCm.x << ", " << navCtx.mousePosWorldCm.y << std::endl;
@@ -111,7 +111,7 @@ bool UI_Component::TryStartCommand(const StateContext &stCtx, const NavigationCo
     return false;
 }
 
-bool UI_Component::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponentBase::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     // Put code in these overrrides to to hanle events, including keypresses etc.
     // it would be nice to abstract away keypresses into named actions...
@@ -121,7 +121,7 @@ bool UI_Component::HandleEventsWhileFocused(const StateContext &stCtx, const Nav
     return false;
 }
 
-void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const NavigationContext &navCtx, const float padding_cm) const
+void CanvasComponentBase::DrawStandardComponentFrame(const RenderContext &rc, const NavigationContext &navCtx, const float padding_cm) const
 {
     int xp = navCtx.CmToPixel(anchor.x + padding_cm);
     int yp = navCtx.CmToPixel(anchor.y + padding_cm);
@@ -135,7 +135,7 @@ void UI_Component::DrawStandardComponentFrame(const RenderContext &rc, const Nav
 //     return inputs;
 // }
 
-void UI_Component::DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const
+void CanvasComponentBase::DrawStandardSockets(const RenderContext &rc, const NavigationContext &navCtx, float padding_cm) const
 {
     int xp = navCtx.CmToPixel(anchor.x + padding_cm);
     int wp = navCtx.CmToPixel(bluePrint.Width - 2.0f * padding_cm);
@@ -166,10 +166,10 @@ void UI_Component::DrawStandardSockets(const RenderContext &rc, const Navigation
     }
 }
 
-UI_Components::VirtualCameraUI::VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_) {}
+CanvasComponents::VirtualCameraUI::VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+    : CanvasComponentBase(id_, anchor_, bluePrint_) {}
 
-void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponents::VirtualCameraUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     // Depending in state, we should draw either a start or stop button
     float x0 = navCtx.CmToPixel(anchor.x);
@@ -195,7 +195,7 @@ void UI_Components::VirtualCameraUI::Draw(const RenderContext &rc, const Navigat
     DrawStandardSockets(rc, navCtx, 0);
 }
 
-bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponents::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     Vector2 offset = Vector2Subtract(navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
     std::cout << "Clicked camera: " << id << " cmp offset: " << offset.x << ", " << offset.y << std::endl;
@@ -204,11 +204,11 @@ bool UI_Components::VirtualCameraUI::TryStartCommand(const StateContext &stCtx, 
 }
 
 
-UI_Components::IMG_IMG_IMG_OPERATIONUI::IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_) {}
+CanvasComponents::IMG_IMG_IMG_OPERATIONUI::IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+    : CanvasComponentBase(id_, anchor_, bluePrint_) {}
 
 
-void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponents::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.1f;
     DrawStandardComponentFrame(rc, navCtx, padding_cm);
@@ -245,10 +245,10 @@ void UI_Components::IMG_IMG_IMG_OPERATIONUI::Draw(const RenderContext &rc, const
     DrawCircleSelectorLines({cx, cy}, navCtx.pixPr_cm * 0.75f, 90 + t, 270 + t, 1, WHITE);
 }
 
-UI_Components::DrawingSurfaceComponent::DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
-    : UI_Component(id_, anchor_, bluePrint_) {}
+CanvasComponents::DrawingSurfaceComponent::DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
+    : CanvasComponentBase(id_, anchor_, bluePrint_) {}
 
-void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
+void CanvasComponents::DrawingSurfaceComponent::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     const float padding_cm = 0.0f;
     int xp = navCtx.CmToPixel(anchor.x + padding_cm);
@@ -273,7 +273,7 @@ void UI_Components::DrawingSurfaceComponent::Draw(const RenderContext &rc, const
     }
 }
 
-bool UI_Components::DrawingSurfaceComponent::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponents::DrawingSurfaceComponent::TryStartCommand(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     currentMouseMove[0] = GetCursorOffset(navCtx);
     currentMouseMove[1] = currentMouseMove[0];
@@ -282,7 +282,7 @@ bool UI_Components::DrawingSurfaceComponent::TryStartCommand(const StateContext 
     return true;
 }
 
-bool UI_Components::DrawingSurfaceComponent::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
+bool CanvasComponents::DrawingSurfaceComponent::HandleEventsWhileFocused(const StateContext &stCtx, const NavigationContext &navCtx)
 {
     if (IsKeyPressed(KEY_C))
     {

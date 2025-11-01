@@ -56,12 +56,12 @@ StateContext Engine_StateManager::HandleEvents()
     return state;
 }
 
-void Engine_StateManager::SetFocusComponent(UI_Component *c)
+void Engine_StateManager::SetFocusComponent(CanvasComponentBase *c)
 {
     focusedComponent = c;
 }
 
-UI_Component* Engine_StateManager::GetFocusComponent() const
+CanvasComponentBase* Engine_StateManager::GetFocusComponent() const
 {
     return focusedComponent;
 }

@@ -19,21 +19,21 @@ ComponentBluePrint ComponentFactory::GetBluePrint(CMPNAMES name)
     return ComponentBluePrint(UNDEFINED, 1, 1, {}, {DT_NONE, 0});
 }
 
-std::unique_ptr<UI_Component> ComponentFactory::CreateUI_Component(ComponentBluePrint blueprint, std::uint8_t id, CellPosition anchor)
+std::unique_ptr<CanvasComponentBase> ComponentFactory::CreateUI_Component(ComponentBluePrint blueprint, std::uint8_t id, CellPosition anchor)
 {
     switch (blueprint.Name)
     {
     case CMPNAMES::VIRTUAL_CAMERA:
-        return std::make_unique<UI_Components::VirtualCameraUI>(id, anchor, blueprint);
+        return std::make_unique<CanvasComponents::VirtualCameraUI>(id, anchor, blueprint);
     case CMPNAMES::SP_CONVOLUTION:
-        return std::make_unique<UI_Components::SP_CONVOLUTIONUI>(id, anchor, blueprint);
+        return std::make_unique<CanvasComponents::SP_CONVOLUTIONUI>(id, anchor, blueprint);
     case CMPNAMES::IMG_IMG_IMG_OPERATION:
-        return std::make_unique<UI_Components::IMG_IMG_IMG_OPERATIONUI>(id, anchor, blueprint);
+        return std::make_unique<CanvasComponents::IMG_IMG_IMG_OPERATIONUI>(id, anchor, blueprint);
     case CMPNAMES::DRAWING_COMPONENT:
-        return std::make_unique<UI_Components::DrawingSurfaceComponent>(id, anchor, blueprint);
+        return std::make_unique<CanvasComponents::DrawingSurfaceComponent>(id, anchor, blueprint);
 
     
     default:
-        return std::make_unique<UI_Component>(id, anchor, blueprint );
+        return std::make_unique<CanvasComponentBase>(id, anchor, blueprint );
     }
 }

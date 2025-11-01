@@ -1,7 +1,7 @@
 #include "Canvas.h"
 #include <iostream>
 #include <rlgl.h>
-#include "components/UI_RadialMenuIMGIMGOperation.h"
+#include "menus/UI_RadialMenuIMGIMGOperation.h"
 
 // Small copy paste from raylib to support drawing integer line segments in cm space
 // Draw lines sequence (using gl lines)
@@ -380,7 +380,7 @@ GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
     return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
-UI_Component *Canvas::GetComponent(int id)
+CanvasComponentBase *Canvas::GetComponent(int id)
 {
     if (inUseComponentKeys.find(id) != inUseComponentKeys.end())
     {

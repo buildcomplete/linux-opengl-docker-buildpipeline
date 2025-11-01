@@ -4,9 +4,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "Engine_StateManager.h"
-#include "Canvas.h"
-
-
+#include "canvas/Canvas.h"
 
 /**
  * Handles mouse interactions, including dragging and cursor customization, 

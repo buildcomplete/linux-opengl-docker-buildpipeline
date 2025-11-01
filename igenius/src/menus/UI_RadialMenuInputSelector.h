@@ -1,7 +1,6 @@
 #pragma once
 
-#include "components/Component.h"
-#include "components/UI_RadialMenuBase.h"
+#include "menus/UI_RadialMenuBase.h"
 
 class UI_RadialMenuInputSelector : public UI_RadialMenuBase
 {

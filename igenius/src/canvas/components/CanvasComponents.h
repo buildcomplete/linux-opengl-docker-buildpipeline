@@ -15,27 +15,16 @@
 #include <functional>
 #include <cstdint>
 
-// class Component
-// {
-// public:
-//     std::uint8_t id = 0;
-
-//     // Datatype in input, and wheter or not a data field is optional
-//     std::vector<IOSpec> inputTypes;
-//     IGDataTypes outputType;
-
-// };
-
 void DrawCircleSelectorLines(Vector2 center, float radius, float startAngle, float endAngle, int segments, Color color);
 
-class UI_Component
+class CanvasComponentBase
 {
-public:
+ public:
     std::uint8_t id = 0;
     CellPosition anchor = {0, 0};
     ComponentBluePrint bluePrint;
 
-    UI_Component(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
+    CanvasComponentBase(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
 
     virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const;
     virtual void FocusedDraw(const RenderContext &rc, const NavigationContext &navCtx) const;
@@ -58,9 +47,9 @@ protected:
     // std::vector<IOPin> outputs;
 };
 
-namespace UI_Components
+namespace CanvasComponents
 {
-    class VirtualCameraUI : public UI_Component
+    class VirtualCameraUI : public CanvasComponentBase
     {
     public:
         VirtualCameraUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
@@ -71,14 +60,14 @@ namespace UI_Components
         bool isCapturing = false;
     };
 
-    class IMG_IMG_IMG_OPERATIONUI : public UI_Component
+    class IMG_IMG_IMG_OPERATIONUI : public CanvasComponentBase
     {
     public:
         IMG_IMG_IMG_OPERATIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);
         virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const override;
     };
 
-    class DrawingSurfaceComponent : public UI_Component
+    class DrawingSurfaceComponent : public CanvasComponentBase
     {
     public:
         DrawingSurfaceComponent(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_);

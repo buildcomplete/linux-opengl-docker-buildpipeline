@@ -2,8 +2,8 @@
 #define ENGINE_STATEMANAGER_H
 #include "IG_types.h"
 #include "context/StateContext.h"
-#include "components/Component.h"
-#include "components/UI_RadialMenuInputSelector.h"
+#include "canvas/components/CanvasComponents.h"
+#include "menus/UI_RadialMenuInputSelector.h"
 
 /**
  * Interprets key and mouse events to manage game states and transitions, 
@@ -15,14 +15,14 @@ public:
     Engine_StateManager();
     
     StateContext HandleEvents();
-    void SetFocusComponent(UI_Component* c);
-    UI_Component *GetFocusComponent() const;
+    void SetFocusComponent(CanvasComponentBase* c);
+    CanvasComponentBase *GetFocusComponent() const;
     void UpdateMenus(const NavigationContext& navCtx);
     void Draw(const RenderContext rc, const NavigationContext navCtx) const;
 
 private:
    StateContext state;
-   UI_Component* focusedComponent = nullptr;
+   CanvasComponentBase* focusedComponent = nullptr;
    UI_RadialMenuInputSelector inputSelectionMenu;
    void OnMenuSelectInputModeClick(int segmentIndex);
 };

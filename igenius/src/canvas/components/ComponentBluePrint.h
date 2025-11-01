@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <vector>
 #include <IG_types.h>
-#include "components/Component.h"
 
 typedef enum : std::int32_t
 {

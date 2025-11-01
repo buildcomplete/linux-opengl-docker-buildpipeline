@@ -1,6 +1,6 @@
 #ifndef STATECONTEXT_H
 #define STATECONTEXT_H
-#include "../IG_types.h"
+#include "IG_types.h"
 #include "raylib.h"
 struct StateContext
 {
