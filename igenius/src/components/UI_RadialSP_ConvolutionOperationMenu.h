@@ -1,8 +1,9 @@
 #pragma once
 
 #include "components/Component.h"
+#include "components/UI_RadialMenuBase.h"
 
-class UI_RadialSPConvolutionperationMenu : public UI_RadialMenuDrawingComponent
+class UI_RadialSPConvolutionperationMenu : public UI_RadialMenuBase
 {
 public:
 

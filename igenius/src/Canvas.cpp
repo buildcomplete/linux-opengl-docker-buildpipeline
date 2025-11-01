@@ -1,7 +1,7 @@
 #include "Canvas.h"
 #include <iostream>
 #include <rlgl.h>
-#include "components/UI_RadialIMGIMGOperationMenu.h"
+#include "components/UI_RadialMenuIMGIMGOperation.h"
 
 // Small copy paste from raylib to support drawing integer line segments in cm space
 // Draw lines sequence (using gl lines)
@@ -79,7 +79,7 @@ void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const 
     }
 
     static bool enableRadialHack = true;
-    static auto rMenu = UI_RadialIMGIMGOperationMenu(canvasTestClickHandler);
+    static auto rMenu = UI_RadialMenuIMGIMGOperation(canvasTestClickHandler);
     if (IsKeyPressed(KEY_H))
     {
         if (rMenu.IsVisible())

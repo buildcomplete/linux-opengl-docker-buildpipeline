@@ -4,7 +4,7 @@
 const Color hoverGreen = {NETGREEN.r, NETGREEN.g, NETGREEN.b, 100};
 const Color bgGrey = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 100};
 UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu(ClickHandler clickHandler)
-    : UI_RadialMenuDrawingComponent(
+    : UI_RadialMenuBase(
           clickHandler,
           {
               {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '"SELECT"' // Defined in SegmentOperations

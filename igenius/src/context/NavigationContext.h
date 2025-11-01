@@ -1,7 +1,7 @@
 #ifndef NAVIGATION_CONTEXT_H
 #define NAVIGATION_CONTEXT_H
 
-#include "raymath.h"
+#include "raylib.h"
 #include "../IG_types.h"
 
 struct NavigationContext

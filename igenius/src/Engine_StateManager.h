@@ -3,7 +3,7 @@
 #include "IG_types.h"
 #include "context/StateContext.h"
 #include "components/Component.h"
-#include "components/UI_RadialInputSelectionMenu.h"
+#include "components/UI_RadialMenuInputSelector.h"
 
 /**
  * Interprets key and mouse events to manage game states and transitions, 
@@ -23,7 +23,7 @@ public:
 private:
    StateContext state;
    UI_Component* focusedComponent = nullptr;
-   UI_RadialInputSelectionMenu inputSelectionMenu;
+   UI_RadialMenuInputSelector inputSelectionMenu;
    void OnMenuSelectInputModeClick(int segmentIndex);
 };
 

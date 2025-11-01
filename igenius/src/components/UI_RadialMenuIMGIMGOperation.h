@@ -1,11 +1,12 @@
 #pragma once
 
 #include "components/Component.h"
+#include "components/UI_RadialMenuBase.h"
 
-class UI_RadialIMGIMGOperationMenu : public UI_RadialMenuDrawingComponent
+class UI_RadialMenuIMGIMGOperation : public UI_RadialMenuBase
 {
 public:
-    UI_RadialIMGIMGOperationMenu(ClickHandler clickHandler);
+    UI_RadialMenuIMGIMGOperation(ClickHandler clickHandler);
     const std::string SegmentOperations = "+-/x";
 
 protected:

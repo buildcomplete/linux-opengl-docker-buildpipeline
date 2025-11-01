@@ -1,10 +1,10 @@
-#include "components/UI_RadialIMGIMGOperationMenu.h"
+#include "components/UI_RadialMenuIMGIMGOperation.h"
 #include <iostream>
 
 const Color hoverGreen = {NETGREEN.r, NETGREEN.g, NETGREEN.b, 100};
 const Color bgGrey = {ELECTRIC_BLUE.r, ELECTRIC_BLUE.g, ELECTRIC_BLUE.b, 100};
-UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu(ClickHandler clickHandler_)
-    : UI_RadialMenuDrawingComponent(
+UI_RadialMenuIMGIMGOperation::UI_RadialMenuIMGIMGOperation(ClickHandler clickHandler_)
+    : UI_RadialMenuBase(
           clickHandler_,
           {
               {ELECTRIC_BLUE, bgGrey, hoverGreen}, // '+' // Defined in SegmentOperations
@@ -18,7 +18,7 @@ UI_RadialIMGIMGOperationMenu::UI_RadialIMGIMGOperationMenu(ClickHandler clickHan
 }
 
 
-void UI_RadialIMGIMGOperationMenu::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
+void UI_RadialMenuIMGIMGOperation::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
 {
     float deltaV = endAngle - startAngle;
     Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};

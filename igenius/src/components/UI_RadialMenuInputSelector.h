@@ -1,12 +1,13 @@
 #pragma once
 
 #include "components/Component.h"
+#include "components/UI_RadialMenuBase.h"
 
-class UI_RadialInputSelectionMenu : public UI_RadialMenuDrawingComponent
+class UI_RadialMenuInputSelector : public UI_RadialMenuBase
 {
 public:
 
-    UI_RadialInputSelectionMenu(ClickHandler clickHandler);
+    UI_RadialMenuInputSelector(ClickHandler clickHandler);
     //virtual void HandleClick(int idx) override;
     const std::vector<std::string> SegmentOperations = {"SELECT", "NET", "PLACE", "MOVE", "DELETE"};
 
