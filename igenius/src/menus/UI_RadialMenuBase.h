@@ -1,17 +1,20 @@
 #pragma once
 #include "menus/UI_MenuBase.h"
 
-struct RadialMenuSegmentColors
+struct RadialMenuSegment
 {
     Color edgeColor;
     Color backgroundColor;
     Color hoverColor;
+    int yourId; // to identify segment in callback so you don't have to rely on index
 };
 
 class UI_RadialMenuBase : public UI_MenuBase
 {
 public:
-    UI_RadialMenuBase(ClickHandler clickHandler_, std::vector<RadialMenuSegmentColors> segments, float rOutCm, float rInCm);
+    using ClickHandlerRadialMenu = std::function<void(int segmentIndex, int segmentId)>;
+
+    UI_RadialMenuBase(ClickHandlerRadialMenu clickHandler_, std::vector<RadialMenuSegment> segments, float rOutCm, float rInCm);
 
     // Returns the calculated segment index, -1 if nothing is selected
     int GetHoverSegment(const NavigationContext &navC) const;
@@ -21,7 +24,7 @@ public:
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) override;
 
 protected:
-    std::vector<RadialMenuSegmentColors> segments;
+    std::vector<RadialMenuSegment> segments;
     float rOutCm;
     float rInCm;
     int hoveredSegment = -1;

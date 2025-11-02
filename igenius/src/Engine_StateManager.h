@@ -24,7 +24,7 @@ private:
    StateContext state;
    CanvasComponentBase* focusedComponent = nullptr;
    UI_RadialMenuInputSelector inputSelectionMenu;
-   void OnMenuSelectInputModeClick(int segmentIndex);
+   void OnMenuSelectInputModeClick(INPUT_STATE_FLAGS newMode);
 };
 
 

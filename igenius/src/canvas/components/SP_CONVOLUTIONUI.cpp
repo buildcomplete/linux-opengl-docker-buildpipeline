@@ -3,7 +3,7 @@
 
 CanvasComponents::SP_CONVOLUTIONUI::SP_CONVOLUTIONUI(std::uint8_t id_, CellPosition anchor_, const ComponentBluePrint &bluePrint_)
     : CanvasComponentBase(id_, anchor_, bluePrint_), 
-      menu([this](int idx) { OnMenuSelectOperationClick(idx); }) 
+      menu([this](int idx, int opId) { OnMenuSelectOperationClick(idx); }) 
     {}
 
 void CanvasComponents::SP_CONVOLUTIONUI::Draw(const RenderContext &rc, const NavigationContext &navCtx) const

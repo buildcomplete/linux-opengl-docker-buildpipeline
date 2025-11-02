@@ -2,17 +2,18 @@
 #include <cmath>
 #include "raymath.h"
 
-
-UI_RadialMenuBase::UI_RadialMenuBase(ClickHandler clickHandler_, std::vector<RadialMenuSegmentColors> segments_, float rOutCm_, float rInCm_)
-    : UI_MenuBase(clickHandler_), segments(segments_), rOutCm(rOutCm_), rInCm(rInCm_)
+UI_RadialMenuBase::UI_RadialMenuBase(ClickHandlerRadialMenu clickHandler_, std::vector<RadialMenuSegment> segments_, float rOutCm_, float rInCm_)
+    : UI_MenuBase([clickHandler_, segments_](int idx)
+                  { clickHandler_(idx, segments_[idx].yourId); }),
+      segments(segments_), rOutCm(rOutCm_), rInCm(rInCm_)
 {
 }
 
-void UI_RadialMenuBase::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) 
+void UI_RadialMenuBase::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx)
 {
-    UI_MenuBase::HandleEventsAndTime( stCtx, navCtx);
-    
-    if (UI_ANIM_STATE::UITEM_OPEN == animState )
+    UI_MenuBase::HandleEventsAndTime(stCtx, navCtx);
+
+    if (UI_ANIM_STATE::UITEM_OPEN == animState)
     {
         // update segment id
         hoveredSegment = UI_RadialMenuBase::GetHoverSegment(navCtx);
@@ -26,7 +27,7 @@ void UI_RadialMenuBase::HandleEventsAndTime(const StateContext &stCtx, const Nav
     }
 };
 
-int UI_RadialMenuBase::GetHoverSegment(const NavigationContext &navC) const 
+int UI_RadialMenuBase::GetHoverSegment(const NavigationContext &navC) const
 {
     Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
     float mouseAngle = -1.0f * RAD2DEG * Vector2LineAngle(origoCM, navC.mousePosWorldCm);
@@ -45,11 +46,10 @@ int UI_RadialMenuBase::GetHoverSegment(const NavigationContext &navC) const
 }
 
 // Static main function, to be changed to get drawing functions instead of "int segments"
-void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int nSegments) const 
+void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int nSegments) const
 {
     float gapPx = navCtx.CmToPixel(0.2f * expansionProgress);
     // Calculate selected segment from mouse/cursor position
-   
 
     Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
     float r1Px = navCtx.CmToPixel(rOutCm) * expansionProgress;
@@ -57,7 +57,6 @@ void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const Navigation
 
     float deltaV = 360.0f / (float)nSegments;
 
-    
     int subSegments = floor(18.0 / nSegments) + 1;
 
     float gapDegR1 = (gapPx / r1Px) * RAD2DEG; // Angular gap in degrees
@@ -79,12 +78,11 @@ void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const Navigation
         float subAngleR2 = (endAngleR2 - startAngleR2) / subSegments;
 
         auto segmentColor = segments[i];
-        Color bgColor = (i!=hoveredSegment) ? segmentColor.backgroundColor : segmentColor.hoverColor;
+        Color bgColor = (i != hoveredSegment) ? segmentColor.backgroundColor : segmentColor.hoverColor;
 
         char buffer[150];
         sprintf(buffer, "Segments: %.1d DeltaVL %.1f selectedSegment: %d", nSegments, deltaV, hoveredSegment);
         DrawText(buffer, 20, 60, 20, WHITE);
-
 
         float
             p1x = cosf(DEG2RAD * startAngleR1) * r1Px,
@@ -135,7 +133,7 @@ void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const Navigation
     }
 }
 
-void UI_RadialMenuBase::Draw(const RenderContext &rc, const NavigationContext &navCtx) const 
+void UI_RadialMenuBase::Draw(const RenderContext &rc, const NavigationContext &navCtx) const
 {
     if (UI_ANIM_STATE::UITEM_CLOSED == animState)
         return;

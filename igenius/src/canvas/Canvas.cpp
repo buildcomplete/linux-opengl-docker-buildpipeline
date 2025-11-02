@@ -59,9 +59,9 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
     return true;
 }
 
-void canvasTestClickHandler(int it)
+void canvasTestClickHandler(int it, int type)
 {
-    std::cout << "> void canvasTestClickHandler(int " << it << ")" << std::endl;
+    std::cout << "> void canvasTestClickHandler(int " << it << "=" << (char)type << ")" << std::endl;
 }
 
 void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc) const
