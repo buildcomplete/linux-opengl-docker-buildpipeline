@@ -44,14 +44,6 @@ void UI_RadialMenuInputSelector::DrawSegmentIcon(const RenderContext &rc, const 
         break;
     }
 
-    float deltaV = endAngle - startAngle;
-    Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
-    float
-        tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
-        ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
-
-    int fSize = (int)ceil(30 * expansionProgress);
-    int tw = MeasureText(text, fSize);
-    DrawText(text, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
+    DrawTextAtSegmentCenter(rc, navCtx, text, NETGREEN, 60, startAngle, endAngle, rInPx, rOutPx);
 
 }

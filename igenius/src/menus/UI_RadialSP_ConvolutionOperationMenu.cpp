@@ -22,14 +22,6 @@ UI_RadialSPConvolutionperationMenu::UI_RadialSPConvolutionperationMenu(ClickHand
 
 void UI_RadialSPConvolutionperationMenu::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
 {
-    float deltaV = endAngle - startAngle;
-    Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
-    float
-        tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
-        ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
-
-    int fSize = (int)ceil(30 * expansionProgress);
-    int tw = MeasureText(SegmentOperations[segmentIndex].c_str(), fSize);
-    DrawText(SegmentOperations[segmentIndex].c_str(), tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
-
+    DrawTextAtSegmentCenter(
+        rc, navCtx, SegmentOperations[segmentIndex].c_str(), NETGREEN, 40, startAngle, endAngle, rInPx, rOutPx);
 }

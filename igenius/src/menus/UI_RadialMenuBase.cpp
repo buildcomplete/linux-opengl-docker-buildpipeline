@@ -1,6 +1,7 @@
 #include "menus/UI_RadialMenuBase.h"
 #include <cmath>
 #include "raymath.h"
+#include "UI_RadialMenuBase.h"
 
 UI_RadialMenuBase::UI_RadialMenuBase(ClickHandlerRadialMenu clickHandler_, std::vector<RadialMenuSegment> segments_, float rOutCm_, float rInCm_)
     : UI_MenuBase([clickHandler_, segments_](int idx)
@@ -27,6 +28,27 @@ void UI_RadialMenuBase::HandleEventsAndTime(const StateContext &stCtx, const Nav
     }
 };
 
+void UI_RadialMenuBase::DrawTextAtSegmentCenter(
+    const RenderContext &rc, 
+    const NavigationContext &navCtx, 
+    const char* text, 
+    const Color& textColor, 
+    const int textSize100pct,
+    float startAngle, float endAngle, 
+    float rInPx, 
+    float rOutPx) const
+{
+    float deltaV = endAngle - startAngle;
+    Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
+    float
+        tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
+        ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
+
+    int fSize = (int)ceil(textSize100pct * expansionProgress);
+    int tw = MeasureText(text, fSize);
+    DrawText(text, tx - tw / 2, ty - fSize / 2, fSize, textColor);
+}
+
 int UI_RadialMenuBase::GetHoverSegment(const NavigationContext &navC) const
 {
     Vector2 origoToMouse = Vector2Subtract(origoCM, navC.mousePosWorldCm);
@@ -45,8 +67,7 @@ int UI_RadialMenuBase::GetHoverSegment(const NavigationContext &navC) const
     return -1;
 }
 
-// Static main function, to be changed to get drawing functions instead of "int segments"
-void UI_RadialMenuBase::DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int nSegments) const
+void UI_RadialMenuBase::DrawRadialSegmentsOutline(const RenderContext &rc, const NavigationContext &navCtx, int nSegments) const
 {
     float gapPx = navCtx.CmToPixel(0.2f * expansionProgress);
     // Calculate selected segment from mouse/cursor position
@@ -138,5 +159,5 @@ void UI_RadialMenuBase::Draw(const RenderContext &rc, const NavigationContext &n
     if (UI_ANIM_STATE::UITEM_CLOSED == animState)
         return;
 
-    DrawRadialMenu(rc, navCtx, segments.size());
+    DrawRadialSegmentsOutline(rc, navCtx, segments.size());
 }

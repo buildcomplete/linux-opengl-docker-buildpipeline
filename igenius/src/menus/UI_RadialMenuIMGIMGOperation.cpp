@@ -20,15 +20,7 @@ UI_RadialMenuIMGIMGOperation::UI_RadialMenuIMGIMGOperation(ClickHandlerRadialMen
 
 void UI_RadialMenuIMGIMGOperation::DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const
 {
-    float deltaV = endAngle - startAngle;
-    Vector2 origoPx = {navCtx.CmToPixel(origoCM.x), navCtx.CmToPixel(origoCM.y)};
-    float
-        tx = cosf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.x,
-        ty = sinf(DEG2RAD * (startAngle + deltaV / 2.0f)) * (rInPx + rOutPx) / 2.0 + origoPx.y;
-
     char buffer[2];
     sprintf(buffer, "%c", (char)(segments[segmentIndex].yourId));
-    int fSize = (int)ceil(120 * expansionProgress);
-    int tw = MeasureText(buffer, fSize);
-    DrawText(buffer, tx - tw / 2, ty - fSize / 2, fSize, NETGREEN);
+    DrawTextAtSegmentCenter(rc, navCtx, buffer, NETGREEN, 120, startAngle, endAngle, rInPx, rOutPx);
 }

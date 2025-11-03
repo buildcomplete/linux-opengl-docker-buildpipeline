@@ -23,6 +23,17 @@ public:
     virtual void DrawSegmentIcon(const RenderContext &rc, const NavigationContext &navCtx, int segmentIndex, float startAngle, float endAngle, float rInPx, float rOutPx) const = 0;
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx) override;
 
+    void DrawTextAtSegmentCenter(
+        const RenderContext &rc,
+        const NavigationContext &navCtx,
+        const char *text,
+        const Color &textColor,
+        const int textSize100pct,
+        float startAngle,
+        float endAngle,
+        float rInPx,
+        float rOutPx) const;
+
 protected:
     std::vector<RadialMenuSegment> segments;
     float rOutCm;
@@ -31,5 +42,5 @@ protected:
     int selectedSegment = -1;
 
 private:
-    void DrawRadialMenu(const RenderContext &rc, const NavigationContext &navCtx, int segments) const;
+    void DrawRadialSegmentsOutline(const RenderContext &rc, const NavigationContext &navCtx, int segments) const;
 };
