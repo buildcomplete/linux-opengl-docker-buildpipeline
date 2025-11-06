@@ -129,6 +129,9 @@ void NetworkManager::SetConstraintFunction(ConstraintFunction f)
 
 void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx) const
 {
+    if (!isInDrawMode)
+        return;
+
     auto pixPr_cm = navCtx.pixPr_cm;
     Color circleColor = ELECTRIC_BLUE;
     circleColor.a = 155;

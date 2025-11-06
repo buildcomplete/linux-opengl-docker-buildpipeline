@@ -9,6 +9,7 @@
 #include "context/NavigationContext.h"
 #include "context/RenderContext.h"
 #include "context/StateContext.h"
+#include "canvas/tools/ToolMap.h"
 
 
 /**
@@ -39,6 +40,8 @@ private:
 	
     StateContext stateContext;
     NavigationContext navigationContext;
+    std::unique_ptr<ToolMap> toolMap;
+    CanvasToolBase* activeTool = nullptr;
 	
 };
 

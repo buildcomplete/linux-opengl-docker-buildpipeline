@@ -19,12 +19,14 @@ void Engine::Init()
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 5);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 9);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::DRAWING_COMPONENT), 2, 1);
-
     
     networkDrawingManager.SetConstraintFunction((ConstraintFunction)[this](const CellPosition p)
     { 
         return canvas.GetNetworkConstraints(p);
     });
+
+    // Create all tools for canvas
+    toolMap = std::make_unique<ToolMap>(&canvas);
 }
 
 void Engine::HandleEvents()
@@ -35,6 +37,10 @@ void Engine::HandleEvents()
     if (false == stateContext.IsInState(INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING))
     {
         networkDrawingManager.HandleEvents(stateContext, navigationContext);
+    }
+    if (activeTool)
+    {
+        activeTool->HandleEventsAndTime(stateContext, navigationContext);
     }
     InjectStateChanges();
 }
@@ -57,6 +63,11 @@ void Engine::Render()
         networkDrawingManager.Draw(rc, navigationContext);
 
         stateManager.Draw(rc, navigationContext);
+
+        if (activeTool)
+        {
+            activeTool->Draw(rc, navigationContext);
+        }
     }
     EndMode2D();
 
@@ -124,9 +135,19 @@ Engine::~Engine()
 
 void Engine::InjectStateChanges()
 {
-    if (stateContext.DidEnterState(IG_INPUT_MODE_DRAW_NETWORK))
+    if (stateContext.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_MODE_DRAW_NETWORK))
     {
         networkDrawingManager.StartDrawing();
+    }
+
+    if (stateContext.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
+    {
+        activeTool = nullptr;
+    }
+
+    if (stateContext.DidExitState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
+    {
+        activeTool = toolMap->GetTool(stateContext.flags);
     }
 
     if (stateContext.DidExitState(IG_INPUT_MODE_DRAW_NETWORK))

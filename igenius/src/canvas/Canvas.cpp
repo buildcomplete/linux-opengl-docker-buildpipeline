@@ -78,7 +78,6 @@ void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const 
         Canvas::DrawNetworkSegment(networks[i], sc.IsInState(IG_INPUT_MODE_DRAW_NETWORK), navC.pixPr_cm, NETGREEN);
     }
 
-    static bool enableRadialHack = true;
     static auto rMenu = UI_RadialMenuIMGIMGOperation(canvasTestClickHandler);
     if (IsKeyPressed(KEY_H))
     {
