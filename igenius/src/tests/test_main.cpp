@@ -7,6 +7,7 @@ void run_engine_tests();
 void run_byte_value_tests();
 void run_networkm_manager_tests();
 void run_igenius_coretypes_tests();
+void run_igenius_tools_PickAndPlaceComponentTool_tests();
 
 int main() {
     // Reset counters at the start
@@ -33,6 +34,7 @@ int main() {
     // run_network_tests();
     run_networkm_manager_tests();
 
+    run_igenius_tools_PickAndPlaceComponentTool_tests();
     
     // Print test summary
     TestCounters::instance().print_summary();

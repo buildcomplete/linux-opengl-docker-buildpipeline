@@ -56,6 +56,7 @@ class Canvas
 public:
     Canvas();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
+    bool ReleaseComponent(std::uint8_t id);
     void Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc) const;
 
     void DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const;
@@ -64,7 +65,8 @@ public:
     std::unique_ptr<CanvasComponentBase> components[256];
     GridContentInfo GetCellInfo(CellPosition cp) const;
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
-    CanvasComponentBase* GetComponent(int id);
+    bool HaveComponent(std::uint8_t id);
+    CanvasComponentBase *GetComponent(std::uint8_t id);
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     NetworkConstraintFlags GetNetworkConstraints(const CellPosition &anchor) const;
     void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);

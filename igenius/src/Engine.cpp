@@ -140,11 +140,13 @@ void Engine::InjectStateChanges()
         networkDrawingManager.StartDrawing();
     }
 
+    // Starting selecting mode, clear current tool
     if (stateContext.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
     {
         activeTool = nullptr;
     }
 
+    // if we are done selecting a mode, check if we set a tool
     if (stateContext.DidExitState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
     {
         activeTool = toolMap->GetTool(stateContext.flags);

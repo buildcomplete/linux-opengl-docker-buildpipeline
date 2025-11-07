@@ -59,6 +59,20 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
     return true;
 }
 
+bool Canvas::ReleaseComponent(std::uint8_t id)
+{
+    if(HaveComponent(id))
+    {
+        SetGridCellValues(components[id]->bluePrint, components[id]->anchor.x, components[id]->anchor.y, 0);
+        // Todo disconnect the component from any attached networks
+        components[id] = nullptr;
+        inUseComponentKeys.erase(id);
+        avaliableComponentKeys.insert(id);
+        return true;
+    }
+    return false;
+}
+
 void canvasTestClickHandler(int it, int type)
 {
     std::cout << "> void canvasTestClickHandler(int " << it << "=" << (char)type << ")" << std::endl;
@@ -379,9 +393,14 @@ GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
     return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
-CanvasComponentBase *Canvas::GetComponent(int id)
+bool Canvas::HaveComponent(std::uint8_t id)
 {
-    if (inUseComponentKeys.find(id) != inUseComponentKeys.end())
+    return inUseComponentKeys.find(id) != inUseComponentKeys.end();
+}
+
+CanvasComponentBase *Canvas::GetComponent(std::uint8_t id)
+{
+    if (HaveComponent(id))
     {
         return components[id].get();
     }
@@ -407,7 +426,6 @@ void Canvas::DrawNetworkSegment(const std::vector<CellPosition> &network, bool d
 
 Canvas::~Canvas()
 {
-    std::cout << "Destrying canvas, hope you are exiting" << std::endl;
     // It is unloaded when window is closed, or engine is closed, not sure,
     // but unloading manually throws an exception
     // UnloadTexture(cameraTexture);
