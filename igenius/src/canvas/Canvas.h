@@ -60,17 +60,17 @@ public:
 
     void DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const;
 
-    bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY);
+    bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY) const;
     std::unique_ptr<CanvasComponentBase> components[256];
     GridContentInfo GetCellInfo(CellPosition cp) const;
     GridContentInfo GetCellInfo(int cellX, int cellY) const;
-    bool HaveComponent(std::uint8_t id);
-    CanvasComponentBase *GetComponent(std::uint8_t id);
+    bool HaveComponent(std::uint8_t id) const;
+    CanvasComponentBase *GetComponent(std::uint8_t id) const;
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     NetworkConstraintFlags GetNetworkConstraints(const CellPosition &anchor) const;
     void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);
-    std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints);
-    NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id);
+    std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const;
+    NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id) const;
     bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
     static void DrawNetworkSegment(const std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm, Color c);
 

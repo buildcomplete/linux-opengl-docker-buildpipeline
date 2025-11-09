@@ -45,7 +45,7 @@ NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)
         gameMousePos.y += md.y;
     }
 
-    LimitCameraToBounds(pixPr_cm_);
+    EnforceCameraBounds(pixPr_cm_);
 
     Vector2 mwp = GetScreenToWorld2D(gameMousePos, camera);
     context = {
@@ -59,7 +59,7 @@ NavigationContext Navigator::HandleEvents(StateContext &sc, float pixPr_cm_)
     return context;
 }
 
-void Navigator::LimitCameraToBounds(float pixPr_cm_)
+void Navigator::EnforceCameraBounds(float pixPr_cm_)
 {
     // Limit camera bound to be within world bounds in cell coords
     Vector2 topLeftWC = NavigationContext::ScreenToWPCMStatic(
@@ -88,7 +88,7 @@ void Navigator::LimitCameraToBounds(float pixPr_cm_)
 }
 
 // Should be called while drawing in camera mode
-void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas)
+void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas) const
 {
     // Assuming drawing in camera mode.
     // draw circle close to where mouse is
@@ -131,7 +131,7 @@ void Navigator::DrawCursorWorldGuide(const StateContext &sc, const Canvas &canva
 }
 
 // Should be called while drawing in fixed screen coordinates (Outhside camera mode)
-void Navigator::DrawCursorScreenGuide(const StateContext &sc)
+void Navigator::DrawCursorScreenGuide(const StateContext &sc) const
 {
     // Draw cross where we are, color based on input mode
     auto drawCrossAtCursor = [this](Color C)

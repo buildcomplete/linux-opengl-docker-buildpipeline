@@ -29,8 +29,8 @@ class NetworkManager
 public:
     void HandleEvents(const StateContext &sc, const NavigationContext &navCtx);
     void Draw(const RenderContext &rc, const NavigationContext &navC) const;
-    bool CanAddToNetwork(CellPosition toC);
-    bool CanAddToNetwork(CellPosition fromC, CellPosition toC);
+    bool CanAddToNetwork(CellPosition toC) const;
+    bool CanAddToNetwork(CellPosition fromC, CellPosition toC) const;
     void StartDrawing();
     std::vector<CellPosition> CompleteDrawing();
     AddAnchorResultState AddAnchorPoint(const NavigationContext &frameCoord);

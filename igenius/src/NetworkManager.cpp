@@ -154,7 +154,7 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
     }
 }
 
-bool NetworkManager::CanAddToNetwork(CellPosition toC)
+bool NetworkManager::CanAddToNetwork(CellPosition toC) const
 {
     return InsideBounds(toC) && 
         (
@@ -162,7 +162,7 @@ bool NetworkManager::CanAddToNetwork(CellPosition toC)
             || (drawnNetwork.size() > 0 && CanAddToNetwork(drawnNetwork.back(), toC))
         );
 }
-bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC)
+bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC) const
 {
     Vector2 to = {(float)toC.x, (float)toC.y};
     Vector2 from = {(float)fromC.x, (float)fromC.y};

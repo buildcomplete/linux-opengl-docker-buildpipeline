@@ -15,10 +15,10 @@ class Navigator {
 
         Navigator();
         NavigationContext HandleEvents(StateContext &sc, float pixPr_cm_);
-        void LimitCameraToBounds(float pixPr_cm_);
+        void EnforceCameraBounds(float pixPr_cm_);
         void FixCameraBounds(Vector2 &topLeftWC, float pixPr_cm_, Vector2 &bottomRightWC);
-        void DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas);
-        void DrawCursorScreenGuide(const StateContext &sc);
+        void DrawCursorWorldGuide(const StateContext &sc, const Canvas &canvas) const;
+        void DrawCursorScreenGuide(const StateContext &sc) const;
         Camera2D camera = { 0 };
 
     private:

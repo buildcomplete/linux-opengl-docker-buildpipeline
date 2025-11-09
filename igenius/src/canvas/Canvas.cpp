@@ -167,7 +167,7 @@ void Canvas::DrawBounds(const NavigationContext &navC, float limRCM, float limBC
     }
 }
 
-bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY)
+bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY) const
 {
     int x0 = std::max(0, cellX);    // inclusive
     int y0 = std::max(0, cellY);    // // inclusive
@@ -250,7 +250,7 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
 }
 
 // Transform a sequence of network anchor point into all the sections in the grid
-std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints)
+std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const
 {
     if (anchorPoints.size() < 2)
     {
@@ -284,7 +284,7 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
 }
 
 // This should be in the networkDrawingManager, canvas should just update the cells.
-NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::uint8_t id)
+NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::uint8_t id) const
 {
     if (samples.size() < 2)
     {
@@ -393,12 +393,12 @@ GridContentInfo Canvas::GetCellInfo(int cellX, int cellY) const
     return gridContentInfo[GetGridIdxAtCell(cellX, cellY)];
 }
 
-bool Canvas::HaveComponent(std::uint8_t id)
+bool Canvas::HaveComponent(std::uint8_t id) const
 {
     return inUseComponentKeys.find(id) != inUseComponentKeys.end();
 }
 
-CanvasComponentBase *Canvas::GetComponent(std::uint8_t id)
+CanvasComponentBase *Canvas::GetComponent(std::uint8_t id) const
 {
     if (HaveComponent(id))
     {
