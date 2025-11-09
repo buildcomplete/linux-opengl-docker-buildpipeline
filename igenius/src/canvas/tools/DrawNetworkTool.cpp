@@ -1,4 +1,4 @@
-#include "NetworkManager.h"
+#include "canvas/tools/DrawNetworkTool.h"
 #include <cmath>
 #include <raymath.h>
 #include "IG_types.h"
@@ -83,10 +83,35 @@ std::int8_t calcOptimalDirIdx(const CellPosition &a, const CellPosition &b)
     return -1;
 };
 
-void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContext &navCtx)
+DrawNetworkTool::DrawNetworkTool(Canvas &c) : CanvasToolBase(c)
 {
-    if (!isInDrawMode || sc.IsInState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
-        return;
+    SetConstraintFunction((ConstraintFunction)[this](const CellPosition p)
+    { 
+        return this->canvas.GetNetworkConstraints(p);
+    });
+}
+
+void DrawNetworkTool::HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx)
+{
+    if (sc.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_MODE_DRAW_NETWORK))
+    {
+        StartDrawing();
+    }
+
+    if (sc.DidExitState(IG_INPUT_MODE_DRAW_NETWORK))
+    {
+        CompleteDrawing();
+    }
+
+    if (sc.DidEnterState(IG_INPUT_TRY_COMMAND))
+    {
+        if ( AddAnchorResultState::COMPLETE_SEGMENT == AddAnchorPoint(navCtx) )
+        {
+            auto n = CompleteDrawing();
+            canvas.AddNetworkSegment(n, 0);
+            StartDrawing();
+        }
+    }
 
     if (lastPathTo == navCtx.mousePosWorldGrid)
         return;
@@ -122,16 +147,13 @@ void NetworkManager::HandleEvents(const StateContext &sc, const NavigationContex
     }
 }
 
-void NetworkManager::SetConstraintFunction(ConstraintFunction f)
+void DrawNetworkTool::SetConstraintFunction(ConstraintFunction f)
 {
     constraintFunction = f;
 }
 
-void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx) const
+void DrawNetworkTool::Draw(const RenderContext &rndrCtx, const NavigationContext &navCtx) const
 {
-    if (!isInDrawMode)
-        return;
-
     auto pixPr_cm = navCtx.pixPr_cm;
     Color circleColor = ELECTRIC_BLUE;
     circleColor.a = 155;
@@ -154,7 +176,7 @@ void NetworkManager::Draw(const RenderContext &rndrCtx, const NavigationContext 
     }
 }
 
-bool NetworkManager::CanAddToNetwork(CellPosition toC) const
+bool DrawNetworkTool::CanAddToNetwork(CellPosition toC) const
 {
     return InsideBounds(toC) && 
         (
@@ -162,7 +184,7 @@ bool NetworkManager::CanAddToNetwork(CellPosition toC) const
             || (drawnNetwork.size() > 0 && CanAddToNetwork(drawnNetwork.back(), toC))
         );
 }
-bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC) const
+bool DrawNetworkTool::CanAddToNetwork(CellPosition fromC, CellPosition toC) const
 {
     Vector2 to = {(float)toC.x, (float)toC.y};
     Vector2 from = {(float)fromC.x, (float)fromC.y};
@@ -174,14 +196,12 @@ bool NetworkManager::CanAddToNetwork(CellPosition fromC, CellPosition toC) const
     return InsideBounds(fromC) && InsideBounds(toC) && distOk && (horzOrVert || diagonal);
 }
 
-void NetworkManager::StartDrawing()
+void DrawNetworkTool::StartDrawing()
 {
-    // when starting network mode, reset current drawing state (or connect to existing network later on...)
-    isInDrawMode = true;
     drawnNetwork.clear();
 }
 
-std::vector<CellPosition> NetworkManager::CompleteDrawing()
+std::vector<CellPosition> DrawNetworkTool::CompleteDrawing()
 {
     std::cout << "NetworkManager::CompleteDrawing()" << std::endl;
     auto drawnNetworkCp = std::vector<CellPosition>(drawnNetwork);
@@ -191,12 +211,10 @@ std::vector<CellPosition> NetworkManager::CompleteDrawing()
     if (drawnNetworkCp.size() < 2)
         drawnNetworkCp.clear();
 
-    isInDrawMode = false;
-
     return drawnNetworkCp;
 }
 
-AddAnchorResultState NetworkManager::AddAnchorPoint(const NavigationContext &frameCoord)
+AddAnchorResultState DrawNetworkTool::AddAnchorPoint(const NavigationContext &frameCoord)
 {
     std::cout << " NetworkManager::AddAnchorPoint(...)" << std::endl;
     // if starting a new network, update networkValidToHelper
@@ -226,7 +244,7 @@ AddAnchorResultState NetworkManager::AddAnchorPoint(const NavigationContext &fra
 // Tryies to add an anchor point,
 // if requested position is blocked or a path cannot be found from previus ancor return false
 // if point could be added, returns true
-bool NetworkManager::TryAddAnchorPoint(CellPosition anchor)
+bool DrawNetworkTool::TryAddAnchorPoint(CellPosition anchor)
 {
     if (!CanAddToNetwork(anchor))
         return false;
@@ -235,7 +253,7 @@ bool NetworkManager::TryAddAnchorPoint(CellPosition anchor)
     return true;
 }
 
-bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
+bool DrawNetworkTool::TryCreatePathToAnchorPoint(CellPosition target)
 {
     // If we can just add a straigt line, no reason to start path finding
     if (drawnNetwork.size() == 0)
@@ -259,7 +277,7 @@ bool NetworkManager::TryCreatePathToAnchorPoint(CellPosition target)
 
     return false;
 }
-bool NetworkManager::TryContinuePathToAnchorPoints(
+bool DrawNetworkTool::TryContinuePathToAnchorPoints(
     CellPosition target,
     std::stack<CellPosition> &path) const
 {
@@ -281,12 +299,12 @@ bool NetworkManager::TryContinuePathToAnchorPoints(
 // Checks if a cell is inside bounds of grid [0 0;255 255]
 // There are lots logic tied to bounds being inside a byte
 // if changed there will be several areas to check
-bool NetworkManager::InsideBounds(const CellPosition &n)
+bool DrawNetworkTool::InsideBounds(const CellPosition &n)
 {
     return n.x >= 0 && n.y >= 0 && n.x < 256 && n.y < 256;
 }
 
-bool NetworkManager::TryCreatePathBetweenAnchorPoints(
+bool DrawNetworkTool::TryCreatePathBetweenAnchorPoints(
     SearchNode start, // Nodes to visit including links back to previous items
     CellPosition target,
     std::stack<CellPosition> &path) const

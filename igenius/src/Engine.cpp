@@ -19,14 +19,10 @@ void Engine::Init()
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 5);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::IMG_IMG_IMG_OPERATION), 10, 9);
     canvas.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::DRAWING_COMPONENT), 2, 1);
-    
-    networkDrawingManager.SetConstraintFunction((ConstraintFunction)[this](const CellPosition p)
-    { 
-        return canvas.GetNetworkConstraints(p);
-    });
+
 
     // Create all tools for canvas
-    toolMap = std::make_unique<ToolMap>(&canvas);
+    toolMap = std::make_unique<ToolMap>(canvas);
 }
 
 void Engine::HandleEvents()
@@ -34,10 +30,10 @@ void Engine::HandleEvents()
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
     stateManager.UpdateMenus(navigationContext);
-    if (false == stateContext.IsInState(INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING))
-    {
-        networkDrawingManager.HandleEvents(stateContext, navigationContext);
-    }
+    // if (false == stateContext.IsInState(INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING))
+    // {
+    //     networkDrawingManager.HandleEventsAndTime(stateContext, navigationContext);
+    // }
     if (activeTool)
     {
         activeTool->HandleEventsAndTime(stateContext, navigationContext);
@@ -60,7 +56,7 @@ void Engine::Render()
         navigator.DrawCursorWorldGuide(stateContext, canvas);
 
         canvas.Draw(rc, navigationContext, stateContext);
-        networkDrawingManager.Draw(rc, navigationContext);
+        //networkDrawingManager.Draw(rc, navigationContext);
 
         stateManager.Draw(rc, navigationContext);
 
@@ -135,11 +131,6 @@ Engine::~Engine()
 
 void Engine::InjectStateChanges()
 {
-    if (stateContext.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_MODE_DRAW_NETWORK))
-    {
-        networkDrawingManager.StartDrawing();
-    }
-
     // Starting selecting mode, clear current tool
     if (stateContext.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_SELECT_MODE))
     {
@@ -152,16 +143,7 @@ void Engine::InjectStateChanges()
         activeTool = toolMap->GetTool(stateContext.flags);
     }
 
-    if (stateContext.DidExitState(IG_INPUT_MODE_DRAW_NETWORK))
-    {
-        // Modified logic, network now only drawn when clicking again on last added node.
-        //auto n = 
-        networkDrawingManager.CompleteDrawing();
-        //canvas.AddNetworkSegment(n, 0);
-    }
-
     // Send network command, begin new, select and existing, expand network
-
     if (stateContext.DidEnterState(IG_INPUT_TRY_COMMAND))
     {
         if (stateContext.IsInState(IG_INPUT_MODE_SELECTING))
@@ -182,14 +164,6 @@ void Engine::InjectStateChanges()
                 }                
             }
         }
-        if (stateContext.IsInState(IG_INPUT_MODE_DRAW_NETWORK))
-        {
-            if ( AddAnchorResultState::COMPLETE_SEGMENT == networkDrawingManager.AddAnchorPoint(navigationContext) )
-            {
-                auto n = networkDrawingManager.CompleteDrawing();
-                canvas.AddNetworkSegment(n, 0);
-                networkDrawingManager.StartDrawing();
-            }
-        }
+       
     }
 }

@@ -1,13 +1,14 @@
 #include "test_framework.h"
-#include "NetworkManager.h"
+#include "canvas/tools/DrawNetworkTool.h"
 
-void test_network_manager_createNetworkSimple()
+void test_networkDrawTool_createNetworkSimple()
 {
-    test_section("Network Manager CreateNetworkSimple tests");
+    test_section("Network Draw Tool CreateNetworkSimple tests");
 
     // create network path along horizontal lines
     {
-        NetworkManager m;
+        Canvas c;
+        DrawNetworkTool m(c);
         m.StartDrawing();
         m.TryAddAnchorPoint({0, 0});
         m.TryAddAnchorPoint({0, 10});
@@ -17,7 +18,8 @@ void test_network_manager_createNetworkSimple()
 
     // create network path along vertical lines
     {
-        NetworkManager m;
+        Canvas c;
+        DrawNetworkTool m(c);
         m.StartDrawing();
         m.TryAddAnchorPoint({0, 0});
         m.TryAddAnchorPoint({10, 0});
@@ -27,7 +29,8 @@ void test_network_manager_createNetworkSimple()
 
     // create network path along diagonal lines
     {
-        NetworkManager m;
+        Canvas c;
+        DrawNetworkTool m(c);
         m.StartDrawing();
         m.TryAddAnchorPoint({0, 0});
         m.TryAddAnchorPoint({10, 10});
@@ -37,7 +40,8 @@ void test_network_manager_createNetworkSimple()
 
     // create network path not on straight line, fails
     {
-        NetworkManager m;
+        Canvas c;
+        DrawNetworkTool m(c);
         m.StartDrawing();
         m.TryAddAnchorPoint({0, 0});
         test_assert(m.TryAddAnchorPoint({10, 15}) == false, "TryAdd... Create network path not on straight line", "TryAddAnchorPoint should return false");
@@ -50,7 +54,8 @@ void test_network_manager_createNetworkSimple()
     //             \/
     // {10, 0} <-{10, 10}
     {
-        NetworkManager m;
+        Canvas c;
+        DrawNetworkTool m(c);
         m.StartDrawing();
         m.TryAddAnchorPoint({0, 0});
         m.TryAddAnchorPoint({0, 10});
@@ -61,11 +66,12 @@ void test_network_manager_createNetworkSimple()
     }
 }
 
-void test_network_manager_createNetworkPathFinding()
+void test_networkDrawTool_createNetworkPathFinding()
 {
-    test_section("Network Manager CreateNetwork using path finding");
+    test_section("Network Draw Tool CreateNetwork using path finding");
     {
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
         n.StartDrawing();
         n.TryAddAnchorPoint({0, 0});
         n.TryCreatePathToAnchorPoint({10, 10});
@@ -74,7 +80,8 @@ void test_network_manager_createNetworkPathFinding()
     }
 
     { // Sout South East (SSE)
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
         n.StartDrawing();
         CellPosition start = {0, 0};
         CellPosition end = {15, 10};
@@ -87,7 +94,9 @@ void test_network_manager_createNetworkPathFinding()
     }
 
     { // Sout East East (SEE)
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.StartDrawing();
         CellPosition start = {0, 0};
         CellPosition end = {10, 15};
@@ -100,7 +109,9 @@ void test_network_manager_createNetworkPathFinding()
     }
 
     { // Sout East East (NWW)
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.StartDrawing();
         CellPosition start = {10, 15};
         CellPosition end = {0, 0};
@@ -113,7 +124,9 @@ void test_network_manager_createNetworkPathFinding()
     }
 
     { // Sout East East (NNE)
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         CellPosition start = {0, 10};
         CellPosition end = {15, 0};
         n.TryAddAnchorPoint(start);
@@ -125,11 +138,13 @@ void test_network_manager_createNetworkPathFinding()
     }
 }
 
-void test_network_manager_atBoundStable()
+void test_networkDrawTool_atBoundStable()
 {
-    test_section("Network Manager CreateNetwork path finder at bounds stability");
+    test_section("Network Draw Tool CreateNetwork path finder at bounds stability");
     {
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         CellPosition start = {0, 0};
         CellPosition end = {255, 255};
         n.TryAddAnchorPoint(start);
@@ -138,11 +153,13 @@ void test_network_manager_atBoundStable()
         test_equals(result.size(), static_cast<size_t>(2), "Test Create network, end is at bounds");
     }
 }
-void test_network_manager_outOfBoundStable()
+void test_networkDrawTool_outOfBoundStable()
 {
-    test_section("Network Manager CreateNetwork path finder out of bounds stability");
+    test_section("Network Draw Tool CreateNetwork path finder out of bounds stability");
     {
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         CellPosition start = {10, 10};
         CellPosition end = {-1, 0};
         n.TryAddAnchorPoint(start);
@@ -153,7 +170,9 @@ void test_network_manager_outOfBoundStable()
 
     {
         CellPosition start = {-1, 0}, end = {10, 10};
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // should not create anything as we try to go out of bounds
         auto result = n.CompleteDrawing();
@@ -161,12 +180,14 @@ void test_network_manager_outOfBoundStable()
     }
 }
 
-void test_network_manager_createPathAvoidBlocked()
+void test_networkDrawTool_createPathAvoidBlocked()
 {
-    test_section("Network Manager CreateNetwork path finder avoid blocked");
+    test_section("Network Draw Tool CreateNetwork path finder avoid blocked");
     {
         CellPosition start = {1, 1},end = {1, 3};
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.TryAddAnchorPoint(start);
         n.TryCreatePathToAnchorPoint(end); // Creating a straigt pipe, with no blocking / contraints, should give two anchors
         auto result = n.CompleteDrawing();
@@ -175,7 +196,9 @@ void test_network_manager_createPathAvoidBlocked()
 
     {
         CellPosition start = {1, 1},end = {1, 4};
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.SetConstraintFunction([](const CellPosition& anchor) 
         {
             return (NetworkConstraintFlags)((anchor.x == 1 && anchor.y == 2) 
@@ -191,7 +214,9 @@ void test_network_manager_createPathAvoidBlocked()
 
     { // Test where entry only allows horizonatal, should create an additional bend
         CellPosition start = {1, 1},end = {3, 3};
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.SetConstraintFunction([](const CellPosition& anchor) 
         {
             return (NetworkConstraintFlags)((anchor.x == 3 && anchor.y == 3) 
@@ -207,7 +232,9 @@ void test_network_manager_createPathAvoidBlocked()
 
        { // Test where entry only allows horizonatal, should create an additional bend
         CellPosition start = {3, 3},end = {1, 1};
-        NetworkManager n;
+        Canvas c;
+        DrawNetworkTool n(c);
+        
         n.SetConstraintFunction([](const CellPosition& anchor) 
         {
             return (NetworkConstraintFlags)((anchor.x == 3 && anchor.y == 3) 
@@ -227,11 +254,11 @@ void test_network_manager_createPathAvoidBlocked()
 }
 
 // Function to run all engine tests
-void run_networkm_manager_tests()
+void run_DrawNetworkTool_tests()
 {
-    test_network_manager_createNetworkSimple();
-    test_network_manager_createNetworkPathFinding();
-    test_network_manager_atBoundStable();
-    test_network_manager_outOfBoundStable();
-    test_network_manager_createPathAvoidBlocked();
+    test_networkDrawTool_createNetworkSimple();
+    test_networkDrawTool_createNetworkPathFinding();
+    test_networkDrawTool_atBoundStable();
+    test_networkDrawTool_outOfBoundStable();
+    test_networkDrawTool_createPathAvoidBlocked();
 }

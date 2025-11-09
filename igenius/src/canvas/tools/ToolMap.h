@@ -5,7 +5,7 @@
 class ToolMap
 {
 public:
-    ToolMap(Canvas* c);
+    ToolMap(Canvas& c);
     CanvasToolBase* GetTool(INPUT_STATE_FLAGS f);
 
 private:

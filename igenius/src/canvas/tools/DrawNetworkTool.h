@@ -8,7 +8,7 @@
 #include "context/StateContext.h"
 #include "context/NavigationContext.h"
 #include "context/RenderContext.h"
-
+#include "canvas/tools/CanvasToolBase.h"
 
 struct SearchNode;
 struct SearchPos;
@@ -24,11 +24,15 @@ typedef enum : std::uint8_t
  * Responsible for drawing network connections and handling mouse events
  * for network creation, interacting with the Canvas to understand item presence.
  */
-class NetworkManager
+class DrawNetworkTool : public CanvasToolBase
 {
 public:
-    void HandleEvents(const StateContext &sc, const NavigationContext &navCtx);
+    DrawNetworkTool(Canvas &c);
+
+    void HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx);
     void Draw(const RenderContext &rc, const NavigationContext &navC) const;
+    
+    
     bool CanAddToNetwork(CellPosition toC) const;
     bool CanAddToNetwork(CellPosition fromC, CellPosition toC) const;
     void StartDrawing();
@@ -43,7 +47,6 @@ public:
 private:
     std::vector<CellPosition> drawnNetwork = std::vector<CellPosition>(0);
     std::vector<CellPosition> pathInProgress = std::vector<CellPosition>(0);
-    bool isInDrawMode = false;
     CellPosition lastPathTo;
     ConstraintFunction constraintFunction = nullptr;
 

@@ -1,10 +1,9 @@
 #pragma once
-#include "CanvasToolBase.h"
+#include "canvas/tools/CanvasToolBase.h"
 class PickAndPlaceComponentTool : public CanvasToolBase
 {
 public:
-    PickAndPlaceComponentTool(Canvas* canvas);
+    PickAndPlaceComponentTool(Canvas &canvas);
     virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const;
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
-
 };

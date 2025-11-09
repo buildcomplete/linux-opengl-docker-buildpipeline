@@ -1,7 +1,7 @@
 #include "PickAndPlaceComponentTool.h"
 #include "raylib.h"
 
-PickAndPlaceComponentTool::PickAndPlaceComponentTool(Canvas *c) : CanvasToolBase(c)
+PickAndPlaceComponentTool::PickAndPlaceComponentTool(Canvas &c) : CanvasToolBase(c)
 {
 }
 

@@ -5,7 +5,7 @@ void run_basic_tests();
 void run_canvas_tests();
 void run_engine_tests();
 void run_byte_value_tests();
-void run_networkm_manager_tests();
+void run_DrawNetworkTool_tests();
 void run_igenius_coretypes_tests();
 void run_igenius_tools_PickAndPlaceComponentTool_tests();
 
@@ -32,7 +32,7 @@ int main() {
     // run_component_tests();
     // run_ui_tests();
     // run_network_tests();
-    run_networkm_manager_tests();
+    run_DrawNetworkTool_tests();
 
     run_igenius_tools_PickAndPlaceComponentTool_tests();
     
