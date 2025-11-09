@@ -29,7 +29,7 @@ class DrawNetworkTool : public CanvasToolBase
 public:
     DrawNetworkTool(Canvas &c);
 
-    void HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx);
+    std::unique_ptr<ICommand>  HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx);
     void Draw(const RenderContext &rc, const NavigationContext &navC) const;
     
     

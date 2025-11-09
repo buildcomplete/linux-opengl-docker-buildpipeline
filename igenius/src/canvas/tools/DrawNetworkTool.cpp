@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <cassert>
 #include "canvas/Canvas.h" // Used for drawing network segments on canvas
+#include "commands/AddNetworkSegmentCommand.h"
 
 // Search related helpers.
 
@@ -91,7 +92,7 @@ DrawNetworkTool::DrawNetworkTool(Canvas &c) : CanvasToolBase(c)
     });
 }
 
-void DrawNetworkTool::HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx)
+std::unique_ptr<ICommand> DrawNetworkTool::HandleEventsAndTime(const StateContext &sc, const NavigationContext &navCtx)
 {
     if (sc.DidEnterState(INPUT_STATE_FLAGS::IG_INPUT_MODE_DRAW_NETWORK))
     {
@@ -108,16 +109,17 @@ void DrawNetworkTool::HandleEventsAndTime(const StateContext &sc, const Navigati
         if ( AddAnchorResultState::COMPLETE_SEGMENT == AddAnchorPoint(navCtx) )
         {
             auto n = CompleteDrawing();
-            canvas.AddNetworkSegment(n, 0);
+            auto result = std::make_unique<AddNetworkSegmentCommand>(canvas, n);
             StartDrawing();
+            return result;
         }
     }
 
     if (lastPathTo == navCtx.mousePosWorldGrid)
-        return;
+        return nullptr;
 
     if (constraintFunction != nullptr && constraintFunction(navCtx.mousePosWorldGrid) == NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR)
-        return;
+        return nullptr;
 
     auto pixPr_cm = navCtx.pixPr_cm;
     // Network will be arranged on grid centers
@@ -145,6 +147,7 @@ void DrawNetworkTool::HandleEventsAndTime(const StateContext &sc, const Navigati
             }
         }
     }
+    return nullptr;
 }
 
 void DrawNetworkTool::SetConstraintFunction(ConstraintFunction f)

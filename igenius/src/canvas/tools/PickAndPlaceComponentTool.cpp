@@ -10,6 +10,7 @@ void PickAndPlaceComponentTool::Draw(const RenderContext &rc, const NavigationCo
     DrawCircle(navCtx.mousePosWorldPixels.x, navCtx.mousePosWorldPixels.y, 5, YELLOW);
 }
 
-void PickAndPlaceComponentTool::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx)
+std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx)
 {
+    return nullptr;
 }

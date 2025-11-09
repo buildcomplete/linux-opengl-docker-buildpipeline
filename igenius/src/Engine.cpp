@@ -30,13 +30,14 @@ void Engine::HandleEvents()
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
     stateManager.UpdateMenus(navigationContext);
-    // if (false == stateContext.IsInState(INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING))
-    // {
-    //     networkDrawingManager.HandleEventsAndTime(stateContext, navigationContext);
-    // }
+
     if (activeTool)
     {
-        activeTool->HandleEventsAndTime(stateContext, navigationContext);
+        auto cmd = activeTool->HandleEventsAndTime(stateContext, navigationContext);
+        if (cmd)
+        {
+           cmd->Execute(); 
+        }
     }
     InjectStateChanges();
 }
