@@ -1,5 +1,4 @@
-#ifndef IG_COMPONENT_BLUEPRINT_H
-#define IG_COMPONENT_BLUEPRINT_H
+#pragma once
 #include <cstdint>
 #include <vector>
 #include <IG_types.h>
@@ -66,4 +65,3 @@ struct ComponentBluePrint
         return *this;
     }
 };
-#endif

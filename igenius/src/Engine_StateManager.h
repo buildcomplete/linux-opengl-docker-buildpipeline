@@ -1,5 +1,4 @@
-#ifndef ENGINE_STATEMANAGER_H
-#define ENGINE_STATEMANAGER_H
+#pragma once
 #include "IG_types.h"
 #include "context/StateContext.h"
 #include "canvas/components/CanvasComponents.h"
@@ -26,6 +25,3 @@ private:
    UI_RadialMenuInputSelector inputSelectionMenu;
    void OnMenuSelectInputModeClick(INPUT_STATE_FLAGS newMode);
 };
-
-
-#endif

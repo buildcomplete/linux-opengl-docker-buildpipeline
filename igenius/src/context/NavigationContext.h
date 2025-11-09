@@ -1,5 +1,4 @@
-#ifndef NAVIGATION_CONTEXT_H
-#define NAVIGATION_CONTEXT_H
+#pragma once
 
 #include "raylib.h"
 #include "../IG_types.h"
@@ -31,5 +30,3 @@ struct NavigationContext
         return { (worldPos.x / pixPr_cm), (worldPos.y / pixPr_cm) };
     }
 };
-
-#endif

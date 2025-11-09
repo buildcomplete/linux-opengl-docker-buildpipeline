@@ -1,5 +1,4 @@
-#ifndef IG_IG_COMPONENTS_H
-#define IG_IG_COMPONENTS_H
+#pragma once
 
 #include <raylib.h>
 #include <vector>
@@ -81,8 +80,3 @@ namespace CanvasComponents
         bool isDrawing = false;
     };
 }
-
-
-
-
-#endif

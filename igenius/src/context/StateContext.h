@@ -1,5 +1,5 @@
-#ifndef STATECONTEXT_H
-#define STATECONTEXT_H
+#pragma once
+
 #include "IG_types.h"
 #include "raylib.h"
 struct StateContext
@@ -12,4 +12,3 @@ struct StateContext
     bool DidEnterState(INPUT_STATE_FLAGS testState) const;
     bool DidExitState(INPUT_STATE_FLAGS testState) const;
 };
-#endif

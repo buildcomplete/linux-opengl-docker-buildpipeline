@@ -1,5 +1,4 @@
-#ifndef IG_TYPES_H
-#define IG_TYPES_H
+#pragma once
 #include <cstdint>
 #include <iostream>
 #include <functional>
@@ -86,5 +85,3 @@ typedef enum
 using ConstraintFunction = std::function<NetworkConstraintFlags(const CellPosition &)>;
 
 std::ostream &operator<<(std::ostream &os, const CellPosition &pos);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef RENDERCONTEXT_H
-#define RENDERCONTEXT_H
+#pragma once
 #include <raylib.h>
 
 // lightweight non-owning context
@@ -15,6 +14,3 @@ struct RenderContext
     //     ::DrawTexturePro(tex, src, dst, origin, rot, tint);
     // }
 };
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef IG_ENGINE_H
-#define IG_ENGINE_H
+#pragma once
 
 #include "Engine_StateManager.h"
 #include "Navigator.h"
@@ -44,5 +43,3 @@ private:
     CanvasToolBase* activeTool = nullptr;
 	
 };
-
-#endif

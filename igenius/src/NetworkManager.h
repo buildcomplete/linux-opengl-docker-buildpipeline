@@ -1,5 +1,4 @@
-#ifndef ENGINE_NETWORKDRAWINGMANAGER_H
-#define ENGINE_NETWORKDRAWINGMANAGER_H
+#pragma once
 
 #include "raylib.h"
 #include "IG_types.h"
@@ -54,5 +53,3 @@ private:
         CellPosition target,
         std::stack<CellPosition> &path) const;
 };
-
-#endif

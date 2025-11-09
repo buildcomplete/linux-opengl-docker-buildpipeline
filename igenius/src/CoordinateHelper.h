@@ -1,5 +1,4 @@
-#ifndef COORDINATEHELPER_H
-#define COORDINATEHELPER_H
+#pragma once
 
 #include "raylib.h"
 #include "raymath.h"
@@ -15,5 +14,3 @@ public:
     CoordinateHelper();
     float CmToPixel(float cm);
 };
-
-#endif

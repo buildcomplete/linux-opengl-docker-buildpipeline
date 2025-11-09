@@ -1,5 +1,4 @@
-#ifndef IG_COMPONENT_FACTORY_H
-#define IG_COMPONENT_FACTORY_H
+#pragma once
 #include "canvas/components/CanvasComponents.h"
 #include "canvas/components/SP_CONVOLUTIONUI.h"
 #include "canvas/components/ComponentBluePrint.h"
@@ -17,5 +16,3 @@ public:
 private:
     static const std::vector<ComponentBluePrint> componentBluePrints;
 };
-
-#endif

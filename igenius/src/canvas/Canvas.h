@@ -1,5 +1,4 @@
-#ifndef IG_CANVAS_H
-#define IG_CANVAS_H
+#pragma once
 #include <vector>
 #include <queue>
 #include "canvas/components/CanvasComponents.h"
@@ -97,6 +96,3 @@ private:
     std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(); 
 
 };
-
-
-#endif

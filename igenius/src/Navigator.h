@@ -1,5 +1,4 @@
-#ifndef NAVIGATOR_H
-#define NAVIGATOR_H
+#pragma once
 
 #include "raylib.h"
 #include "raymath.h"
@@ -29,6 +28,3 @@ class Navigator {
         Rectangle cameraBoundsWC = {-0x1E,-0x0E, 255, 255}; // World bounds in cm, notice grid relates to upper right corner of cell
     
 };
-
-#endif
-
