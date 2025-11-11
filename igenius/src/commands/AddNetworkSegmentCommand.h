@@ -15,4 +15,5 @@ public:
 private:
     std::vector<CellPosition> anchors;
     Canvas &canvas;
+    std::uint32_t segmentInsertionId;
 };

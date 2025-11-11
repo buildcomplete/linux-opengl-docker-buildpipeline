@@ -27,6 +27,10 @@ void Engine::Init()
 
 void Engine::HandleEvents()
 {
+    // Hack to quickly test undo in action
+    if (IsKeyDown(KEY_LEFT_CONTROL) && IsKeyPressed(KEY_Z))
+        commandStack.Undo();
+
     stateContext = stateManager.HandleEvents();
     navigationContext = navigator.HandleEvents(stateContext, coordinateHelper.pixPr_cm);
     stateManager.UpdateMenus(navigationContext);
@@ -36,7 +40,7 @@ void Engine::HandleEvents()
         auto cmd = activeTool->HandleEventsAndTime(stateContext, navigationContext);
         if (cmd)
         {
-           cmd->Execute(); 
+            commandStack.Execute(std::move(cmd));
         }
     }
     InjectStateChanges();

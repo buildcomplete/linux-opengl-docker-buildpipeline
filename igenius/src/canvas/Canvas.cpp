@@ -338,16 +338,16 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
     return {true, id, startInfo, endInfo};
 }
 
-bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
+std::uint32_t Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id)
 {
     if (anchorPoints.size() == 0)
     {
-        return false;
+        return 0;
     }
 
     if (id == 0 && avaliableNetworkKeys.empty())
     {
-        return false;
+        return 0;
     }
 
     std::vector<CellPosition> samples = GetNetworkSamplePositions(anchorPoints);
@@ -355,7 +355,7 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     id = checkInfo.finalId;
 
     if (!checkInfo.IsValid)
-        return false;
+        return 0;
 
     if (id == 0)
     {
@@ -370,8 +370,11 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
         gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = id;
     }
 
-    // store anchore points
+    // store anchore points, and id for deletion
+    networkSegmentId++;
     networks.push_back(std::vector<CellPosition>(anchorPoints));
+    networkSegmentIds.push_back(networkSegmentId);
+
 
     // std::vector<CellPosition> overlapGridPositions = GetNetworkSamplePositions(anchorPoints);
     // std::cout << "Positions: [" << std::endl;
@@ -379,7 +382,31 @@ bool Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uin
     // {
     //     std::cout << overlapGridPositions[i].x << "," << overlapGridPositions[i].y << std::endl;
     // }
-    return true;
+    return networkSegmentId;
+}
+
+bool Canvas::RemoveNetworkSegment(std::uint32_t segmentIdentifier)
+{
+    for (int i=0;i<networkSegmentIds.size();++i)
+    {
+        if (networkSegmentIds[i]==segmentIdentifier)
+        {
+            auto anchors = networks[i];
+            std::vector<CellPosition> samples = GetNetworkSamplePositions(anchors);
+            for (int i = 0; i < samples.size(); ++i)
+            {
+                gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = 0;
+            }
+
+            networks.erase(networks.begin()+i);
+            networkSegmentIds.erase(networkSegmentIds.begin() + i);
+
+            // Release network id if not used by other networks...
+
+            return true;
+        }
+    }
+    return false;
 }
 
 GridContentInfo Canvas::GetCellInfo(CellPosition cp) const

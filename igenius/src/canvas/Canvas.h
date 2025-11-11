@@ -71,7 +71,10 @@ public:
     void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);
     std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const;
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id) const;
-    bool AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); // Add a network, if id is zero, assigns new id
+    
+    // Add a network, if id is zero, return 0 if failed adding, otherwise segmentIdentifier (not network id)
+    std::uint32_t AddNetworkSegment(std::vector<CellPosition> &anchorPoints, std::uint8_t id); 
+    bool RemoveNetworkSegment(std::uint32_t segmentIdentifier); 
     static void DrawNetworkSegment(const std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm, Color c);
 
     ~Canvas();
@@ -94,5 +97,7 @@ private:
    
     // Realized networks
     std::vector<std::vector<CellPosition>> networks = std::vector<std::vector<CellPosition>>(); 
+    std::uint32_t networkSegmentId=0;
+    std::vector<std::uint32_t> networkSegmentIds = std::vector<std::uint32_t>(); 
 
 };
