@@ -69,7 +69,6 @@ public:
     void SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id);
     NetworkConstraintFlags GetNetworkConstraints(const CellPosition &anchor) const;
     void SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags);
-    std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const;
     NetworkCheckState CheckNetwork(std::vector<CellPosition> &anchorPoints, std::uint8_t id) const;
     
     // Add a network, if id is zero, return 0 if failed adding, otherwise segmentIdentifier (not network id)
@@ -80,6 +79,8 @@ public:
     ~Canvas();
 
 private:
+    std::vector<CellPosition> GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const;
+
     void DrawBounds(const NavigationContext &navC, float limRCM, float limBCM) const;
     static const std::uint8_t GridWidth = 255;
     static const std::uint8_t GridHeight = 255;

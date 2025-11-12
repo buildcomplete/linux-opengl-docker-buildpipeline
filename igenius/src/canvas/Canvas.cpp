@@ -250,6 +250,7 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
 }
 
 // Transform a sequence of network anchor point into all the sections in the grid
+// Assumes anchor points are diagonal 45 degress or vertical / horizontal, otherwise it is going of world...
 std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosition> &anchorPoints) const
 {
     if (anchorPoints.size() < 2)
@@ -283,7 +284,6 @@ std::vector<CellPosition> Canvas::GetNetworkSamplePositions(std::vector<CellPosi
     return result;
 }
 
-// This should be in the networkDrawingManager, canvas should just update the cells.
 NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::uint8_t id) const
 {
     if (samples.size() < 2)
@@ -393,9 +393,9 @@ bool Canvas::RemoveNetworkSegment(std::uint32_t segmentIdentifier)
         {
             auto anchors = networks[i];
             std::vector<CellPosition> samples = GetNetworkSamplePositions(anchors);
-            for (int i = 0; i < samples.size(); ++i)
+            for (int s = 0; i < samples.size(); ++s)
             {
-                gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = 0;
+                gridContentInfo[GetGridIdxAtCell(samples[s].x, samples[s].y)].networkId = 0;
             }
 
             networks.erase(networks.begin()+i);
