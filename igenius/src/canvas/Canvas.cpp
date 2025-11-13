@@ -342,9 +342,9 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
         // check if we are crossing another network off grid
         if (i!=0 && pos.x != prevPos.x && pos.y != prevPos.y )
         {
-            auto cposCross1 = gridContentInfo[GetGridIdxAtCell(prevPos.x, pos.y)].networkId;
-            auto cposCross2 = gridContentInfo[GetGridIdxAtCell(pos.x, prevPos.y)].networkId;
-            if (cposCross1 != 0 && cposCross1==cposCross2)
+            auto nIdCross1 = gridContentInfo[GetGridIdxAtCell(prevPos.x, pos.y)].networkId;
+            auto nIdCross2 = gridContentInfo[GetGridIdxAtCell(pos.x, prevPos.y)].networkId;
+            if (nIdCross1 != 0 && nIdCross1==nIdCross2)
             {
                 return {false};
             }
