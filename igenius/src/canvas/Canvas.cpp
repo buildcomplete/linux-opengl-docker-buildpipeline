@@ -314,10 +314,12 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
     // 3) Component input/output should be compatible
     // 4) There should only be allowed networks in the beggining or end of the network
     // 5) We need to add special check when moving diagonal as we might miss other diagonals
-
-    for (int i = 0; i < samples.size() - 1; ++i)
+    CellPosition pos;
+    CellPosition prevPos;
+    for (int i = 0; i < samples.size(); ++i)
     {
-        GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)];
+        pos=samples[i];
+        GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(pos.x, pos.y)];
         if (id != 0 && (cposInfo.networkId != 0 && cposInfo.networkId != id))
         {
             return {false};
@@ -334,6 +336,21 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
         {
             return {false};
         }
+
+        // When not at starting point,
+        // if we are moving diagonaly
+        // check if we are crossing another network off grid
+        if (i!=0 && pos.x != prevPos.x && pos.y != prevPos.y )
+        {
+            auto cposCross1 = gridContentInfo[GetGridIdxAtCell(prevPos.x, pos.y)].networkId;
+            auto cposCross2 = gridContentInfo[GetGridIdxAtCell(pos.x, prevPos.y)].networkId;
+            if (cposCross1 != 0 && cposCross1==cposCross2)
+            {
+                return {false};
+            }
+            
+        }
+        prevPos=pos;
     }
     return {true, id, startInfo, endInfo};
 }
