@@ -59,6 +59,32 @@ bool Canvas::AddComponent(const ComponentBluePrint &bluePrint, unsigned char cel
     return true;
 }
 
+// Add this new implementation
+bool Canvas::MoveComponentTo(std::uint8_t componentId, CellPosition newPosition) {
+    if (!HaveComponent(componentId)) {
+        return false;
+    }
+
+    auto* component = components[componentId].get();
+    const auto& blueprint = component->bluePrint;
+    
+    // 1. Check if the new position is free, ignoring the component itself
+    if (IsGridFree(blueprint, newPosition.x, newPosition.y, componentId)) 
+    {
+        const auto originalPosition = component->anchor;
+
+        // 2. Clear the component's old grid position
+        SetGridCellValues(blueprint, originalPosition.x, originalPosition.y, 0);
+
+        // 3. If free, update the component's anchor and the new grid position
+        component->anchor = newPosition;
+        SetGridCellValues(blueprint, newPosition.x, newPosition.y, componentId);
+        return true;
+    }
+    return false;
+
+}
+
 bool Canvas::ReleaseComponent(std::uint8_t id)
 {
     if(HaveComponent(id))
@@ -187,6 +213,21 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
     }
     return true;
 }
+
+// Add this new, specialized IsGridFree implementation
+bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY, std::uint8_t componentIdToIgnore) const {
+    for (int y = 0; y < blueprint.Height; ++y) {
+        for (int x = 0; x < blueprint.Width; ++x) {
+            GridContentInfo info = GetCellInfo(cellX + x, cellY + y);
+            // It's not free if a component is there AND it's not the one we're moving
+            if (info.componentId != 0 && info.componentId != componentIdToIgnore) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 // Sets grid cell values, notice, this fellow do not perform boundary checks and assumes the where checed elsewhere
 void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, std::uint8_t id)

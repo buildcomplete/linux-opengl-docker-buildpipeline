@@ -55,12 +55,14 @@ class Canvas
 public:
     Canvas();
     bool AddComponent(const ComponentBluePrint &bluePrint, unsigned char cellAnchorX, unsigned char cellAnchorY);
+    bool MoveComponentTo(std::uint8_t componentId, CellPosition newPosition);
     bool ReleaseComponent(std::uint8_t id);
     void Draw(const RenderContext &rc, const NavigationContext &navC, const StateContext &sc) const;
 
     void DrawOverlay(const RenderContext &rc, const NavigationContext &navC) const;
 
     bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY) const;
+    bool IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY, std::uint8_t componentIdToIgnore) const;
     std::unique_ptr<CanvasComponentBase> components[256];
     GridContentInfo GetCellInfo(CellPosition cp) const;
     GridContentInfo GetCellInfo(int cellX, int cellY) const;

@@ -85,9 +85,14 @@ void test_moving_component_canvas_operations()
     {
         Canvas c;
         c.AddComponent(ComponentFactory::GetBluePrint(CMPNAMES::DRAWING_COMPONENT), 1,1);
-        auto component = c.GetComponent(1);
-        test_assert(false, "Test moving component", "not implemented yet");
+        test_equals(c.GetCellInfo(1,1).componentId, (std::uint8_t)1, "Component 1 at 1,1 before moving");
+       // auto componentAt1_1_before_move = c.GetComponent(1);
+        c.MoveComponentTo(1, {2,2} );
+        test_equals(c.GetCellInfo(1,1).componentId, (std::uint8_t)0, "Component 1 moved from 1,1 should now be zero");
+    
+        test_equals(c.GetCellInfo(2,2).componentId, (std::uint8_t)1, "Component 1 moved to 2,2 should now be one");
     }
+
 }
 
 void test_canvas_network_operations()
