@@ -4,12 +4,13 @@ AddNetworkSegmentCommand::AddNetworkSegmentCommand(Canvas& _canvas, std::vector<
     canvas(_canvas),  anchors(_anchors)
 { }
 
-void AddNetworkSegmentCommand::Execute()
+bool AddNetworkSegmentCommand::Execute()
 {
     segmentInsertionId=canvas.AddNetworkSegment(anchors, 0);
+    return segmentInsertionId != 0;
 }
 
-void AddNetworkSegmentCommand::Undo()
+bool AddNetworkSegmentCommand::Undo()
 {
-    canvas.RemoveNetworkSegment(segmentInsertionId);
+    return canvas.RemoveNetworkSegment(segmentInsertionId);
 }

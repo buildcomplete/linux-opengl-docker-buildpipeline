@@ -6,12 +6,12 @@ MoveComponentCommand::MoveComponentCommand(Canvas &_canvas, std::uint8_t _compon
     originalPosition = canvas.GetComponent(componentId)->anchor;
 }
 
-void MoveComponentCommand::Execute()
+bool MoveComponentCommand::Execute()
 {
-    canvas.MoveComponentTo(componentId, newPosition);
+    return canvas.MoveComponentTo(componentId, newPosition);
 }
 
-void MoveComponentCommand::Undo()
+bool MoveComponentCommand::Undo()
 {
-    canvas.MoveComponentTo(componentId, originalPosition);
+    return canvas.MoveComponentTo(componentId, originalPosition);
 }

@@ -9,8 +9,8 @@ class AddNetworkSegmentCommand : public ICommand
 
 public:
     AddNetworkSegmentCommand(Canvas &_canvas, std::vector<CellPosition> _anchors);
-    void Execute() override;
-    void Undo() override;
+    bool Execute() override;
+    bool Undo() override;
 
 private:
     std::vector<CellPosition> anchors;

@@ -9,8 +9,8 @@ class MoveComponentCommand : public ICommand
 
 public:
     MoveComponentCommand(Canvas &_canvas, std::uint8_t _componentId, CellPosition _newPosition);
-    void Execute() override;
-    void Undo() override;
+    bool Execute() override;
+    bool Undo() override;
 
 private:
     Canvas &canvas;
