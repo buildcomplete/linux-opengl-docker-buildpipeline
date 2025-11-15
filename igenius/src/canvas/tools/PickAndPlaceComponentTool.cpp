@@ -17,11 +17,11 @@ void PickAndPlaceComponentTool::Draw(const RenderContext &rc, const NavigationCo
             pickedComponent->bluePrint.Width * navCtx.pixPr_cm,
             pickedComponent->bluePrint.Height * navCtx.pixPr_cm,
             ColorAlpha(RED, 0.1));
-    
+
         auto last = pickedComponent->anchor;
         pickedComponent->anchor = getAnchorDropPositionGivenOffset(navCtx);
-        pickedComponent->Draw(rc,navCtx);
-        pickedComponent->anchor=last;
+        pickedComponent->Draw(rc, navCtx);
+        pickedComponent->anchor = last;
     }
 }
 
@@ -31,33 +31,35 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
         return nullptr;
 
     // Click = with nothing selected = try to pick..
-    if ( !pickedComponent)
+    if (!pickedComponent)
     {
         pickedComponent = canvas.GetComponent(
             canvas.GetCellInfo(
-                navCtx.mousePosWorldGrid).componentId);
-        // Calculate mouse offset inside component so component doesnt jump when clicked, 
+                      navCtx.mousePosWorldGrid)
+                .componentId);
+        // Calculate mouse offset inside component so component doesnt jump when clicked,
         // relative mouse pos should be used as grab point.
-        if (pickedComponent) pickOffsetCm = pickedComponent->GetCursorOffset(navCtx);
-    } 
+        if (pickedComponent)
+            pickOffsetCm = pickedComponent->GetCursorOffset(navCtx);
+    }
     // Click = with something selected = try to place
     else
     {
+        auto dropPosition = getAnchorDropPositionGivenOffset(navCtx);
         if (canvas.IsGridFree(
-            pickedComponent->bluePrint, 
-            navCtx.mousePosWorldGrid.x, 
-            navCtx.mousePosWorldGrid.y, 
-            pickedComponent->id))
+                pickedComponent->bluePrint,
+                dropPosition.x,
+                dropPosition.y,
+                pickedComponent->id))
         {
             auto cmd = std::make_unique<MoveComponentCommand>(
-                canvas, 
-                pickedComponent->id, 
-                getAnchorDropPositionGivenOffset(navCtx));
+                canvas,
+                pickedComponent->id,
+                dropPosition);
             pickedComponent = nullptr;
             return cmd;
         }
     }
-    
 
     return nullptr;
 }
@@ -65,5 +67,5 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
 CellPosition PickAndPlaceComponentTool::getAnchorDropPositionGivenOffset(const NavigationContext &navCtx) const
 {
     auto wpWithOffset = navCtx.mousePosWorldCm - pickOffsetCm;
-    return {(int)round(wpWithOffset.x), (int)round(wpWithOffset.y) };
+    return {(int)round(wpWithOffset.x), (int)round(wpWithOffset.y)};
 }
