@@ -75,10 +75,15 @@ bool Canvas::MoveComponentTo(std::uint8_t componentId, CellPosition newPosition)
 
         // 2. Clear the component's old grid position
         SetGridCellValues(blueprint, originalPosition.x, originalPosition.y, 0);
+         // Update constraint map
+        SetConstraints(blueprint, originalPosition.x, originalPosition.y, NetworkConstraintFlags::FLAG_NCONSTRAINT_NO_CONSTRAINTS);
+
 
         // 3. If free, update the component's anchor and the new grid position
         component->anchor = newPosition;
         SetGridCellValues(blueprint, newPosition.x, newPosition.y, componentId);
+        SetConstraints(blueprint, newPosition.x, newPosition.y, NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR);
+
         return true;
     }
     return false;
@@ -271,7 +276,7 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
     {
         networkConstraints[GetGridIdxAtCell(x0, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
         if (x0>1)
-            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
+            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
     }
 
     if (blueprint.outputDataType.type != DT_NONE)
@@ -279,14 +284,14 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
         auto specOut = blueprint.outputDataType;
         networkConstraints[GetGridIdxAtCell(x1-1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
         if (x1<255)
-            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S);
+            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
     }
 
     // Add corner contraints to ensure we cannot create a diagonal blocking the object
     if (y0>1)
-        networkConstraints[GetGridIdxAtCell(x0, y0-1)] = (NetworkConstraintFlags)((FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+        networkConstraints[GetGridIdxAtCell(x0, y0-1)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
     if (y1<255)
-        networkConstraints[GetGridIdxAtCell(x0, y1)] = (NetworkConstraintFlags)((FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+        networkConstraints[GetGridIdxAtCell(x0, y1)] = (NetworkConstraintFlags)(constraintFlags &(FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
 
 }
 
@@ -451,8 +456,10 @@ bool Canvas::RemoveNetworkSegment(std::uint32_t segmentIdentifier)
         {
             auto anchors = networks[i];
             std::vector<CellPosition> samples = GetNetworkSamplePositions(anchors);
-            for (int s = 0; i < samples.size(); ++s)
+            std::cout << samples.size() << std::endl;
+            for (int s = 0; s < samples.size(); ++s)
             {
+                std::cout << samples[s] << std::endl;
                 gridContentInfo[GetGridIdxAtCell(samples[s].x, samples[s].y)].networkId = 0;
             }
 

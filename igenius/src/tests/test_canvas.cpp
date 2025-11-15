@@ -176,6 +176,19 @@ void test_canvas_network_operations()
             test_equals(segmentIdC, (std::uint32_t)0, "canvas network Diagonal overlap test, section C should not be Added");
         }
     }
+
+    {
+        std::vector<CellPosition> anchorsA = {{0,0},{3,3}};
+        {
+            Canvas c;
+            std::uint32_t segmentIdA = c.AddNetworkSegment(anchorsA, 0);
+            test_equals(segmentIdA, (std::uint32_t)1, "canvas network Remove segment test, section Added ok");
+            test_assert(
+                c.RemoveNetworkSegment(segmentIdA),
+                "c.RemoveNetworkSegment(segmentIdA)",
+                "Test removing network segment");
+        }
+    }
 }
 
 // Function to run all canvas tests
