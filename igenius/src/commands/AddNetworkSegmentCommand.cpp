@@ -12,5 +12,4 @@ void AddNetworkSegmentCommand::Execute()
 void AddNetworkSegmentCommand::Undo()
 {
     canvas.RemoveNetworkSegment(segmentInsertionId);
-    std::cout << "Undo Add Network Segment" << segmentInsertionId << std::endl;
 }

@@ -450,17 +450,15 @@ std::uint32_t Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints,
 
 bool Canvas::RemoveNetworkSegment(std::uint32_t segmentIdentifier)
 {
-    for (int i=0;i<networkSegmentIds.size();++i)
+    for (auto i=0;i<networkSegmentIds.size();++i)
     {
         if (networkSegmentIds[i]==segmentIdentifier)
         {
             auto anchors = networks[i];
             std::vector<CellPosition> samples = GetNetworkSamplePositions(anchors);
-            std::cout << samples.size() << std::endl;
-            for (int s = 0; s < samples.size(); ++s)
+            for (auto sample = samples.begin(); sample != samples.end(); ++sample)
             {
-                std::cout << samples[s] << std::endl;
-                gridContentInfo[GetGridIdxAtCell(samples[s].x, samples[s].y)].networkId = 0;
+                gridContentInfo[GetGridIdxAtCell(sample->x, sample->y)].networkId = 0;
             }
 
             networks.erase(networks.begin()+i);
