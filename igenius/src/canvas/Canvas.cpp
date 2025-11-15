@@ -221,6 +221,9 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
 
 // Add this new, specialized IsGridFree implementation
 bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cellY, std::uint8_t componentIdToIgnore) const {
+    if (cellX < 0 || cellY < 0 || (cellX + blueprint.Width) > 255 || (cellY + blueprint.Height) > 255)
+        return false;
+    
     for (int y = 0; y < blueprint.Height; ++y) {
         for (int x = 0; x < blueprint.Width; ++x) {
             GridContentInfo info = GetCellInfo(cellX + x, cellY + y);
