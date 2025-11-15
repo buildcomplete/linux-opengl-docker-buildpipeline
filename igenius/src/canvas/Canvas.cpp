@@ -262,7 +262,7 @@ NetworkConstraintFlags Canvas::GetNetworkConstraints(const CellPosition& anchor)
 void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, NetworkConstraintFlags constraintFlags)
 {
     int x0 = std::max(0, (int)cellX); // inclusive
-    int y0 = std::max(0, (int)cellY); // // inclusive
+    int y0 = std::max(0, (int)cellY); // inclusive
     int x1 = x0 + blueprint.Width;    // Exclusive
     int y1 = y0 + blueprint.Height;   // Exclusive
 
@@ -277,23 +277,23 @@ void Canvas::SetConstraints(const ComponentBluePrint &blueprint, std::uint8_t ce
     for (auto specIn : blueprint.inputDataTypes)
     {
         networkConstraints[GetGridIdxAtCell(x0, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
-        if (x0>1)
-            networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
+        // if (x0>1)
+        //     networkConstraints[GetGridIdxAtCell(x0-1, y0+specIn.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
     }
 
     if (blueprint.outputDataType.type != DT_NONE)
     {
         auto specOut = blueprint.outputDataType;
         networkConstraints[GetGridIdxAtCell(x1-1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & ~(FLAG_NCONSTRAINT_E | FLAG_NCONSTRAINT_W));
-        if (x1<255)
-            networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
+        // if (x1<255)
+        //     networkConstraints[GetGridIdxAtCell(x1, y0+specOut.row)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_N | FLAG_NCONSTRAINT_S));
     }
 
     // Add corner contraints to ensure we cannot create a diagonal blocking the object
-    if (y0>1)
-        networkConstraints[GetGridIdxAtCell(x0, y0-1)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
-    if (y1<255)
-        networkConstraints[GetGridIdxAtCell(x0, y1)] = (NetworkConstraintFlags)(constraintFlags &(FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+    // if (y0>1)
+    //     networkConstraints[GetGridIdxAtCell(x0, y0-1)] = (NetworkConstraintFlags)(constraintFlags & (FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
+    // if (y1<255)
+    //     networkConstraints[GetGridIdxAtCell(x0, y1)] = (NetworkConstraintFlags)(constraintFlags &(FLAG_NCONSTRAINT_SE | FLAG_NCONSTRAINT_NW));
 
 }
 
