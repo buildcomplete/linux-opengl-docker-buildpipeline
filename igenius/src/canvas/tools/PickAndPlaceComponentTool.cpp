@@ -19,7 +19,8 @@ void PickAndPlaceComponentTool::Draw(const RenderContext &rc, const NavigationCo
              ColorAlpha(RED, 0.1));
         
         auto last = pickedComponent->anchor;
-        pickedComponent->anchor = navCtx.mousePosWorldGrid;
+        auto wpWithOffset = navCtx.mousePosWorldCm - pickOffsetCm;
+        pickedComponent->anchor = {(int)round(wpWithOffset.x), (int)round(wpWithOffset.y) };
         pickedComponent->Draw(rc,navCtx);
         pickedComponent->anchor=last;
     }
@@ -36,6 +37,9 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
         pickedComponent = canvas.GetComponent(
             canvas.GetCellInfo(
                 navCtx.mousePosWorldGrid).componentId);
+        // Calculate mouse offset inside component so component doesnt jump when clicked, 
+        // relative mouse pos should be used as grab point.
+        pickOffsetCm = pickedComponent->GetCursorOffset(navCtx);
     } 
     // Click = with something selected = try to place
     else
