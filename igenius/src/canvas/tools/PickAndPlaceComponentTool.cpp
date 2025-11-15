@@ -38,7 +38,7 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
                 navCtx.mousePosWorldGrid).componentId);
         // Calculate mouse offset inside component so component doesnt jump when clicked, 
         // relative mouse pos should be used as grab point.
-        pickOffsetCm = pickedComponent->GetCursorOffset(navCtx);
+        if (pickedComponent) pickOffsetCm = pickedComponent->GetCursorOffset(navCtx);
     } 
     // Click = with something selected = try to place
     else

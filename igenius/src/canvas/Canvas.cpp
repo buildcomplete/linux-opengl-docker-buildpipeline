@@ -127,9 +127,9 @@ void Canvas::Draw(const RenderContext &rc, const NavigationContext &navC, const 
     if (IsKeyPressed(KEY_H))
     {
         if (rMenu.IsVisible())
-            rMenu.Hide();
+            rMenu.BeginHide();
         else
-            rMenu.Show(navC.mousePosWorldCm);
+            rMenu.BeginShow(navC.mousePosWorldCm);
     }
 
     // HACK TEST OF DRAWING RADIAL MENU
@@ -211,7 +211,6 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
     {
         for (int y = y0; y < y1; ++y)
         {
-
             if ((0 != gridContentInfo[GetGridIdxAtCell(x, y)].componentId) || (0 != gridContentInfo[GetGridIdxAtCell(x, y)].networkId))
                 return false;
         }
@@ -228,7 +227,7 @@ bool Canvas::IsGridFree(const ComponentBluePrint &blueprint, int cellX, int cell
         for (int x = 0; x < blueprint.Width; ++x) {
             GridContentInfo info = GetCellInfo(cellX + x, cellY + y);
             // It's not free if a component is there AND it's not the one we're moving
-            if (info.componentId != 0 && info.componentId != componentIdToIgnore) {
+            if (info.componentId != 0 && info.componentId != componentIdToIgnore || info.networkId) {
                 return false;
             }
         }

@@ -50,7 +50,7 @@ bool CanvasComponents::SP_CONVOLUTIONUI::TryStartCommand(const StateContext &stC
 {
     if (!menu.IsVisible())
     {
-        menu.Show({anchor.x + bluePrint.Width/2.0f, anchor.y + bluePrint.Height/2.0f} );
+        menu.BeginShow({anchor.x + bluePrint.Width/2.0f, anchor.y + bluePrint.Height/2.0f} );
     }
     return true;
 }
@@ -71,5 +71,5 @@ void CanvasComponents::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentI
 {
     std::cout << "** void UI_Components::SP_CONVOLUTIONUI::OnMenuSelectOperationClick(int segmentIndex= " << segmentIndex << ")" << std::endl;
 
-    menu.Hide();
+    menu.BeginHide();
 }

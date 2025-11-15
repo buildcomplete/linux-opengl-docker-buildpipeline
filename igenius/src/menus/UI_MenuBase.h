@@ -21,8 +21,8 @@ public:
 
     virtual void HandleEventsAndTime(const StateContext &stCtx, const NavigationContext &navCtx);
     virtual void Draw(const RenderContext &rc, const NavigationContext &navCtx) const = 0; // Draws the components
-    void Show(Vector2 origo);                                                              // Start expanding a menu item.
-    void Hide();                                                                           // Start closing a menu item.
+    void BeginShow(Vector2 origo);                                                              // Start expanding a menu item.
+    void BeginHide();                                                                           // Start closing a menu item.
     bool IsVisible();
 
 protected:

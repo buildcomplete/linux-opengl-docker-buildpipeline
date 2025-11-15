@@ -13,7 +13,7 @@ void UI_MenuBase::HandleClickInternal(int idx)
     }
 }
 
-void UI_MenuBase::Show(const Vector2 origoCM_)
+void UI_MenuBase::BeginShow(const Vector2 origoCM_)
 {
     transitionStartTime = GetTime();
     animState = UI_ANIM_STATE::UITEM_EXPANDING;
@@ -21,7 +21,7 @@ void UI_MenuBase::Show(const Vector2 origoCM_)
     std::cout << "Show" << std::endl;
 }
 
-void UI_MenuBase::Hide()
+void UI_MenuBase::BeginHide()
 {
     transitionStartTime = GetTime();
     animState = UI_ANIM_STATE::UITEM_CLOSING;

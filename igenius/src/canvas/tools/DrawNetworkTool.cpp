@@ -160,6 +160,29 @@ void DrawNetworkTool::Draw(const RenderContext &rndrCtx, const NavigationContext
     auto pixPr_cm = navCtx.pixPr_cm;
     Color circleColor = ELECTRIC_BLUE;
     circleColor.a = 155;
+
+    // Draw contraints on visible grid
+    if (constraintFunction)
+    {
+        auto topLeftCI = navCtx.ScreenToCellIndex({0,0});
+        auto bottomRightWC = navCtx.ScreenToCellIndex({(float)GetScreenWidth(), (float)GetScreenHeight()});
+        for (int yy = std::max(0,topLeftCI.y); yy<= std::min(255,bottomRightWC.y); ++yy )
+        {
+            for (int xx = std::max(0,topLeftCI.x); xx<= std::min(255,bottomRightWC.x); ++xx )
+            {
+                auto cnstr = constraintFunction({xx,yy});
+                if (NetworkConstraintFlags::FLAG_NCONSTRAINT_NO_CONSTRAINTS != cnstr )
+                {
+                    DrawCircle(
+                        navCtx.pixPr_cm * xx + navCtx.pixPr_cm/2.0f,
+                        navCtx.pixPr_cm * yy + navCtx.pixPr_cm/2.0f,
+                        3,
+                        RED);
+                }
+            }
+        }
+    }
+
     DrawCircle(navCtx.mousePosWorldGrid.x * pixPr_cm + pixPr_cm / 2.0f, navCtx.mousePosWorldGrid.y * pixPr_cm + pixPr_cm / 2.0f, pixPr_cm / 6.0f, circleColor);
 
     bool completing = drawnNetwork.size() > 0 && navCtx.mousePosWorldGrid == drawnNetwork.back();

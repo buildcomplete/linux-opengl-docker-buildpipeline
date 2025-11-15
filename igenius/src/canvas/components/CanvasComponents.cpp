@@ -99,6 +99,13 @@ void CanvasComponentBase::FocusedDraw(const RenderContext &rc, const NavigationC
 
 Vector2 CanvasComponentBase::GetCursorOffset(const NavigationContext &navCtx)
 {
+    std::cout 
+        << "CanvasComponentBase::GetCursorOffset " 
+        << navCtx.mousePosWorldCm.x << "; "
+        << navCtx.mousePosWorldCm.y << "; "
+        << anchor.x << "; "
+        << anchor.y << "; "
+        <<  std::endl;
     return Vector2Subtract(navCtx.mousePosWorldCm, {(float)anchor.x, (float)anchor.y});
 }
 

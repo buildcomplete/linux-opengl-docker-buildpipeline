@@ -10,9 +10,9 @@ Engine_StateManager::Engine_StateManager() :
 INPUT_STATE_FLAGS inputModeFlag = INPUT_STATE_FLAGS::IG_INPUT_MODE_SELECTING;
 void Engine_StateManager::OnMenuSelectInputModeClick(INPUT_STATE_FLAGS newMode)
 {
-    std::cout << "** void Engine_StateManager::OnMenuSelectOperationClick(int segmentIndex= " << newMode << ")" << std::endl;
+    std::cout << "** void Engine_StateManager::OnMenuSelectOperationClick(int newMode= " << newMode << ")" << std::endl;
     inputModeFlag = newMode;
-    inputSelectionMenu.Hide();
+    inputSelectionMenu.BeginHide();
 }
 
 StateContext Engine_StateManager::HandleEvents()
@@ -27,12 +27,12 @@ StateContext Engine_StateManager::HandleEvents()
     state.flippedFlags = (INPUT_STATE_FLAGS)(targetState ^ state.flags);
     state.flags = targetState;
     state.inputCursorDelta = GetMouseDelta();
-    if (state.flippedFlags)
-    {
-        std::bitset<32> binary(state.flippedFlags); // converts the integer to 32-bit binary
+    // if (state.flippedFlags)
+    // {
+    //     std::bitset<32> binary(state.flippedFlags); // converts the integer to 32-bit binary
 
-        std::cout << "Flipped flags:" << binary << std::endl;
-    }
+    //     std::cout << "Flipped flags:" << binary << std::endl;
+    // }
 
     if (state.DidEnterState(IG_INPUT_SELECT_MODE))
     {
@@ -56,7 +56,7 @@ void Engine_StateManager::UpdateMenus(const NavigationContext &navCtx)
 {
     if (state.DidEnterState(IG_INPUT_SELECT_MODE) && false == inputSelectionMenu.IsVisible())
     {
-        inputSelectionMenu.Show(navCtx.mousePosWorldCm);
+        inputSelectionMenu.BeginShow(navCtx.mousePosWorldCm);
     }
 
     if (inputSelectionMenu.IsVisible())
