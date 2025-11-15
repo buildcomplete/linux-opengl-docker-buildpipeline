@@ -2,18 +2,16 @@
 #include "commands/ICommand.h"
 #include <vector>
 #include "IG_types.h"
-#include "canvas/Canvas.h"
 
 class AddNetworkSegmentCommand : public ICommand
 {
 
 public:
-    AddNetworkSegmentCommand(Canvas &_canvas, std::vector<CellPosition> _anchors);
-    bool Execute() override;
-    bool Undo() override;
+    AddNetworkSegmentCommand(std::vector<CellPosition> _anchors);
+    bool Execute(Canvas &c) override;
+    bool Undo(Canvas &c) override;
 
 private:
     std::vector<CellPosition> anchors;
-    Canvas &canvas;
     std::uint32_t segmentInsertionId;
 };

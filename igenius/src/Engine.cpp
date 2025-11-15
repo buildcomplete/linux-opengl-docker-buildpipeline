@@ -2,7 +2,7 @@
 #include "IG_types.h"
 #include <cstdio>
 
-Engine::Engine()
+Engine::Engine() : commandStack(canvas)
 {
 }
 

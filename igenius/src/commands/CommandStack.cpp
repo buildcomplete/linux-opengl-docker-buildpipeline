@@ -1,9 +1,13 @@
 #include "commands/CommandStack.h"
 #include <iostream>
+#include "CommandStack.h"
 
-void CommandStack::Execute(std::unique_ptr<ICommand> command) 
+CommandStack::CommandStack(Canvas &c) : canvas(c)
+{}
+
+void CommandStack::Execute(std::unique_ptr<ICommand> command)
 {
-    if (command->Execute())
+    if (command->Execute(canvas))
     {
         undoStack.push_back(std::move(command));
         redoStack.clear();
@@ -18,7 +22,7 @@ void CommandStack::Undo()
 {
     if (!undoStack.empty()) 
     {
-        if (!undoStack.back()->Undo())
+        if (!undoStack.back()->Undo(canvas))
         {
             std::cerr << "Failed Undo of command" << std::endl;
         }
@@ -31,7 +35,7 @@ void CommandStack::Redo()
 {
     if (!redoStack.empty()) 
     {
-        redoStack.back()->Execute();
+        redoStack.back()->Execute(canvas);
         undoStack.push_back(std::move(redoStack.back()));
         redoStack.pop_back();
     }

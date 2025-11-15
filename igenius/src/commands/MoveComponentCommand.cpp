@@ -1,17 +1,17 @@
 #include "MoveComponentCommand.h"
 
-MoveComponentCommand::MoveComponentCommand(Canvas &_canvas, std::uint8_t _componentId, CellPosition _newPosition) :
-    canvas(_canvas), componentId(_componentId), newPosition(_newPosition)
+MoveComponentCommand::MoveComponentCommand(std::uint8_t _componentId, CellPosition _newPosition) :
+    componentId(_componentId), newPosition(_newPosition)
 {
-    originalPosition = canvas.GetComponent(componentId)->anchor;
 }
 
-bool MoveComponentCommand::Execute()
+bool MoveComponentCommand::Execute(Canvas &c )
 {
-    return canvas.MoveComponentTo(componentId, newPosition);
+    originalPosition = c.GetComponent(componentId)->anchor;
+    return c.MoveComponentTo(componentId, newPosition);
 }
 
-bool MoveComponentCommand::Undo()
+bool MoveComponentCommand::Undo(Canvas &c)
 {
-    return canvas.MoveComponentTo(componentId, originalPosition);
+    return c.MoveComponentTo(componentId, originalPosition);
 }

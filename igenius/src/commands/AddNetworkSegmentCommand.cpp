@@ -1,16 +1,17 @@
 #include "AddNetworkSegmentCommand.h"
+#include "canvas/Canvas.h"
 
-AddNetworkSegmentCommand::AddNetworkSegmentCommand(Canvas& _canvas, std::vector<CellPosition> _anchors) : 
-    canvas(_canvas),  anchors(_anchors)
+AddNetworkSegmentCommand::AddNetworkSegmentCommand(std::vector<CellPosition> _anchors) : 
+     anchors(_anchors)
 { }
 
-bool AddNetworkSegmentCommand::Execute()
+bool AddNetworkSegmentCommand::Execute(Canvas &c)
 {
-    segmentInsertionId=canvas.AddNetworkSegment(anchors, 0);
+    segmentInsertionId=c.AddNetworkSegment(anchors, 0);
     return segmentInsertionId != 0;
 }
 
-bool AddNetworkSegmentCommand::Undo()
+bool AddNetworkSegmentCommand::Undo(Canvas &c)
 {
-    return canvas.RemoveNetworkSegment(segmentInsertionId);
+    return c.RemoveNetworkSegment(segmentInsertionId);
 }

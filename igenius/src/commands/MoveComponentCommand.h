@@ -6,14 +6,12 @@
 
 class MoveComponentCommand : public ICommand
 {
-
 public:
-    MoveComponentCommand(Canvas &_canvas, std::uint8_t _componentId, CellPosition _newPosition);
-    bool Execute() override;
-    bool Undo() override;
+    MoveComponentCommand(std::uint8_t _componentId, CellPosition _newPosition);
+    bool Execute(Canvas &c) override;
+    bool Undo(Canvas &c) override;
 
 private:
-    Canvas &canvas;
     std::uint8_t componentId;
     CellPosition newPosition;
     CellPosition originalPosition;

@@ -109,7 +109,7 @@ std::unique_ptr<ICommand> DrawNetworkTool::HandleEventsAndTime(const StateContex
         if ( AddAnchorResultState::COMPLETE_SEGMENT == AddAnchorPoint(navCtx) )
         {
             auto n = CompleteDrawing();
-            auto result = std::make_unique<AddNetworkSegmentCommand>(canvas, n);
+            auto result = std::make_unique<AddNetworkSegmentCommand>(n);
             StartDrawing();
             return result;
         }

@@ -36,7 +36,7 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
         pickedComponent = canvas.GetComponent(
             canvas.GetCellInfo(
                       navCtx.mousePosWorldGrid)
-                .componentId);
+            .componentId);
         // Calculate mouse offset inside component so component doesnt jump when clicked,
         // relative mouse pos should be used as grab point.
         if (pickedComponent)
@@ -53,7 +53,6 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
                 pickedComponent->id))
         {
             auto cmd = std::make_unique<MoveComponentCommand>(
-                canvas,
                 pickedComponent->id,
                 dropPosition);
             pickedComponent = nullptr;
