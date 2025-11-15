@@ -10,4 +10,5 @@ public:
 private:
     CanvasComponentBase* pickedComponent = nullptr;
     Vector2 pickOffsetCm = {0};
+    CellPosition getAnchorDropPositionGivenOffset( const NavigationContext &navCtx) const;
 };

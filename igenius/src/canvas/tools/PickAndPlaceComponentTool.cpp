@@ -12,15 +12,14 @@ void PickAndPlaceComponentTool::Draw(const RenderContext &rc, const NavigationCo
     if (pickedComponent)
     {
         DrawRectangle(
-             pickedComponent->anchor.x * navCtx.pixPr_cm,
-             pickedComponent->anchor.y * navCtx.pixPr_cm,
-             pickedComponent->bluePrint.Width * navCtx.pixPr_cm,
-             pickedComponent->bluePrint.Height * navCtx.pixPr_cm,
-             ColorAlpha(RED, 0.1));
-        
+            pickedComponent->anchor.x * navCtx.pixPr_cm,
+            pickedComponent->anchor.y * navCtx.pixPr_cm,
+            pickedComponent->bluePrint.Width * navCtx.pixPr_cm,
+            pickedComponent->bluePrint.Height * navCtx.pixPr_cm,
+            ColorAlpha(RED, 0.1));
+    
         auto last = pickedComponent->anchor;
-        auto wpWithOffset = navCtx.mousePosWorldCm - pickOffsetCm;
-        pickedComponent->anchor = {(int)round(wpWithOffset.x), (int)round(wpWithOffset.y) };
+        pickedComponent->anchor = getAnchorDropPositionGivenOffset(navCtx);
         pickedComponent->Draw(rc,navCtx);
         pickedComponent->anchor=last;
     }
@@ -50,7 +49,10 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
             navCtx.mousePosWorldGrid.y, 
             pickedComponent->id))
         {
-            auto cmd = std::make_unique<MoveComponentCommand>(canvas, pickedComponent->id, navCtx.mousePosWorldGrid);
+            auto cmd = std::make_unique<MoveComponentCommand>(
+                canvas, 
+                pickedComponent->id, 
+                getAnchorDropPositionGivenOffset(navCtx));
             pickedComponent = nullptr;
             return cmd;
         }
@@ -58,4 +60,10 @@ std::unique_ptr<ICommand> PickAndPlaceComponentTool::HandleEventsAndTime(const S
     
 
     return nullptr;
+}
+
+CellPosition PickAndPlaceComponentTool::getAnchorDropPositionGivenOffset(const NavigationContext &navCtx) const
+{
+    auto wpWithOffset = navCtx.mousePosWorldCm - pickOffsetCm;
+    return {(int)round(wpWithOffset.x), (int)round(wpWithOffset.y) };
 }
