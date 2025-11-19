@@ -255,7 +255,7 @@ void Canvas::SetGridCellValues(const ComponentBluePrint &blueprint, std::uint8_t
 
 NetworkConstraintFlags Canvas::GetNetworkConstraints(const CellPosition& anchor) const
 {
-    return networkConstraints[GetGridIdxAtCell(anchor.x, anchor.y)];
+    return networkConstraints[GetGridIdxAtCell(anchor)];
 }
 
 
@@ -345,8 +345,8 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
     CellPosition pn = samples[samples.size() - 1];
 
     // Check what we are connecting to, if anything, in the ends
-    GridContentInfo startInfo = gridContentInfo[GetGridIdxAtCell(ps.x, ps.y)];
-    GridContentInfo endInfo = gridContentInfo[GetGridIdxAtCell(pn.x, pn.y)];
+    GridContentInfo startInfo = gridContentInfo[GetGridIdxAtCell(ps)];
+    GridContentInfo endInfo = gridContentInfo[GetGridIdxAtCell(pn)];
 
     // if we do not have specified id, but are starting or stopping in a network node with an id,
     // Use that id, if it is two different networks, then we cannot join
@@ -367,7 +367,7 @@ NetworkCheckState Canvas::CheckNetwork(std::vector<CellPosition> &samples, std::
     for (int i = 0; i < samples.size(); ++i)
     {
         pos=samples[i];
-        GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(pos.x, pos.y)];
+        GridContentInfo cposInfo = gridContentInfo[GetGridIdxAtCell(pos)];
         if (id != 0 && (cposInfo.networkId != 0 && cposInfo.networkId != id))
         {
             return {false};
@@ -429,10 +429,18 @@ std::uint32_t Canvas::AddNetworkSegment(std::vector<CellPosition> &anchorPoints,
     }
 
     // Update map, this assumes lines are either horizontal, vertical or 45 degress
-
     for (int i = 0; i < samples.size(); ++i)
     {
-        gridContentInfo[GetGridIdxAtCell(samples[i].x, samples[i].y)].networkId = id;
+        auto idx = GetGridIdxAtCell(samples[i]);
+        gridContentInfo[idx].networkId = id;
+        networkConstraints[idx] = NetworkConstraintFlags::FLAG_NCONSTRAINT_ALLDIR;
+    }
+
+    // unset constraints at start and end, should actually be related to all anchors and direction
+    for (auto a = anchorPoints.begin();a!=anchorPoints.end(); ++a)
+    {
+        networkConstraints[GetGridIdxAtCell(*a)] =
+            NetworkConstraintFlags::FLAG_NCONSTRAINT_NO_CONSTRAINTS;
     }
 
     // store anchore points, and id for deletion
@@ -502,6 +510,11 @@ CanvasComponentBase *Canvas::GetComponent(std::uint8_t id) const
 int Canvas::GetGridIdxAtCell(int cellX, int cellY) const
 {
     return cellX + cellY * GridWidth;
+}
+
+int Canvas::GetGridIdxAtCell(const CellPosition &cell) const
+{
+    return GetGridIdxAtCell(cell.x, cell.y);
 }
 
 void Canvas::DrawNetworkSegment(const std::vector<CellPosition> &network, bool drawNodes, float pixPr_cm, Color c)

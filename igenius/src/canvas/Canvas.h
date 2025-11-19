@@ -88,6 +88,7 @@ private:
     static const std::uint8_t GridHeight = 255;
     void SetGridCellContentInfo(const ComponentBluePrint &blueprint, std::uint8_t cellX, std::uint8_t cellY, GridContentInfo info);
     int GetGridIdxAtCell(int cellX, int cellY) const;
+    int GetGridIdxAtCell(const CellPosition &cell) const;
 
     // GridRegisterInfo gridComponentRegister[GridWidth * GridHeight] = {}; // Register of item types in the grid and reference to the contentInfo, zero initialized
     GridContentInfo gridContentInfo[GridWidth * GridHeight] = {0}; // Register of ids placed in the grid
